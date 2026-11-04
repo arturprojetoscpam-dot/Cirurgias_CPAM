@@ -49,7 +49,9 @@
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
+<section id="authScreen" class="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 p-4"><div class="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"><div class="bg-gradient-to-r from-teal-900 to-slate-900 px-8 py-7 text-center text-white"><div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-400/15 text-2xl text-teal-300"><i class="fa-solid fa-hospital"></i></div><h1 class="text-xl font-bold">Cirurgias_CPAM</h1><p class="mt-1 text-xs text-teal-200">Acesso restrito ao sistema</p></div><div class="p-8"><div id="authLogin"><h2 class="text-lg font-bold">Entrar no sistema</h2><p class="mb-5 mt-1 text-xs text-slate-500">Use seu e-mail institucional e senha.</p><form id="formLogin" onsubmit="entrar(event)" class="space-y-4"><div><label class="mb-1 block text-xs font-semibold">E-mail</label><input id="loginEmail" type="email" required autocomplete="username" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="nome@instituicao.gov.br"></div><div><label class="mb-1 block text-xs font-semibold">Senha</label><input id="loginSenha" type="password" required autocomplete="current-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="Sua senha"></div><button id="btnEntrar" type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-bold text-white">Entrar</button></form><button onclick="solicitarRecuperacao()" class="mt-4 w-full text-center text-xs font-semibold text-teal-700">Esqueci minha senha</button></div><div id="authNovaSenha" class="hidden"><h2 class="text-lg font-bold">Criar nova senha</h2><form onsubmit="salvarNovaSenha(event)" class="mt-4 space-y-4"><input id="novaSenha" type="password" minlength="10" required autocomplete="new-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="Nova senha (mínimo 10 caracteres)"><input id="confirmaNovaSenha" type="password" minlength="10" required autocomplete="new-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="Confirme a nova senha"><button type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-bold text-white">Salvar nova senha</button></form></div><p id="authMensagem" role="status" class="mt-4 hidden rounded-xl p-3 text-xs"></p><p class="mt-6 text-center text-[10px] text-slate-400">Acesso individual protegido por autenticação e permissões.</p></div></div></section>
     <!-- Cabeçalho Principal -->
+    <div id="appShell" class="hidden">
     <header class="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white shadow-lg sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
             <div class="flex items-center gap-3">
@@ -64,11 +66,7 @@
 
             <div class="flex items-center gap-3">
                 <!-- Status da Conexão / Botão Config -->
-                <button onclick="abrirModalConfig()" id="btnStatusConexao" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-800 border border-slate-700 transition">
-                    <span id="indicatorConexao" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span id="textConexao">Configurar Supabase</span>
-                    <i class="fa-solid fa-gear text-slate-400 ml-1"></i>
-                </button>
+                <div class="flex items-center gap-3"><div class="hidden sm:block text-right"><p id="usuarioEmail" class="text-xs font-semibold"></p><p id="usuarioPerfil" class="text-[10px] text-teal-300"></p></div><button id="btnAuditoria" onclick="alternarAuditoria()" class="hidden rounded-lg border border-slate-500 bg-slate-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-clipboard-list mr-1"></i>Auditoria</button><button id="btnUsuarios" onclick="alternarPainelUsuarios()" class="hidden rounded-lg border border-teal-500/40 bg-teal-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-users mr-1"></i>Usuários</button><button onclick="sair()" class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Sair</button></div>
             </div>
         </div>
     </header>
@@ -127,6 +125,8 @@
             </div>
         </section>
 
+<section id="secAuditoria" class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="border-b border-slate-100 pb-4"><h2 class="font-bold text-slate-800"><i class="fa-solid fa-clipboard-list mr-2 text-teal-700"></i>Auditoria de alterações</h2><p class="mt-1 text-xs text-slate-500">Histórico de operações no cadastro cirúrgico. O log não exibe valores pessoais do paciente.</p></div><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">Data/hora</th><th class="p-3">Usuário</th><th class="p-3">Operação</th><th class="p-3">Identificação</th><th class="p-3">Campos alterados</th></tr></thead><tbody id="gridAuditoria" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr></tbody></table></div></section>
+        <section id="secAdmin" class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-user-shield mr-2 text-teal-700"></i>Gestão de usuários</h2><p class="mt-1 text-xs text-slate-500">Altere perfis e suspenda acessos. Convide novas contas pelo Supabase Auth.</p></div><a href="https://supabase.com/dashboard/project/uazilxyspnycvntxcxzu/auth/users" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-teal-200 px-3 py-2 text-xs font-semibold text-teal-800">Convidar usuário <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a></div><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">E-mail</th><th class="p-3">Nome</th><th class="p-3">Perfil</th><th class="p-3">Acesso</th><th class="p-3">Ação</th></tr></thead><tbody id="gridUsuarios" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr></tbody></table></div><p class="mt-3 text-[10px] text-slate-400">Novas contas recebem inicialmente o perfil Consulta.</p></section>
         <!-- ABA DE AÇÕES E BOTÕES DE EXPANSÃO -->
         <div class="flex justify-between items-center border-b border-slate-200 pb-3">
             <div class="flex items-center gap-2">
@@ -395,6 +395,7 @@
         </section>
 
     </main>
+    </div>
 
     <!-- MODAL DE DETALHES COMPLETO DA CIRURGIA -->
     <div id="modalDetalhes" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -488,475 +489,251 @@
         </div>
     </div>
 
-    <!-- MODAL DE CONFIGURAÇÃO DO SUPABASE -->
-    <div id="modalConfig" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
-            <div class="bg-slate-900 text-white p-4 px-6 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-database text-teal-400"></i>
-                    <h3 class="font-bold text-sm">Configurar Conexão Supabase</h3>
-                </div>
-                <button onclick="fecharModalConfig()" class="text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            
-            <div class="p-6 space-y-4">
-                <p class="text-xs text-slate-500 leading-relaxed">
-                    Insira as credenciais do seu projeto Supabase. Elas serão salvas de forma segura no navegador (`localStorage`) para conectar automaticamente.
-                </p>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Project URL *</label>
-                    <input type="text" id="cfgUrl" placeholder="https://xyz.supabase.co" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500 font-mono">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">Publishable Key / Anon Key *</label>
-                    <input type="password" id="cfgKey" placeholder="sb_publishable_... ou eyJ..." class="w-full border border-slate-300 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500 font-mono">
-                </div>
-
-                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-[11px] text-amber-800 flex items-start gap-2">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5"></i>
-                    <span>Certifique-se de ter executado o script de criação da tabela <strong>cirurgias</strong> no SQL Editor do Supabase.</span>
-                </div>
-            </div>
-
-            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-end gap-2">
-                <button onclick="fecharModalConfig()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold text-xs">Cancelar</button>
-                <button onclick="salvarCredenciaisSupabase()" class="px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow">Salvar & Conectar</button>
-            </div>
-        </div>
-    </div>
-
     <!-- SCRIPT DE LÓGICA E INTEGRAÇÃO -->
+
     <script>
-        // --- ESTADO GLOBAL ---
-        let supabaseClient = null;
-        let todosRegistros = [];
-        let registrosFiltrados = [];
-        let paginaAtual = 1;
-        const itensPorPagina = 15;
+        const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
+        const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false;
+        const itensPorPagina=15;
+        const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
-        // Credenciais padrão (Substitua ou use o gerenciador web)
-        let configSupabase = {
-            url: localStorage.getItem('sb_url') || 'https://uazilxyspnycvntxcxzu.supabase.co',
-            key: localStorage.getItem('sb_key') || 'sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP'
-        };
-
-        // --- INICIALIZAÇÃO ---
-        window.addEventListener('DOMContentLoaded', () => {
-            // Preencher data padrão para hoje no formulário
-            document.getElementById('Data_da_Cirurgia').valueAsDate = new Date();
-            
-            inicializarSupabase();
+        window.addEventListener('DOMContentLoaded',async function(){
+            document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();
+            supabaseClient.auth.onAuthStateChange(function(evento,sessao){
+                if(evento==='PASSWORD_RECOVERY'){mostrarNovaSenha();return;}
+                if(sessao&&sessao.user) window.setTimeout(function(){ativarSessao(sessao.user);},0);
+                else mostrarLogin();
+            });
+            const {data,error}=await supabaseClient.auth.getSession();
+            if(error){mostrarMensagemAuth(error.message);return;}
+            if(data.session&&data.session.user) await ativarSessao(data.session.user); else mostrarLogin();
         });
 
-        function inicializarSupabase() {
-            if (configSupabase.url && configSupabase.key) {
-                try {
-                    supabaseClient = supabase.createClient(configSupabase.url, configSupabase.key);
-                    atualizarBadgeConexao(true, "Conectado ao Supabase");
-                    carregarDados();
-                } catch (e) {
-                    console.error(e);
-                    atualizarBadgeConexao(false, "Erro de Conexão");
+        function mostrarMensagemAuth(mensagem,sucesso){
+            const el=document.getElementById('authMensagem');el.textContent=mensagem;
+            el.className='mt-4 rounded-xl p-3 text-xs '+(sucesso?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700');el.classList.remove('hidden');
+        }
+        function ocultarMensagemAuth(){const el=document.getElementById('authMensagem');el.textContent='';el.classList.add('hidden');}
+        function mostrarLogin(){
+            usuarioAtual=null;perfilAtual=null;todosRegistros=[];registrosFiltrados=[];
+            document.getElementById('appShell').classList.add('hidden');document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('authLogin').classList.remove('hidden');document.getElementById('authNovaSenha').classList.add('hidden');ocultarMensagemAuth();
+        }
+        async function ativarSessao(usuario){
+            if(carregandoPerfil||(usuarioAtual&&usuarioAtual.id===usuario.id&&perfilAtual))return;
+            carregandoPerfil=true;
+            try{
+                const {data:perfil,error}=await supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active').eq('user_id',usuario.id).single();
+                if(error)throw error;
+                if(!perfil||!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Acesso suspenso. Procure o administrador.');return;}
+                usuarioAtual=usuario;perfilAtual=perfil;
+                document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
+                document.getElementById('usuarioEmail').textContent=usuario.email||perfil.email;
+                document.getElementById('usuarioPerfil').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
+                document.getElementById('btnUsuarios').classList.toggle('hidden',perfil.role!=='administrador');
+                document.getElementById('btnAuditoria').classList.toggle('hidden',perfil.role!=='administrador');
+                document.getElementById('btnToggleForm').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
+                document.getElementById('secFormulario').classList.add('hidden');
+                atualizarBadgeConexao(true,'Sessão autenticada');await carregarDados();
+            }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
+            finally{carregandoPerfil=false;}
+        }
+        async function entrar(evento){
+            evento.preventDefault();ocultarMensagemAuth();const botao=document.getElementById('btnEntrar');botao.disabled=true;botao.textContent='Autenticando...';
+            const {data,error}=await supabaseClient.auth.signInWithPassword({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginSenha').value});
+            botao.disabled=false;botao.textContent='Entrar';
+            if(error){mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');return;}
+            if(data.user)await ativarSessao(data.user);
+        }
+        async function solicitarRecuperacao(){
+            ocultarMensagemAuth();const email=document.getElementById('loginEmail').value.trim();
+            if(!email){mostrarMensagemAuth('Informe seu e-mail no campo acima.');document.getElementById('loginEmail').focus();return;}
+            const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
+            if(error)mostrarMensagemAuth('Não foi possível solicitar a recuperação: '+error.message);
+            else mostrarMensagemAuth('Se o e-mail estiver cadastrado, você receberá as instruções.',true);
+        }
+        function mostrarNovaSenha(){
+            document.getElementById('appShell').classList.add('hidden');document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('authLogin').classList.add('hidden');document.getElementById('authNovaSenha').classList.remove('hidden');ocultarMensagemAuth();
+        }
+        async function salvarNovaSenha(evento){
+            evento.preventDefault();const senha=document.getElementById('novaSenha').value,confirmacao=document.getElementById('confirmaNovaSenha').value;
+            if(senha.length<10){mostrarMensagemAuth('A senha deve ter pelo menos 10 caracteres.');return;}
+            if(senha!==confirmacao){mostrarMensagemAuth('As senhas não são iguais.');return;}
+            const {error}=await supabaseClient.auth.updateUser({password:senha});
+            if(error){mostrarMensagemAuth('Não foi possível atualizar a senha: '+error.message);return;}
+            mostrarMensagemAuth('Senha atualizada. Entre novamente.',true);await supabaseClient.auth.signOut();
+            document.getElementById('authNovaSenha').classList.add('hidden');document.getElementById('authLogin').classList.remove('hidden');
+        }
+        async function sair(){const {error}=await supabaseClient.auth.signOut();if(error)exibirToast(error.message,'erro');else mostrarLogin();}
+        function atualizarBadgeConexao(ok,texto){
+            const ind=document.getElementById('indicatorConexao'),txt=document.getElementById('textConexao');if(!ind||!txt)return;
+            txt.textContent=texto;ind.className=ok?'w-2.5 h-2.5 rounded-full bg-emerald-400':'w-2.5 h-2.5 rounded-full bg-rose-500';
+        }
+        async function carregarDados(){
+            if(!usuarioAtual||!perfilAtual)return;exibirLoadingGrid();
+            try{
+                let todos=[];const lote=1000;
+                for(let inicio=0;;inicio+=lote){
+                    const {data,error}=await supabaseClient.from('cirurgias').select('*')
+                        .order('Data_da_Cirurgia',{ascending:false}).order('Identificação',{ascending:true}).range(inicio,inicio+lote-1);
+                    if(error)throw error;todos=todos.concat(data||[]);if(!data||data.length<lote)break;
                 }
-            } else {
-                atualizarBadgeConexao(false, "Não Configurado");
-                abrirModalConfig();
+                todosRegistros=todos;atualizarDashboard();aplicarFiltros();
+            }catch(error){
+                console.error(error);const tbody=document.getElementById('gridCirurgias');
+                tbody.innerHTML='<tr><td colspan="8" class="p-8 text-center text-rose-600"><strong>Falha ao buscar registros.</strong><p class="mt-1 text-xs"></p></td></tr>';
+                tbody.querySelector('p').textContent=error.message;exibirToast('Erro ao carregar registros: '+error.message,'erro');
             }
         }
-
-        function atualizarBadgeConexao(conectado, texto) {
-            const ind = document.getElementById('indicatorConexao');
-            const txt = document.getElementById('textConexao');
-
-            txt.innerText = texto;
-            if (conectado) {
-                ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
-            } else {
-                ind.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping";
-            }
+        function atualizarDashboard(){
+            const total=todosRegistros.length;
+            const realizadas=todosRegistros.filter(r=>(r.Situaçao||'').toUpperCase()==='REALIZADA').length;
+            const canceladas=todosRegistros.filter(r=>(r.Situaçao||'').toUpperCase()==='CANCELADA').length;
+            const pctReal=total?((realizadas/total)*100).toFixed(1):'0.0',pctCanc=total?((canceladas/total)*100).toFixed(1):'0.0';
+            document.getElementById('dashTotal').textContent=total.toLocaleString('pt-BR');document.getElementById('dashRealizadas').textContent=realizadas.toLocaleString('pt-BR');
+            document.getElementById('pctRealizadas').textContent=pctReal+'% do total';document.getElementById('dashCanceladas').textContent=canceladas.toLocaleString('pt-BR');
+            document.getElementById('pctCanceladas').textContent=pctCanc+'% do total';document.getElementById('dashTaxa').textContent=pctReal+'%';
         }
-
-        // --- CARREGAMENTO DE DADOS E MÉTRICAS ---
-        async function carregarDados() {
-            if (!supabaseClient) return;
-
-            exibirLoadingGrid();
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('cirurgias')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                todosRegistros = data || [];
-                atualizarDashboard();
-                aplicarFiltros();
-                
-            } catch (error) {
-                console.error("Erro ao carregar dados:", error);
-                exibirToast("Erro ao carregar registros do Supabase: " + error.message, "erro");
-                document.getElementById('gridCirurgias').innerHTML = `
-                    <tr>
-                        <td colspan="8" class="p-8 text-center text-rose-500">
-                            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
-                            <p class="font-bold">Falha ao buscar dados no banco</p>
-                            <p class="text-xs text-slate-400 mt-1">${error.message}</p>
-                        </td>
-                    </tr>
-                `;
-            }
+        function aplicarFiltros(){
+            const termo=document.getElementById('txtBusca').value.toLowerCase().trim(),esp=document.getElementById('filtroEspecialidade').value;
+            const carater=document.getElementById('filtroCarater').value,situacao=document.getElementById('filtroSituacao').value;
+            registrosFiltrados=todosRegistros.filter(function(reg){
+                const campos=[reg.Nome_Paciente,reg.prontuario,reg.NBE,reg.Medico,reg.Procedimento1,reg.Especialidade,reg.CNS];
+                return (!termo||campos.some(function(c){return String(c||'').toLowerCase().includes(termo);}))&&
+                    (!esp||(reg.Especialidade||'').toUpperCase()===esp.toUpperCase())&&
+                    (!carater||(reg.Carater_Atendimento||'').toUpperCase()===carater.toUpperCase())&&
+                    (!situacao||(reg.Situaçao||'').toUpperCase()===situacao.toUpperCase());
+            });paginaAtual=1;renderizarGrid();
         }
-
-        function atualizarDashboard() {
-            const total = todosRegistros.length;
-            const realizadas = todosRegistros.filter(r => (r.Situaçao || '').toUpperCase() === 'REALIZADA').length;
-            const canceladas = todosRegistros.filter(r => (r.Situaçao || '').toUpperCase() === 'CANCELADA').length;
-            
-            const pctReal = total > 0 ? ((realizadas / total) * 100).toFixed(1) : 0;
-            const pctCanc = total > 0 ? ((canceladas / total) * 100).toFixed(1) : 0;
-
-            document.getElementById('dashTotal').innerText = total.toLocaleString('pt-BR');
-            document.getElementById('dashRealizadas').innerText = realizadas.toLocaleString('pt-BR');
-            document.getElementById('pctRealizadas').innerText = `${pctReal}% do total`;
-            document.getElementById('dashCanceladas').innerText = canceladas.toLocaleString('pt-BR');
-            document.getElementById('pctCanceladas').innerText = `${pctCanc}% do total`;
-            document.getElementById('dashTaxa').innerText = `${pctReal}%`;
+        function escaparHtml(valor){return String(valor==null?'':valor).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+        function renderizarGrid(){
+            const tbody=document.getElementById('gridCirurgias'),total=registrosFiltrados.length;
+            document.getElementById('lblTotalCount').textContent=todosRegistros.length;document.getElementById('lblExibindoCount').textContent=total;
+            if(!total){tbody.innerHTML='<tr><td colspan="8" class="p-8 text-center text-slate-400">Nenhum registro encontrado.</td></tr>';atualizarBotoesPaginacao(0);return;}
+            const paginas=Math.ceil(total/itensPorPagina),inicio=(paginaAtual-1)*itensPorPagina,itens=registrosFiltrados.slice(inicio,inicio+itensPorPagina);
+            tbody.innerHTML=itens.map(function(reg,idx){
+                const realizada=(reg.Situaçao||'').toUpperCase()==='REALIZADA',urgencia=(reg.Carater_Atendimento||'').toUpperCase()==='URGENCIA',i=inicio+idx;
+                const sit=realizada?'<span class="rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">REALIZADA</span>':'<span class="rounded-full border border-rose-200 bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800">CANCELADA</span>';
+                const car=urgencia?'<span class="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">URGÊNCIA</span>':'<span class="rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">ELETIVA</span>';
+                return '<tr class="group cursor-pointer transition hover:bg-slate-50" onclick="abrirDetalhesIndex('+i+')"><td class="p-3.5 font-mono">'+escaparHtml(formatarData(reg.Data_da_Cirurgia))+'</td>'+
+                    '<td class="p-3.5 font-mono"><div>'+escaparHtml(reg.prontuario||'-')+'</div><div class="text-[10px] text-slate-400">'+escaparHtml(reg.NBE?'NBE: '+reg.NBE:'')+'</div></td>'+
+                    '<td class="p-3.5 font-bold">'+escaparHtml(reg.Nome_Paciente||'NÃO INFORMADO')+'</td><td class="p-3.5">'+escaparHtml(reg.Especialidade||'-')+'</td>'+
+                    '<td class="p-3.5">'+escaparHtml(reg.Medico||'-')+'</td><td class="p-3.5">'+car+'</td><td class="p-3.5">'+sit+'</td>'+
+                    '<td class="p-3.5 text-center" onclick="event.stopPropagation()"><button onclick="abrirDetalhesIndex('+i+')" class="rounded-lg p-1.5 text-slate-400 hover:bg-teal-50 hover:text-teal-600" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button></td></tr>';
+            }).join('');atualizarBotoesPaginacao(paginas);
         }
-
-        // --- FILTROS E PAGINAÇÃO ---
-        function aplicarFiltros() {
-            const termo = document.getElementById('txtBusca').value.toLowerCase().trim();
-            const esp = document.getElementById('filtroEspecialidade').value;
-            const carater = document.getElementById('filtroCarater').value;
-            const situacao = document.getElementById('filtroSituacao').value;
-
-            registrosFiltrados = todosRegistros.filter(reg => {
-                const matchTermo = !termo || [
-                    reg.Nome_Paciente, reg.prontuario, reg.NBE, reg.Medico, 
-                    reg.Procedimento1, reg.Especialidade, reg.CNS
-                ].some(c => (c || '').toString().toLowerCase().includes(termo));
-
-                const matchEsp = !esp || (reg.Especialidade || '').toUpperCase() === esp.toUpperCase();
-                const matchCarater = !carater || (reg.Carater_Atendimento || '').toUpperCase() === carater.toUpperCase();
-                const matchSit = !situacao || (reg.Situaçao || '').toUpperCase() === situacao.toUpperCase();
-
-                return matchTermo && matchEsp && matchCarater && matchSit;
-            });
-
-            paginaAtual = 1;
-            renderizarGrid();
+        function atualizarBotoesPaginacao(paginas){
+            document.getElementById('lblPaginaAtual').textContent='Pág. '+paginaAtual+' de '+(paginas||1);
+            document.getElementById('btnPagAnterior').disabled=paginaAtual<=1;document.getElementById('btnPagProxima').disabled=paginaAtual>=paginas;
         }
-
-        function renderizarGrid() {
-            const tbody = document.getElementById('gridCirurgias');
-            tbody.innerHTML = '';
-
-            const total = registrosFiltrados.length;
-            document.getElementById('lblTotalCount').innerText = todosRegistros.length;
-            document.getElementById('lblExibindoCount').innerText = total;
-
-            if (total === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="p-8 text-center text-slate-400">
-                            <i class="fa-solid fa-folder-open text-2xl mb-2 text-slate-300"></i>
-                            <p>Nenhum registro encontrado para os filtros selecionados.</p>
-                        </td>
-                    </tr>
-                `;
-                atualizarBotoesPaginacao(0);
-                return;
-            }
-
-            const totalPaginas = Math.ceil(total / itensPorPagina);
-            const inicio = (paginaAtual - 1) * itensPorPagina;
-            const fim = inicio + itensPorPagina;
-            const itensPagina = registrosFiltrados.slice(inicio, fim);
-
-            itensPagina.forEach((reg, idx) => {
-                const isRealizada = (reg.Situaçao || '').toUpperCase() === 'REALIZADA';
-                const badgeSit = isRealizada 
-                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-check mr-1"></i>REALIZADA</span>`
-                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200"><i class="fa-solid fa-xmark mr-1"></i>CANCELADA</span>`;
-
-                const isUrgencia = (reg.Carater_Atendimento || '').toUpperCase() === 'URGENCIA';
-                const badgeCarater = isUrgencia
-                    ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">URGÊNCIA</span>`
-                    : `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">ELETIVA</span>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition cursor-pointer group" onclick="abrirDetalhesIndex(${inicio + idx})">
-                        <td class="p-3.5 font-mono text-slate-600">${formatarData(reg.Data_da_Cirurgia)}</td>
-                        <td class="p-3.5 font-mono font-medium text-slate-700">
-                            <div>${reg.prontuario || '-'}</div>
-                            <div class="text-[10px] text-slate-400">${reg.NBE ? 'NBE: ' + reg.NBE : ''}</div>
-                        </td>
-                        <td class="p-3.5 font-bold text-slate-800 group-hover:text-teal-700 transition">${reg.Nome_Paciente || 'NÃO INFORMADO'}</td>
-                        <td class="p-3.5 text-slate-600 font-medium">${reg.Especialidade || '-'}</td>
-                        <td class="p-3.5 text-slate-700 font-medium">${reg.Medico || '-'}</td>
-                        <td class="p-3.5">${badgeCarater}</td>
-                        <td class="p-3.5">${badgeSit}</td>
-                        <td class="p-3.5 text-center" onclick="event.stopPropagation()">
-                            <button onclick="abrirDetalhesIndex(${inicio + idx})" class="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition" title="Ver Detalhes">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            atualizarBotoesPaginacao(totalPaginas);
-        }
-
-        function atualizarBotoesPaginacao(totalPaginas) {
-            document.getElementById('lblPaginaAtual').innerText = `Pág. ${paginaAtual} de ${totalPaginas || 1}`;
-            document.getElementById('btnPagAnterior').disabled = paginaAtual <= 1;
-            document.getElementById('btnPagProxima').disabled = paginaAtual >= totalPaginas;
-        }
-
-        function paginaAnterior() {
-            if (paginaAtual > 1) {
-                paginaAtual--;
-                renderizarGrid();
-            }
-        }
-
-        function proximaPagina() {
-            const totalPaginas = Math.ceil(registrosFiltrados.length / itensPorPagina);
-            if (paginaAtual < totalPaginas) {
-                paginaAtual++;
-                renderizarGrid();
-            }
-        }
-
-        // --- SALVAR REGISTRO ---
-        async function salvarCirurgia(e) {
-            e.preventDefault();
-
-            if (!supabaseClient) {
-                exibirToast("Supabase não está conectado!", "erro");
-                abrirModalConfig();
-                return;
-            }
-
-            const btn = document.getElementById('btnSalvar');
-            btn.disabled = true;
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Gravando...</span>`;
-
-            const situacao = document.getElementById('Situaçao').value;
-            const motivoCancelam = document.getElementById('Mot_Cancelam').value;
-
-            if (situacao === 'CANCELADA' && !motivoCancelam.trim()) {
-                exibirToast("Por favor, informe o motivo do cancelamento.", "erro");
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>`;
-                return;
-            }
-
-            const novoRegistro = {
-                "Identificação": "REG_" + Date.now(),
-                "Data_da_Cirurgia": document.getElementById('Data_da_Cirurgia').value,
-                "Nome_Paciente": document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
-                "prontuario": document.getElementById('prontuario').value.trim(),
-                "NBE": document.getElementById('NBE').value.trim(),
-                "CNS": document.getElementById('CNS').value.trim(),
-                "Data_Nascimento": document.getElementById('Data_Nascimento').value,
-                "sexo": document.getElementById('sexo').value,
-                "NOME_MAE": document.getElementById('NOME_MAE').value.toUpperCase().trim(),
-                "Especialidade": document.getElementById('Especialidade').value,
-                "Carater_Atendimento": document.getElementById('Carater_Atendimento').value,
-                "Situaçao": situacao,
-                "Procedimento1": document.getElementById('Procedimento1').value.toUpperCase().trim(),
-                "Procedimento2": document.getElementById('Procedimento2').value.toUpperCase().trim(),
-                "Procedimento3": document.getElementById('Procedimento3').value.toUpperCase().trim(),
-                "Mot_Cancelam": situacao === 'CANCELADA' ? motivoCancelam.toUpperCase().trim() : '',
-                "Medico": document.getElementById('Medico').value.toUpperCase().trim(),
-                "CRM_CIR": document.getElementById('CRM_CIR').value.toUpperCase().trim(),
-                "Anestesista": document.getElementById('Anestesista').value.toUpperCase().trim(),
-                "CRM_ANEST": document.getElementById('CRM_ANEST').value.toUpperCase().trim(),
-                "Anestesia1": document.getElementById('Anestesia1').value,
-                "DIGITADO_POR": 'SISTEMA_WEB',
-                "DIGITADO_EM": new Date().toLocaleString('pt-BR')
+        function paginaAnterior(){if(paginaAtual>1){paginaAtual--;renderizarGrid();}}
+        function proximaPagina(){const paginas=Math.ceil(registrosFiltrados.length/itensPorPagina);if(paginaAtual<paginas){paginaAtual++;renderizarGrid();}}
+        async function salvarCirurgia(evento){
+            evento.preventDefault();
+            if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar cirurgias.','erro');return;}
+            const botao=document.getElementById('btnSalvar');botao.disabled=true;botao.textContent='Gravando...';
+            const situacao=document.getElementById('Situaçao').value,motivo=document.getElementById('Mot_Cancelam').value;
+            if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast('Informe o motivo do cancelamento.','erro');botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>';return;}
+            const novo={
+                'Identificação':'REG_'+Date.now(),'Data_da_Cirurgia':document.getElementById('Data_da_Cirurgia').value,
+                'Nome_Paciente':document.getElementById('Nome_Paciente').value.toUpperCase().trim(),'prontuario':document.getElementById('prontuario').value.trim(),
+                'NBE':document.getElementById('NBE').value.trim(),'CNS':document.getElementById('CNS').value.trim(),'Data_Nascimento':document.getElementById('Data_Nascimento').value,
+                'sexo':document.getElementById('sexo').value,'NOME_MAE':document.getElementById('NOME_MAE').value.toUpperCase().trim(),
+                'Especialidade':document.getElementById('Especialidade').value,'Carater_Atendimento':document.getElementById('Carater_Atendimento').value,'Situaçao':situacao,
+                'Procedimento1':document.getElementById('Procedimento1').value.toUpperCase().trim(),'Procedimento2':document.getElementById('Procedimento2').value.toUpperCase().trim(),
+                'Procedimento3':document.getElementById('Procedimento3').value.toUpperCase().trim(),'Mot_Cancelam':situacao==='CANCELADA'?motivo.toUpperCase().trim():'',
+                'Medico':document.getElementById('Medico').value.toUpperCase().trim(),'CRM_CIR':document.getElementById('CRM_CIR').value.toUpperCase().trim(),
+                'Anestesista':document.getElementById('Anestesista').value.toUpperCase().trim(),'CRM_ANEST':document.getElementById('CRM_ANEST').value.toUpperCase().trim(),
+                'Anestesia1':document.getElementById('Anestesia1').value,'DIGITADO_POR':usuarioAtual.email||perfilAtual.email,'DIGITADO_EM':new Date().toLocaleString('pt-BR')
             };
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('cirurgias')
-                    .insert([novoRegistro]);
-
-                if (error) throw error;
-
-                exibirToast("Registro gravado com sucesso no Supabase!", "sucesso");
-                document.getElementById('formCirurgia').reset();
-                document.getElementById('Data_da_Cirurgia').valueAsDate = new Date();
-                aoMudarSituacao();
-                toggleFormulario();
-                carregarDados();
-
-            } catch (error) {
-                console.error("Erro ao salvar:", error);
-                exibirToast("Erro ao gravar: " + error.message, "erro");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>`;
-            }
+            try{
+                const {error}=await supabaseClient.from('cirurgias').insert([novo]);if(error)throw error;
+                exibirToast('Registro gravado com sucesso.','sucesso');document.getElementById('formCirurgia').reset();
+                document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();aoMudarSituacao();toggleFormulario();await carregarDados();
+            }catch(error){console.error(error);exibirToast('Erro ao gravar: '+error.message,'erro');}
+            finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>';}
         }
-
-        // --- INTERFACES & MODAIS ---
-        function toggleFormulario() {
-            const sec = document.getElementById('secFormulario');
-            sec.classList.toggle('hidden');
-            if (!sec.classList.contains('hidden')) {
-                sec.scrollIntoView({ behavior: 'smooth' });
-            }
+        function toggleFormulario(){
+            if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
+            const sec=document.getElementById('secFormulario');sec.classList.toggle('hidden');if(!sec.classList.contains('hidden'))sec.scrollIntoView({behavior:'smooth'});
         }
-
-        function aoMudarSituacao() {
-            const sit = document.getElementById('Situaçao').value;
-            const box = document.getElementById('boxMotivoCancelamento');
-            if (sit === 'CANCELADA') {
-                box.classList.remove('hidden');
-            } else {
-                box.classList.add('hidden');
-            }
+        function aoMudarSituacao(){
+            const cancelada=document.getElementById('Situaçao').value==='CANCELADA';
+            document.getElementById('boxMotivoCancelamento').classList.toggle('hidden',!cancelada);document.getElementById('Mot_Cancelam').required=cancelada;
         }
-
-        function abrirDetalhesIndex(idx) {
-            const reg = registrosFiltrados[idx];
-            if (!reg) return;
-
-            document.getElementById('detalheSubtitulo').innerText = `Prontuário: ${reg.prontuario || 'N/A'}`;
-            document.getElementById('detalheNome').innerText = reg.Nome_Paciente || '-';
-            document.getElementById('detalheProntuario').innerText = reg.prontuario || '-';
-            document.getElementById('detalheNbe').innerText = reg.NBE || '-';
-            document.getElementById('detalheCns').innerText = reg.CNS || '-';
-            document.getElementById('detalheNascimento').innerText = formatarData(reg.Data_Nascimento);
-            document.getElementById('detalheSexo').innerText = reg.sexo || '-';
-            document.getElementById('detalheMae').innerText = reg.NOME_MAE || '-';
-
-            document.getElementById('detalheEspecialidade').innerText = reg.Especialidade || '-';
-            document.getElementById('detalheDataCirurgia').innerText = formatarData(reg.Data_da_Cirurgia);
-            document.getElementById('detalheProc1').innerText = reg.Procedimento1 || '-';
-            
-            const p2 = document.getElementById('detalheProc2');
-            const p3 = document.getElementById('detalheProc3');
-            p2.innerText = reg.Procedimento2 || '-';
-            p3.innerText = reg.Procedimento3 || '-';
-
-            document.getElementById('detalheMedico').innerText = reg.Medico || '-';
-            document.getElementById('detalheCrmCir').innerText = reg.CRM_CIR || '-';
-            document.getElementById('detalheAnestesista').innerText = reg.Anestesista || '-';
-            document.getElementById('detalheCrmAnest').innerText = reg.CRM_ANEST || '-';
-            document.getElementById('detalheAnestesia').innerText = reg.Anestesia1 || '-';
-            document.getElementById('detalheDigitadoInfo').innerText = `${reg.DIGITADO_POR || 'SISTEMA'} em ${reg.DIGITADO_EM || '-'}`;
-
-            // Badges
-            const isRealizada = (reg.Situaçao || '').toUpperCase() === 'REALIZADA';
-            document.getElementById('detalheSituacaoBadge').innerText = reg.Situaçao || 'REALIZADA';
-            document.getElementById('detalheSituacaoBadge').className = isRealizada ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold';
-            
-            document.getElementById('detalheCaraterBadge').innerText = reg.Carater_Atendimento || '-';
-
-            const boxCanc = document.getElementById('detalheBoxCancelamento');
-            if (!isRealizada) {
-                boxCanc.classList.remove('hidden');
-                document.getElementById('detalheMotivoCancelamento').innerText = reg.Mot_Cancelam || 'Não informado';
-            } else {
-                boxCanc.classList.add('hidden');
-            }
-
+        function abrirDetalhesIndex(i){
+            const r=registrosFiltrados[i];if(!r)return;
+            const v={detalheSubtitulo:'Prontuário: '+(r.prontuario||'N/A'),detalheNome:r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
+                detalheNbe:r.NBE||'-',detalheCns:r.CNS||'-',detalheNascimento:formatarData(r.Data_Nascimento),detalheSexo:r.sexo||'-',detalheMae:r.NOME_MAE||'-',
+                detalheEspecialidade:r.Especialidade||'-',detalheDataCirurgia:formatarData(r.Data_da_Cirurgia),detalheProc1:r.Procedimento1||'-',detalheProc2:r.Procedimento2||'-',
+                detalheProc3:r.Procedimento3||'-',detalheMedico:r.Medico||'-',detalheCrmCir:r.CRM_CIR||'-',detalheAnestesista:r.Anestesista||'-',
+                detalheCrmAnest:r.CRM_ANEST||'-',detalheAnestesia:r.Anestesia1||'-',detalheDigitadoInfo:(r.DIGITADO_POR||'SISTEMA')+' em '+(r.DIGITADO_EM||'-'),detalheCaraterBadge:r.Carater_Atendimento||'-'};
+            Object.keys(v).forEach(function(id){document.getElementById(id).textContent=v[id];});
+            const realizada=(r.Situaçao||'').toUpperCase()==='REALIZADA',badge=document.getElementById('detalheSituacaoBadge');
+            badge.textContent=r.Situaçao||'REALIZADA';badge.className=realizada?'font-bold text-emerald-700':'font-bold text-rose-700';
+            document.getElementById('detalheBoxCancelamento').classList.toggle('hidden',realizada);
+            if(!realizada)document.getElementById('detalheMotivoCancelamento').textContent=r.Mot_Cancelam||'Não informado';
             document.getElementById('modalDetalhes').classList.remove('hidden');
         }
-
-        function fecharModalDetalhes() {
-            document.getElementById('modalDetalhes').classList.add('hidden');
+        function fecharModalDetalhes(){document.getElementById('modalDetalhes').classList.add('hidden');}
+        function formatarData(d){if(!d)return '-';if(d.includes('/'))return d;const p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
+        function exibirLoadingGrid(){document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="8" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin text-2xl text-teal-600 mb-2"></i><p>Carregando registros...</p></td></tr>';}
+        function exibirToast(mensagem,tipo){
+            const t=document.createElement('div'),i=document.createElement('i'),s=document.createElement('span'),ok=tipo!=='erro';
+            t.className='pointer-events-auto flex items-center gap-3 rounded-xl border px-4 py-3 text-xs font-semibold shadow-lg '+(ok?'border-emerald-700 bg-emerald-900 text-emerald-100':'border-rose-700 bg-rose-900 text-rose-100');
+            i.className=ok?'fa-solid fa-circle-check text-emerald-400':'fa-solid fa-triangle-exclamation text-rose-400';s.textContent=mensagem;t.appendChild(i);t.appendChild(s);
+            document.getElementById('toastContainer').appendChild(t);window.setTimeout(function(){t.remove();},4500);
         }
-
-        // Modal Configuração
-        function abrirModalConfig() {
-            document.getElementById('cfgUrl').value = configSupabase.url;
-            document.getElementById('cfgKey').value = configSupabase.key;
-            document.getElementById('modalConfig').classList.remove('hidden');
+        function alternarPainelUsuarios(){
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;const sec=document.getElementById('secAdmin'),abrir=sec.classList.contains('hidden');
+            sec.classList.toggle('hidden',!abrir);if(abrir){carregarUsuarios();sec.scrollIntoView({behavior:'smooth'});}
         }
-
-        function fecharModalConfig() {
-            document.getElementById('modalConfig').classList.add('hidden');
+        async function carregarUsuarios(){
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;const corpo=document.getElementById('gridUsuarios');
+            corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr>';
+            const {data,error}=await supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active,created_at').order('created_at',{ascending:true});
+            if(error){corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent=error.message;return;}
+            corpo.innerHTML=(data||[]).map(function(p){
+                const opts=Object.keys(ROTULOS_PERFIL).map(function(role){return '<option value="'+role+'"'+(p.role===role?' selected':'')+'>'+ROTULOS_PERFIL[role]+'</option>';}).join('');
+                return '<tr><td class="p-3 font-medium">'+escaparHtml(p.email)+'</td><td class="p-3">'+escaparHtml(p.full_name||'-')+'</td>'+
+                    '<td class="p-3"><select id="role-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs">'+opts+'</select></td>'+
+                    '<td class="p-3"><select id="active-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs"><option value="true"'+(p.active?' selected':'')+'>Ativo</option><option value="false"'+(!p.active?' selected':'')+'>Suspenso</option></select></td>'+
+                    '<td class="p-3"><button onclick="salvarPerfilUsuario(\''+p.user_id+'\')" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white">Salvar</button></td></tr>';
+            }).join('')||'<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum usuário cadastrado.</td></tr>';
         }
-
-        function salvarCredenciaisSupabase() {
-            const url = document.getElementById('cfgUrl').value.trim();
-            const key = document.getElementById('cfgKey').value.trim();
-
-            if (!url || !key) {
-                exibirToast("Preencha a URL e a Chave!", "erro");
-                return;
-            }
-
-            localStorage.setItem('sb_url', url);
-            localStorage.setItem('sb_key', key);
-
-            configSupabase.url = url;
-            configSupabase.key = key;
-
-            fecharModalConfig();
-            exibirToast("Credenciais salvas com sucesso!", "sucesso");
-            inicializarSupabase();
+        function alternarAuditoria(){
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;
+            const sec=document.getElementById('secAuditoria'),abrir=sec.classList.contains('hidden');
+            sec.classList.toggle('hidden',!abrir);
+            if(abrir){carregarAuditoria();sec.scrollIntoView({behavior:'smooth'});}
         }
-
-        // --- UTILS ---
-        function formatarData(dataStr) {
-            if (!dataStr) return '-';
-            if (dataStr.includes('/')) return dataStr; // Já formatado
-            const partes = dataStr.split('-');
-            if (partes.length === 3) {
-                return `${partes[2]}/${partes[1]}/${partes[0]}`;
-            }
-            return dataStr;
+        async function carregarAuditoria(){
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;
+            const corpo=document.getElementById('gridAuditoria');
+            corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr>';
+            const {data,error}=await supabaseClient.from('audit_logs')
+                .select('occurred_at,actor_email,action,record_id,changed_fields')
+                .order('occurred_at',{ascending:false}).limit(100);
+            if(error){corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent=error.message;return;}
+            corpo.innerHTML=(data||[]).map(function(log){
+                const dataHora=log.occurred_at?new Date(log.occurred_at).toLocaleString('pt-BR'):'-';
+                const campos=(log.changed_fields||[]).join(', ')||'-';
+                return '<tr><td class="p-3 whitespace-nowrap">'+escaparHtml(dataHora)+'</td><td class="p-3">'+escaparHtml(log.actor_email||'Sistema')+'</td>'+
+                    '<td class="p-3 font-semibold">'+escaparHtml(log.action)+'</td><td class="p-3 font-mono">'+escaparHtml(log.record_id||'-')+'</td>'+
+                    '<td class="p-3">'+escaparHtml(campos)+'</td></tr>';
+            }).join('')||'<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhuma operação registrada ainda.</td></tr>';
         }
-
-        function exibirLoadingGrid() {
-            document.getElementById('gridCirurgias').innerHTML = `
-                <tr>
-                    <td colspan="8" class="p-8 text-center text-slate-400">
-                        <i class="fa-solid fa-spinner fa-spin text-2xl text-teal-600 mb-2"></i>
-                        <p class="font-medium">Carregando registros do banco de dados...</p>
-                    </td>
-                </tr>
-            `;
-        }
-
-        function exibirToast(mensagem, tipo = 'sucesso') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            
-            const isSucesso = tipo === 'sucesso';
-            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold transition-all transform translate-y-2 opacity-0 ${
-                isSucesso 
-                    ? 'bg-emerald-900 text-emerald-100 border-emerald-700' 
-                    : 'bg-rose-900 text-rose-100 border-rose-700'
-            }`;
-
-            toast.innerHTML = `
-                <i class="${isSucesso ? 'fa-solid fa-circle-check text-emerald-400' : 'fa-solid fa-triangle-exclamation text-rose-400'} text-base"></i>
-                <span>${mensagem}</span>
-            `;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-y-2', 'opacity-0');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000);
+        async function salvarPerfilUsuario(id){
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;
+            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true';
+            const {error}=await supabaseClient.from('user_profiles').update({role:role,active:active}).eq('user_id',id);
+            if(error){exibirToast('Não foi possível atualizar: '+error.message,'erro');return;}
+            exibirToast('Perfil atualizado.','sucesso');
+            if(id===usuarioAtual.id&&(!active||role!=='administrador')){await supabaseClient.auth.signOut();mostrarLogin();return;}
+            await carregarUsuarios();
         }
     </script>
 </body>
