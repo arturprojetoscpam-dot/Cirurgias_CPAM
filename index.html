@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão de Bloco Cirúrgico</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            dark: '#0f172a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- Toast Notifications Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Cabeçalho Principal -->
+    <header class="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-300 text-xl font-bold">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight leading-none text-white">Bloco Cirúrgico</h1>
+                    <p class="text-xs text-teal-300 font-medium">Gestão & Registro Hospitalar</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Status da Conexão / Botão Config -->
+                <button onclick="abrirModalConfig()" id="btnStatusConexao" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800/80 hover:bg-slate-800 border border-slate-700 transition">
+                    <span id="indicatorConexao" class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span id="textConexao">Configurar Supabase</span>
+                    <i class="fa-solid fa-gear text-slate-400 ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+        <!-- DASHBOARD DE MÉTRICAS -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Card 1: Total -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Registrado</p>
+                    <h3 id="dashTotal" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Cirurgias no sistema</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-notes-medical"></i>
+                </div>
+            </div>
+
+            <!-- Card 2: Realizadas -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Realizadas</p>
+                    <h3 id="dashRealizadas" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
+                    <p class="text-[11px] text-emerald-700/70 font-medium mt-0.5" id="pctRealizadas">0% do total</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+            </div>
+
+            <!-- Card 3: Canceladas -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Canceladas</p>
+                    <h3 id="dashCanceladas" class="text-2xl font-bold text-rose-600 mt-1">0</h3>
+                    <p class="text-[11px] text-rose-700/70 font-medium mt-0.5" id="pctCanceladas">0% do total</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+            </div>
+
+            <!-- Card 4: Taxa de Sucesso -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Eficiência de Agendamento</p>
+                    <h3 id="dashTaxa" class="text-2xl font-bold text-blue-600 mt-1">0%</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Taxa de realização</p>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-chart-line"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- ABA DE AÇÕES E BOTÕES DE EXPANSÃO -->
+        <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
+                <h2 class="text-base font-bold text-slate-800">Operações do Bloco</h2>
+            </div>
+            <button onclick="toggleFormulario()" id="btnToggleForm" class="bg-teal-700 hover:bg-teal-800 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i>
+                <span>Novo Registro Cirúrgico</span>
+            </button>
+        </div>
+
+        <!-- FORMULÁRIO COMPLETO DE CADASTRO -->
+        <section id="secFormulario" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-md p-6 transition-all duration-300">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
+                <div>
+                    <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-file-signature text-teal-600"></i> Ficha de Registro de Cirurgia
+                    </h3>
+                    <p class="text-xs text-slate-400">Preencha todos os campos regulamentares para dar entrada no prontuário.</p>
+                </div>
+                <button onclick="toggleFormulario()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="formCirurgia" onsubmit="salvarCirurgia(event)" class="space-y-6">
+
+                <!-- 1. IDENTIFICAÇÃO DO PACIENTE -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-injured"></i> 1. Dados do Paciente
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo do Paciente *</label>
+                            <input type="text" id="Nome_Paciente" required placeholder="Ex: MARIA SILVA DOS SANTOS" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Prontuário *</label>
+                            <input type="text" id="prontuario" required placeholder="Ex: 123456" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">NBE</label>
+                            <input type="text" id="NBE" placeholder="Ex: NBE-9988" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Cartão SUS (CNS)</label>
+                            <input type="text" id="CNS" placeholder="700000000000000" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Data de Nascimento</label>
+                            <input type="date" id="Data_Nascimento" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Sexo</label>
+                            <select id="sexo" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">Selecione</option>
+                                <option value="FEMININO">FEMININO</option>
+                                <option value="MASCULINO">MASCULINO</option>
+                                <option value="OUTRO">OUTRO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome da Mãe</label>
+                            <input type="text" id="NOME_MAE" placeholder="Nome da mãe" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. DETALHES DO PROCEDIMENTO -->
+                <div class="border-t border-slate-100 pt-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-procedures"></i> 2. Detalhes do Procedimento Cirúrgico
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Data da Cirurgia *</label>
+                            <input type="date" id="Data_da_Cirurgia" required class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Especialidade *</label>
+                            <select id="Especialidade" required class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="CIRURGIA GERAL">CIRURGIA GERAL</option>
+                                <option value="PEQUENAS CIRURGIAS">PEQUENAS CIRURGIAS</option>
+                                <option value="ORTOPEDIA">ORTOPEDIA</option>
+                                <option value="OTORRINOLARINGOLOGIA">OTORRINOLARINGOLOGIA</option>
+                                <option value="NEUROCIRURGIA">NEUROCIRURGIA</option>
+                                <option value="ODONTOLOGIA">ODONTOLOGIA / BUCOMAXILO</option>
+                                <option value="PLASTICA">CIRURGIA PLÁSTICA</option>
+                                <option value="OFTALMOLOGIA">OFTALMOLOGIA</option>
+                                <option value="VASCULAR">CIRURGIA VASCULAR</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Caráter do Atendimento *</label>
+                            <select id="Carater_Atendimento" required class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="URGENCIA">URGÊNCIA</option>
+                                <option value="ELETIVA">ELETIVA</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Situação *</label>
+                            <select id="Situaçao" required onchange="aoMudarSituacao()" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none font-bold">
+                                <option value="REALIZADA" class="text-emerald-700">REALIZADA</option>
+                                <option value="CANCELADA" class="text-rose-700">CANCELADA</option>
+                            </select>
+                        </div>
+
+                        <!-- Procedimentos (1, 2, 3) -->
+                        <div class="md:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Procedimento Principal (1)</label>
+                                <input type="text" id="Procedimento1" placeholder="Ex: COLECISTECTOMIA" class="w-full border border-slate-300 p-2 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Procedimento Secundário (2)</label>
+                                <input type="text" id="Procedimento2" placeholder="Procedimento secundário" class="w-full border border-slate-300 p-2 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Procedimento Terciário (3)</label>
+                                <input type="text" id="Procedimento3" placeholder="Procedimento adicional" class="w-full border border-slate-300 p-2 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Motivo Cancelamento (Exibido dinamicamente) -->
+                        <div id="boxMotivoCancelamento" class="hidden md:col-span-4 bg-rose-50 p-3 rounded-xl border border-rose-200">
+                            <label class="block text-xs font-bold text-rose-800 mb-1">Motivo do Cancelamento *</label>
+                            <input type="text" id="Mot_Cancelam" placeholder="Ex: Paciente sem jejum / Instabilidade hemodinâmica / Ausência do paciente" class="w-full border border-rose-300 p-2 rounded-xl text-xs bg-white text-rose-900 focus:ring-2 focus:ring-rose-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. EQUIPE MÉDICA E ANESTESIA -->
+                <div class="border-t border-slate-100 pt-5">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-user-doctor"></i> 3. Equipe Médica & Anestesia
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Médico Cirurgião Principal *</label>
+                            <input type="text" id="Medico" required placeholder="Nome do médico cirurgião" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">CRM Cirurgião</label>
+                            <input type="text" id="CRM_CIR" placeholder="CRM/UF" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo de Anestesia</label>
+                            <select id="Anestesia1" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
+                                <option value="">Selecione</option>
+                                <option value="GERAL">GERAL</option>
+                                <option value="SEDAÇÃO">SEDAÇÃO</option>
+                                <option value="RAQUI">RAQUI</option>
+                                <option value="LOCAL">LOCAL</option>
+                                <option value="PERIDURAL">PERIDURAL</option>
+                                <option value="BLOQUEIO">BLOQUEIO REGIONAL</option>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Médico Anestesista</label>
+                            <input type="text" id="Anestesista" placeholder="Nome do anestesista" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">CRM Anestesista</label>
+                            <input type="text" id="CRM_ANEST" placeholder="CRM/UF" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Digitado Por</label>
+                            <input type="text" id="DIGITADO_POR" value="WEB_OPERATOR" readonly class="w-full border border-slate-200 bg-slate-50 p-2.5 rounded-xl text-xs text-slate-500 outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BOTÕES DO FORMULÁRIO -->
+                <div class="border-t border-slate-100 pt-5 flex justify-end gap-3">
+                    <button type="button" onclick="toggleFormulario()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnSalvar" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 text-xs">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Gravar no Prontuário</span>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- TABELA DE REGISTROS COM FILTROS AVANÇADOS -->
+        <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
+            
+            <!-- Barra Superior de Pesquisa e Filtros -->
+            <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 space-y-3">
+                <div class="flex flex-col md:flex-row gap-3 justify-between">
+                    
+                    <!-- Campo de Busca Global -->
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                        <input type="text" id="txtBusca" oninput="aplicarFiltros()" placeholder="Buscar por Paciente, Prontuário, Médico, NBE..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white">
+                    </div>
+
+                    <!-- Filtros Rápidos Dropdown -->
+                    <div class="flex flex-wrap sm:flex-nowrap gap-2">
+                        <select id="filtroEspecialidade" onchange="aplicarFiltros()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white text-slate-700 font-medium outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">Todas Especialidades</option>
+                            <option value="CIRURGIA GERAL">CIRURGIA GERAL</option>
+                            <option value="PEQUENAS CIRURGIAS">PEQUENAS CIRURGIAS</option>
+                            <option value="ORTOPEDIA">ORTOPEDIA</option>
+                            <option value="OTORRINOLARINGOLOGIA">OTORRINO</option>
+                            <option value="NEUROCIRURGIA">NEUROCIRURGIA</option>
+                        </select>
+
+                        <select id="filtroCarater" onchange="aplicarFiltros()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white text-slate-700 font-medium outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">Todo Caráter</option>
+                            <option value="URGENCIA">URGÊNCIA</option>
+                            <option value="ELETIVA">ELETIVA</option>
+                        </select>
+
+                        <select id="filtroSituacao" onchange="aplicarFiltros()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white text-slate-700 font-medium outline-none focus:ring-2 focus:ring-teal-500">
+                            <option value="">Todas Situações</option>
+                            <option value="REALIZADA">REALIZADAS</option>
+                            <option value="CANCELADA">CANCELADAS</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela Grid -->
+            <div class="overflow-x-auto custom-scrollbar">
+                <table class="w-full text-left text-xs border-collapse">
+                    <thead class="bg-slate-100/80 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
+                        <tr>
+                            <th class="p-3.5">Data</th>
+                            <th class="p-3.5">Prontuário / NBE</th>
+                            <th class="p-3.5">Paciente</th>
+                            <th class="p-3.5">Especialidade</th>
+                            <th class="p-3.5">Cirurgião</th>
+                            <th class="p-3.5">Caráter</th>
+                            <th class="p-3.5">Situação</th>
+                            <th class="p-3.5 text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gridCirurgias" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="8" class="p-8 text-center text-slate-400">
+                                <i class="fa-solid fa-spinner fa-spin text-xl text-teal-600 mb-2"></i>
+                                <p>Carregando registros do banco de dados...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Rodapé / Paginação -->
+            <div class="p-3.5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
+                <div>
+                    Exibindo <span id="lblExibindoCount" class="font-bold text-slate-800">0</span> de <span id="lblTotalCount" class="font-bold text-slate-800">0</span> registros encontrados
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="btnPagAnterior" onclick="paginaAnterior()" disabled class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">Anterior</button>
+                    <span id="lblPaginaAtual" class="font-bold text-slate-700 px-2">Pág. 1</span>
+                    <button id="btnPagProxima" onclick="proximaPagina()" disabled class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">Próxima</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL DE DETALHES COMPLETO DA CIRURGIA -->
+    <div id="modalDetalhes" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]">
+            <!-- Header Modal -->
+            <div class="bg-gradient-to-r from-teal-900 to-slate-900 text-white p-4 px-6 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-notes-medical text-teal-400 text-xl"></i>
+                    <div>
+                        <h3 class="font-bold text-base leading-tight">Detalhes do Registro Cirúrgico</h3>
+                        <p id="detalheSubtitulo" class="text-xs text-teal-300 font-mono">Prontuário: -</p>
+                    </div>
+                </div>
+                <button onclick="fecharModalDetalhes()" class="text-slate-300 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Corpo Modal (Scrollable) -->
+            <div class="p-6 overflow-y-auto custom-scrollbar space-y-6 text-xs text-slate-700">
+                <!-- Status & Alerta -->
+                <div class="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-200" id="detalheHeaderStatus">
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Situação Atual</span>
+                        <span id="detalheSituacaoBadge" class="font-bold">REALIZADA</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block">Caráter</span>
+                        <span id="detalheCaraterBadge" class="font-bold">ELETIVA</span>
+                    </div>
+                </div>
+
+                <!-- Dados Paciente -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-teal-800 uppercase text-[11px] border-b pb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user"></i> Informações do Paciente
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div><strong class="block text-slate-400 text-[10px]">NOME COMPLETO</strong> <span id="detalheNome" class="font-bold text-slate-800">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">PRONTUÁRIO</strong> <span id="detalheProntuario" class="font-mono">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">NBE</strong> <span id="detalheNbe" class="font-mono">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">CNS (SUS)</strong> <span id="detalheCns">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">NASCIMENTO</strong> <span id="detalheNascimento">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">SEXO</strong> <span id="detalheSexo">-</span></div>
+                        <div class="col-span-2"><strong class="block text-slate-400 text-[10px]">NOME DA MÃE</strong> <span id="detalheMae">-</span></div>
+                    </div>
+                </div>
+
+                <!-- Procedimentos -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-teal-800 uppercase text-[11px] border-b pb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-scissors"></i> Procedimentos & Especialidade
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><strong class="block text-slate-400 text-[10px]">ESPECIALIDADE</strong> <span id="detalheEspecialidade" class="font-semibold text-slate-800">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">DATA CIRURGIA</strong> <span id="detalheDataCirurgia" class="font-semibold">-</span></div>
+                        <div class="col-span-2"><strong class="block text-slate-400 text-[10px]">PROCEDIMENTO PRINCIPAL (1)</strong> <span id="detalheProc1" class="font-medium text-slate-800">-</span></div>
+                        <div class="col-span-2" id="boxProc2"><strong class="block text-slate-400 text-[10px]">PROCEDIMENTO 2</strong> <span id="detalheProc2">-</span></div>
+                        <div class="col-span-2" id="boxProc3"><strong class="block text-slate-400 text-[10px]">PROCEDIMENTO 3</strong> <span id="detalheProc3">-</span></div>
+                    </div>
+                </div>
+
+                <!-- Motivo Cancelamento (Se houver) -->
+                <div id="detalheBoxCancelamento" class="hidden p-3 bg-rose-50 rounded-xl border border-rose-200">
+                    <strong class="block text-rose-800 text-[10px] uppercase font-bold">Motivo do Cancelamento</strong>
+                    <p id="detalheMotivoCancelamento" class="text-xs text-rose-900 font-medium mt-0.5">-</p>
+                </div>
+
+                <!-- Equipe Médica -->
+                <div class="space-y-2">
+                    <h4 class="font-bold text-teal-800 uppercase text-[11px] border-b pb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-md"></i> Equipe Médica e Anestésica
+                    </h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><strong class="block text-slate-400 text-[10px]">CIRURGIÃO</strong> <span id="detalheMedico" class="font-bold text-slate-800">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">CRM CIRURGIÃO</strong> <span id="detalheCrmCir">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">ANESTESISTA</strong> <span id="detalheAnestesista">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">CRM ANESTESISTA</strong> <span id="detalheCrmAnest">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">TIPO ANESTESIA</strong> <span id="detalheAnestesia">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">DIGITADO POR / EM</strong> <span id="detalheDigitadoInfo" class="text-slate-500">-</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Modal -->
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-end">
+                <button onclick="fecharModalDetalhes()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs transition">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIGURAÇÃO DO SUPABASE -->
+    <div id="modalConfig" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl overflow-hidden border border-slate-200">
+            <div class="bg-slate-900 text-white p-4 px-6 flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-database text-teal-400"></i>
+                    <h3 class="font-bold text-sm">Configurar Conexão Supabase</h3>
+                </div>
+                <button onclick="fecharModalConfig()" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Insira as credenciais do seu projeto Supabase. Elas serão salvas de forma segura no navegador (`localStorage`) para conectar automaticamente.
+                </p>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Project URL *</label>
+                    <input type="text" id="cfgUrl" placeholder="https://xyz.supabase.co" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500 font-mono">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Publishable Key / Anon Key *</label>
+                    <input type="password" id="cfgKey" placeholder="sb_publishable_... ou eyJ..." class="w-full border border-slate-300 p-2.5 rounded-xl text-xs outline-none focus:ring-2 focus:ring-teal-500 font-mono">
+                </div>
+
+                <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-[11px] text-amber-800 flex items-start gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-0.5"></i>
+                    <span>Certifique-se de ter executado o script de criação da tabela <strong>cirurgias</strong> no SQL Editor do Supabase.</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-end gap-2">
+                <button onclick="fecharModalConfig()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold text-xs">Cancelar</button>
+                <button onclick="salvarCredenciaisSupabase()" class="px-5 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs shadow">Salvar & Conectar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE LÓGICA E INTEGRAÇÃO -->
+    <script>
+        // --- ESTADO GLOBAL ---
+        let supabaseClient = null;
+        let todosRegistros = [];
+        let registrosFiltrados = [];
+        let paginaAtual = 1;
+        const itensPorPagina = 15;
+
+        // Credenciais padrão (Substitua ou use o gerenciador web)
+        let configSupabase = {
+            url: localStorage.getItem('sb_url') || 'https://uazilxyspnycvntxcxzu.supabase.co',
+            key: localStorage.getItem('sb_key') || 'sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP'
+        };
+
+        // --- INICIALIZAÇÃO ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Preencher data padrão para hoje no formulário
+            document.getElementById('Data_da_Cirurgia').valueAsDate = new Date();
+            
+            inicializarSupabase();
+        });
+
+        function inicializarSupabase() {
+            if (configSupabase.url && configSupabase.key) {
+                try {
+                    supabaseClient = supabase.createClient(configSupabase.url, configSupabase.key);
+                    atualizarBadgeConexao(true, "Conectado ao Supabase");
+                    carregarDados();
+                } catch (e) {
+                    console.error(e);
+                    atualizarBadgeConexao(false, "Erro de Conexão");
+                }
+            } else {
+                atualizarBadgeConexao(false, "Não Configurado");
+                abrirModalConfig();
+            }
+        }
+
+        function atualizarBadgeConexao(conectado, texto) {
+            const ind = document.getElementById('indicatorConexao');
+            const txt = document.getElementById('textConexao');
+
+            txt.innerText = texto;
+            if (conectado) {
+                ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-400";
+            } else {
+                ind.className = "w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping";
+            }
+        }
+
+        // --- CARREGAMENTO DE DADOS E MÉTRICAS ---
+        async function carregarDados() {
+            if (!supabaseClient) return;
+
+            exibirLoadingGrid();
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('cirurgias')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                todosRegistros = data || [];
+                atualizarDashboard();
+                aplicarFiltros();
+                
+            } catch (error) {
+                console.error("Erro ao carregar dados:", error);
+                exibirToast("Erro ao carregar registros do Supabase: " + error.message, "erro");
+                document.getElementById('gridCirurgias').innerHTML = `
+                    <tr>
+                        <td colspan="8" class="p-8 text-center text-rose-500">
+                            <i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i>
+                            <p class="font-bold">Falha ao buscar dados no banco</p>
+                            <p class="text-xs text-slate-400 mt-1">${error.message}</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function atualizarDashboard() {
+            const total = todosRegistros.length;
+            const realizadas = todosRegistros.filter(r => (r.Situaçao || '').toUpperCase() === 'REALIZADA').length;
+            const canceladas = todosRegistros.filter(r => (r.Situaçao || '').toUpperCase() === 'CANCELADA').length;
+            
+            const pctReal = total > 0 ? ((realizadas / total) * 100).toFixed(1) : 0;
+            const pctCanc = total > 0 ? ((canceladas / total) * 100).toFixed(1) : 0;
+
+            document.getElementById('dashTotal').innerText = total.toLocaleString('pt-BR');
+            document.getElementById('dashRealizadas').innerText = realizadas.toLocaleString('pt-BR');
+            document.getElementById('pctRealizadas').innerText = `${pctReal}% do total`;
+            document.getElementById('dashCanceladas').innerText = canceladas.toLocaleString('pt-BR');
+            document.getElementById('pctCanceladas').innerText = `${pctCanc}% do total`;
+            document.getElementById('dashTaxa').innerText = `${pctReal}%`;
+        }
+
+        // --- FILTROS E PAGINAÇÃO ---
+        function aplicarFiltros() {
+            const termo = document.getElementById('txtBusca').value.toLowerCase().trim();
+            const esp = document.getElementById('filtroEspecialidade').value;
+            const carater = document.getElementById('filtroCarater').value;
+            const situacao = document.getElementById('filtroSituacao').value;
+
+            registrosFiltrados = todosRegistros.filter(reg => {
+                const matchTermo = !termo || [
+                    reg.Nome_Paciente, reg.prontuario, reg.NBE, reg.Medico, 
+                    reg.Procedimento1, reg.Especialidade, reg.CNS
+                ].some(c => (c || '').toString().toLowerCase().includes(termo));
+
+                const matchEsp = !esp || (reg.Especialidade || '').toUpperCase() === esp.toUpperCase();
+                const matchCarater = !carater || (reg.Carater_Atendimento || '').toUpperCase() === carater.toUpperCase();
+                const matchSit = !situacao || (reg.Situaçao || '').toUpperCase() === situacao.toUpperCase();
+
+                return matchTermo && matchEsp && matchCarater && matchSit;
+            });
+
+            paginaAtual = 1;
+            renderizarGrid();
+        }
+
+        function renderizarGrid() {
+            const tbody = document.getElementById('gridCirurgias');
+            tbody.innerHTML = '';
+
+            const total = registrosFiltrados.length;
+            document.getElementById('lblTotalCount').innerText = todosRegistros.length;
+            document.getElementById('lblExibindoCount').innerText = total;
+
+            if (total === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="p-8 text-center text-slate-400">
+                            <i class="fa-solid fa-folder-open text-2xl mb-2 text-slate-300"></i>
+                            <p>Nenhum registro encontrado para os filtros selecionados.</p>
+                        </td>
+                    </tr>
+                `;
+                atualizarBotoesPaginacao(0);
+                return;
+            }
+
+            const totalPaginas = Math.ceil(total / itensPorPagina);
+            const inicio = (paginaAtual - 1) * itensPorPagina;
+            const fim = inicio + itensPorPagina;
+            const itensPagina = registrosFiltrados.slice(inicio, fim);
+
+            itensPagina.forEach((reg, idx) => {
+                const isRealizada = (reg.Situaçao || '').toUpperCase() === 'REALIZADA';
+                const badgeSit = isRealizada 
+                    ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-check mr-1"></i>REALIZADA</span>`
+                    : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200"><i class="fa-solid fa-xmark mr-1"></i>CANCELADA</span>`;
+
+                const isUrgencia = (reg.Carater_Atendimento || '').toUpperCase() === 'URGENCIA';
+                const badgeCarater = isUrgencia
+                    ? `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">URGÊNCIA</span>`
+                    : `<span class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">ELETIVA</span>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer group" onclick="abrirDetalhesIndex(${inicio + idx})">
+                        <td class="p-3.5 font-mono text-slate-600">${formatarData(reg.Data_da_Cirurgia)}</td>
+                        <td class="p-3.5 font-mono font-medium text-slate-700">
+                            <div>${reg.prontuario || '-'}</div>
+                            <div class="text-[10px] text-slate-400">${reg.NBE ? 'NBE: ' + reg.NBE : ''}</div>
+                        </td>
+                        <td class="p-3.5 font-bold text-slate-800 group-hover:text-teal-700 transition">${reg.Nome_Paciente || 'NÃO INFORMADO'}</td>
+                        <td class="p-3.5 text-slate-600 font-medium">${reg.Especialidade || '-'}</td>
+                        <td class="p-3.5 text-slate-700 font-medium">${reg.Medico || '-'}</td>
+                        <td class="p-3.5">${badgeCarater}</td>
+                        <td class="p-3.5">${badgeSit}</td>
+                        <td class="p-3.5 text-center" onclick="event.stopPropagation()">
+                            <button onclick="abrirDetalhesIndex(${inicio + idx})" class="p-1.5 rounded-lg text-slate-400 hover:text-teal-600 hover:bg-teal-50 transition" title="Ver Detalhes">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            atualizarBotoesPaginacao(totalPaginas);
+        }
+
+        function atualizarBotoesPaginacao(totalPaginas) {
+            document.getElementById('lblPaginaAtual').innerText = `Pág. ${paginaAtual} de ${totalPaginas || 1}`;
+            document.getElementById('btnPagAnterior').disabled = paginaAtual <= 1;
+            document.getElementById('btnPagProxima').disabled = paginaAtual >= totalPaginas;
+        }
+
+        function paginaAnterior() {
+            if (paginaAtual > 1) {
+                paginaAtual--;
+                renderizarGrid();
+            }
+        }
+
+        function proximaPagina() {
+            const totalPaginas = Math.ceil(registrosFiltrados.length / itensPorPagina);
+            if (paginaAtual < totalPaginas) {
+                paginaAtual++;
+                renderizarGrid();
+            }
+        }
+
+        // --- SALVAR REGISTRO ---
+        async function salvarCirurgia(e) {
+            e.preventDefault();
+
+            if (!supabaseClient) {
+                exibirToast("Supabase não está conectado!", "erro");
+                abrirModalConfig();
+                return;
+            }
+
+            const btn = document.getElementById('btnSalvar');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Gravando...</span>`;
+
+            const situacao = document.getElementById('Situaçao').value;
+            const motivoCancelam = document.getElementById('Mot_Cancelam').value;
+
+            if (situacao === 'CANCELADA' && !motivoCancelam.trim()) {
+                exibirToast("Por favor, informe o motivo do cancelamento.", "erro");
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>`;
+                return;
+            }
+
+            const novoRegistro = {
+                "Identificação": "REG_" + Date.now(),
+                "Data_da_Cirurgia": document.getElementById('Data_da_Cirurgia').value,
+                "Nome_Paciente": document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
+                "prontuario": document.getElementById('prontuario').value.trim(),
+                "NBE": document.getElementById('NBE').value.trim(),
+                "CNS": document.getElementById('CNS').value.trim(),
+                "Data_Nascimento": document.getElementById('Data_Nascimento').value,
+                "sexo": document.getElementById('sexo').value,
+                "NOME_MAE": document.getElementById('NOME_MAE').value.toUpperCase().trim(),
+                "Especialidade": document.getElementById('Especialidade').value,
+                "Carater_Atendimento": document.getElementById('Carater_Atendimento').value,
+                "Situaçao": situacao,
+                "Procedimento1": document.getElementById('Procedimento1').value.toUpperCase().trim(),
+                "Procedimento2": document.getElementById('Procedimento2').value.toUpperCase().trim(),
+                "Procedimento3": document.getElementById('Procedimento3').value.toUpperCase().trim(),
+                "Mot_Cancelam": situacao === 'CANCELADA' ? motivoCancelam.toUpperCase().trim() : '',
+                "Medico": document.getElementById('Medico').value.toUpperCase().trim(),
+                "CRM_CIR": document.getElementById('CRM_CIR').value.toUpperCase().trim(),
+                "Anestesista": document.getElementById('Anestesista').value.toUpperCase().trim(),
+                "CRM_ANEST": document.getElementById('CRM_ANEST').value.toUpperCase().trim(),
+                "Anestesia1": document.getElementById('Anestesia1').value,
+                "DIGITADO_POR": 'SISTEMA_WEB',
+                "DIGITADO_EM": new Date().toLocaleString('pt-BR')
+            };
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('cirurgias')
+                    .insert([novoRegistro]);
+
+                if (error) throw error;
+
+                exibirToast("Registro gravado com sucesso no Supabase!", "sucesso");
+                document.getElementById('formCirurgia').reset();
+                document.getElementById('Data_da_Cirurgia').valueAsDate = new Date();
+                aoMudarSituacao();
+                toggleFormulario();
+                carregarDados();
+
+            } catch (error) {
+                console.error("Erro ao salvar:", error);
+                exibirToast("Erro ao gravar: " + error.message, "erro");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>`;
+            }
+        }
+
+        // --- INTERFACES & MODAIS ---
+        function toggleFormulario() {
+            const sec = document.getElementById('secFormulario');
+            sec.classList.toggle('hidden');
+            if (!sec.classList.contains('hidden')) {
+                sec.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function aoMudarSituacao() {
+            const sit = document.getElementById('Situaçao').value;
+            const box = document.getElementById('boxMotivoCancelamento');
+            if (sit === 'CANCELADA') {
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
+        function abrirDetalhesIndex(idx) {
+            const reg = registrosFiltrados[idx];
+            if (!reg) return;
+
+            document.getElementById('detalheSubtitulo').innerText = `Prontuário: ${reg.prontuario || 'N/A'}`;
+            document.getElementById('detalheNome').innerText = reg.Nome_Paciente || '-';
+            document.getElementById('detalheProntuario').innerText = reg.prontuario || '-';
+            document.getElementById('detalheNbe').innerText = reg.NBE || '-';
+            document.getElementById('detalheCns').innerText = reg.CNS || '-';
+            document.getElementById('detalheNascimento').innerText = formatarData(reg.Data_Nascimento);
+            document.getElementById('detalheSexo').innerText = reg.sexo || '-';
+            document.getElementById('detalheMae').innerText = reg.NOME_MAE || '-';
+
+            document.getElementById('detalheEspecialidade').innerText = reg.Especialidade || '-';
+            document.getElementById('detalheDataCirurgia').innerText = formatarData(reg.Data_da_Cirurgia);
+            document.getElementById('detalheProc1').innerText = reg.Procedimento1 || '-';
+            
+            const p2 = document.getElementById('detalheProc2');
+            const p3 = document.getElementById('detalheProc3');
+            p2.innerText = reg.Procedimento2 || '-';
+            p3.innerText = reg.Procedimento3 || '-';
+
+            document.getElementById('detalheMedico').innerText = reg.Medico || '-';
+            document.getElementById('detalheCrmCir').innerText = reg.CRM_CIR || '-';
+            document.getElementById('detalheAnestesista').innerText = reg.Anestesista || '-';
+            document.getElementById('detalheCrmAnest').innerText = reg.CRM_ANEST || '-';
+            document.getElementById('detalheAnestesia').innerText = reg.Anestesia1 || '-';
+            document.getElementById('detalheDigitadoInfo').innerText = `${reg.DIGITADO_POR || 'SISTEMA'} em ${reg.DIGITADO_EM || '-'}`;
+
+            // Badges
+            const isRealizada = (reg.Situaçao || '').toUpperCase() === 'REALIZADA';
+            document.getElementById('detalheSituacaoBadge').innerText = reg.Situaçao || 'REALIZADA';
+            document.getElementById('detalheSituacaoBadge').className = isRealizada ? 'text-emerald-700 font-bold' : 'text-rose-700 font-bold';
+            
+            document.getElementById('detalheCaraterBadge').innerText = reg.Carater_Atendimento || '-';
+
+            const boxCanc = document.getElementById('detalheBoxCancelamento');
+            if (!isRealizada) {
+                boxCanc.classList.remove('hidden');
+                document.getElementById('detalheMotivoCancelamento').innerText = reg.Mot_Cancelam || 'Não informado';
+            } else {
+                boxCanc.classList.add('hidden');
+            }
+
+            document.getElementById('modalDetalhes').classList.remove('hidden');
+        }
+
+        function fecharModalDetalhes() {
+            document.getElementById('modalDetalhes').classList.add('hidden');
+        }
+
+        // Modal Configuração
+        function abrirModalConfig() {
+            document.getElementById('cfgUrl').value = configSupabase.url;
+            document.getElementById('cfgKey').value = configSupabase.key;
+            document.getElementById('modalConfig').classList.remove('hidden');
+        }
+
+        function fecharModalConfig() {
+            document.getElementById('modalConfig').classList.add('hidden');
+        }
+
+        function salvarCredenciaisSupabase() {
+            const url = document.getElementById('cfgUrl').value.trim();
+            const key = document.getElementById('cfgKey').value.trim();
+
+            if (!url || !key) {
+                exibirToast("Preencha a URL e a Chave!", "erro");
+                return;
+            }
+
+            localStorage.setItem('sb_url', url);
+            localStorage.setItem('sb_key', key);
+
+            configSupabase.url = url;
+            configSupabase.key = key;
+
+            fecharModalConfig();
+            exibirToast("Credenciais salvas com sucesso!", "sucesso");
+            inicializarSupabase();
+        }
+
+        // --- UTILS ---
+        function formatarData(dataStr) {
+            if (!dataStr) return '-';
+            if (dataStr.includes('/')) return dataStr; // Já formatado
+            const partes = dataStr.split('-');
+            if (partes.length === 3) {
+                return `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+            return dataStr;
+        }
+
+        function exibirLoadingGrid() {
+            document.getElementById('gridCirurgias').innerHTML = `
+                <tr>
+                    <td colspan="8" class="p-8 text-center text-slate-400">
+                        <i class="fa-solid fa-spinner fa-spin text-2xl text-teal-600 mb-2"></i>
+                        <p class="font-medium">Carregando registros do banco de dados...</p>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function exibirToast(mensagem, tipo = 'sucesso') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const isSucesso = tipo === 'sucesso';
+            toast.className = `pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold transition-all transform translate-y-2 opacity-0 ${
+                isSucesso 
+                    ? 'bg-emerald-900 text-emerald-100 border-emerald-700' 
+                    : 'bg-rose-900 text-rose-100 border-rose-700'
+            }`;
+
+            toast.innerHTML = `
+                <i class="${isSucesso ? 'fa-solid fa-circle-check text-emerald-400' : 'fa-solid fa-triangle-exclamation text-rose-400'} text-base"></i>
+                <span>${mensagem}</span>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
