@@ -675,7 +675,7 @@
             document.getElementById('NOME_MAE').value=p.nome_mae||'';
             bloquearCamposPaciente(true);
             const info=document.getElementById('pacienteSelecionadoInfo');
-            info.textContent='Paciente selecionado: '+(p.nome_paciente||'')+' — ID interno '+p.id;
+            info.textContent='Paciente selecionado: '+(p.nome_paciente||'')+'. A cirurgia será vinculada a este cadastro.';
             info.classList.remove('hidden');
             document.getElementById('resultadosPacientes').classList.add('hidden');
         }
@@ -699,7 +699,7 @@
                     pacientesEncontrados=data||[];
                     if(!pacientesEncontrados.length){lista.innerHTML='<p class="p-3 text-xs text-slate-500">Nenhum paciente encontrado. Use “Cadastrar novo paciente” somente após conferir a busca.</p>';return;}
                     lista.innerHTML=pacientesEncontrados.map(function(p){
-                        const detalhe=[p.data_nascimento||'Nascimento não informado',p.numero_cadastro_ambulatorio?'Cadastro: '+p.numero_cadastro_ambulatorio:''].filter(Boolean).join(' · ');
+                        const detalhe=[p.data_nascimento||'Nascimento não informado',p.nome_mae?'Mãe: '+p.nome_mae:'',p.numero_cadastro_ambulatorio?'Cadastro: '+p.numero_cadastro_ambulatorio:''].filter(Boolean).join(' · ');
                         return '<button type="button" onclick="selecionarPaciente(\''+p.id+'\')" class="block w-full border-b border-slate-100 p-3 text-left last:border-0 hover:bg-teal-50"><span class="block text-xs font-bold text-slate-800">'+escaparHtml(p.nome_paciente)+'</span><span class="mt-1 block text-[10px] text-slate-500">'+escaparHtml(detalhe||'Dados complementares não informados')+'</span></button>';
                     }).join('');
                 }catch(error){
