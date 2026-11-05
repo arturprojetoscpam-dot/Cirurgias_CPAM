@@ -164,7 +164,7 @@
                         <label for="buscaPaciente" class="mb-1 block text-xs font-semibold text-slate-700">Localizar paciente já cadastrado</label>
                         <div class="flex flex-col gap-2 sm:flex-row">
                             <input type="search" id="buscaPaciente" oninput="buscarPacientes()" placeholder="Digite pelo menos 3 letras do nome do paciente" autocomplete="off" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500">
-                            <button type="button" onclick="limparPacienteSelecionado()" class="shrink-0 rounded-xl border border-teal-700 px-4 py-2 text-xs font-semibold text-teal-800 hover:bg-teal-100">Cadastrar novo paciente</button>
+                            <button type="button" onclick="iniciarNovoPaciente()" class="shrink-0 rounded-xl border border-teal-700 px-4 py-2 text-xs font-semibold text-teal-800 hover:bg-teal-100">Cadastrar novo paciente</button>
                         </div>
                         <div id="resultadosPacientes" class="mt-2 hidden max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white"></div>
                         <p id="pacienteSelecionadoInfo" class="mt-2 hidden text-xs font-semibold text-emerald-800" aria-live="polite"></p>
@@ -663,6 +663,12 @@
             bloquearCamposPaciente(false);
             ['Nome_Paciente','prontuario','CNS','Data_Nascimento','NOME_MAE'].forEach(function(id){document.getElementById(id).value='';});
             document.getElementById('sexo').value='';
+        }
+        function iniciarNovoPaciente(){
+            const termo=document.getElementById('buscaPaciente').value.trim();
+            limparPacienteSelecionado();
+            if(termo&&!/^\\d+$/.test(termo))document.getElementById('Nome_Paciente').value=termo.toUpperCase();
+            document.getElementById('Nome_Paciente').focus();
         }
         function selecionarPaciente(id){
             const p=pacientesEncontrados.find(function(item){return item.id===id;});if(!p)return;
