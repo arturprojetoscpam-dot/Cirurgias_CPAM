@@ -667,7 +667,7 @@
         function iniciarNovoPaciente(){
             const termo=document.getElementById('buscaPaciente').value.trim();
             limparPacienteSelecionado();
-            if(termo&&!/^\\d+$/.test(termo))document.getElementById('Nome_Paciente').value=termo.toUpperCase();
+            if(termo&&!/^\d+$/.test(termo))document.getElementById('Nome_Paciente').value=termo.toUpperCase();
             document.getElementById('Nome_Paciente').focus();
         }
         function selecionarPaciente(id){
