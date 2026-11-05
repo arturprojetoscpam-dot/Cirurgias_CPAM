@@ -146,7 +146,7 @@
                     <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-file-signature text-teal-600"></i> Ficha de Registro de Cirurgia
                     </h3>
-                    <p class="text-xs text-slate-400">Preencha todos os campos regulamentares para dar entrada no prontuário.</p>
+                    <p class="text-xs text-slate-400">Selecione um paciente cadastrado ou registre um novo; depois informe a ocorrência cirúrgica.</p>
                 </div>
                 <button onclick="toggleFormulario()" class="text-slate-400 hover:text-slate-600 p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -160,23 +160,32 @@
                     <h4 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-user-injured"></i> 1. Dados do Paciente
                     </h4>
+                    <div class="mb-4 rounded-xl border border-teal-100 bg-teal-50/60 p-4">
+                        <label for="buscaPaciente" class="mb-1 block text-xs font-semibold text-slate-700">Localizar paciente já cadastrado</label>
+                        <div class="flex flex-col gap-2 sm:flex-row">
+                            <input type="search" id="buscaPaciente" oninput="buscarPacientes()" placeholder="Digite pelo menos 3 letras do nome do paciente" autocomplete="off" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500">
+                            <button type="button" onclick="limparPacienteSelecionado()" class="shrink-0 rounded-xl border border-teal-700 px-4 py-2 text-xs font-semibold text-teal-800 hover:bg-teal-100">Cadastrar novo paciente</button>
+                        </div>
+                        <div id="resultadosPacientes" class="mt-2 hidden max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white"></div>
+                        <p id="pacienteSelecionadoInfo" class="mt-2 hidden text-xs font-semibold text-emerald-800" aria-live="polite"></p>
+                        <p class="mt-2 text-[10px] text-slate-500">Pesquise antes de cadastrar. A seleção vincula esta cirurgia ao cadastro existente; um novo paciente só será criado quando não houver seleção.</p>
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <div class="md:col-span-2">
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo do Paciente *</label>
                             <input type="text" id="Nome_Paciente" required placeholder="Ex: MARIA SILVA DOS SANTOS" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Prontuário *</label>
-                            <input type="text" id="prontuario" required placeholder="Ex: 123456" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Cadastro ambulatorial (se houver)</label>
+                            <input type="text" id="prontuario" placeholder="Número de cadastro ambulatorial" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">NBE</label>
                             <input type="text" id="NBE" placeholder="Ex: NBE-9988" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
                         </div>
-
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Cartão SUS (CNS)</label>
-                            <input type="text" id="CNS" placeholder="700000000000000" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
+                            <input type="text" id="CNS" placeholder="Número do CNS" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1">Data de Nascimento</label>
@@ -310,7 +319,7 @@
                     </button>
                     <button type="submit" id="btnSalvar" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 text-xs">
                         <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Gravar no Prontuário</span>
+                        <span>Salvar cirurgia</span>
                     </button>
                 </div>
             </form>
@@ -326,7 +335,7 @@
                     <!-- Campo de Busca Global -->
                     <div class="relative flex-1">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                        <input type="text" id="txtBusca" oninput="aplicarFiltros()" placeholder="Buscar por Paciente, Prontuário, Médico, NBE..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white">
+                        <input type="text" id="txtBusca" oninput="aplicarFiltros()" placeholder="Buscar por Paciente, Cadastro ambulatorial, Médico, NBE..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white">
                     </div>
 
                     <!-- Filtros Rápidos Dropdown -->
@@ -361,7 +370,7 @@
                     <thead class="bg-slate-100/80 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
                         <tr>
                             <th class="p-3.5">Data</th>
-                            <th class="p-3.5">Prontuário / NBE</th>
+                            <th class="p-3.5">Cadastro ambulatorial / NBE</th>
                             <th class="p-3.5">Paciente</th>
                             <th class="p-3.5">Especialidade</th>
                             <th class="p-3.5">Cirurgião</th>
@@ -406,7 +415,7 @@
                     <i class="fa-solid fa-notes-medical text-teal-400 text-xl"></i>
                     <div>
                         <h3 class="font-bold text-base leading-tight">Detalhes do Registro Cirúrgico</h3>
-                        <p id="detalheSubtitulo" class="text-xs text-teal-300 font-mono">Prontuário: -</p>
+                        <p id="detalheSubtitulo" class="text-xs text-teal-300 font-mono">Cadastro ambulatorial: -</p>
                     </div>
                 </div>
                 <button onclick="fecharModalDetalhes()" class="text-slate-300 hover:text-white p-1">
@@ -435,7 +444,7 @@
                     </h4>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <div><strong class="block text-slate-400 text-[10px]">NOME COMPLETO</strong> <span id="detalheNome" class="font-bold text-slate-800">-</span></div>
-                        <div><strong class="block text-slate-400 text-[10px]">PRONTUÁRIO</strong> <span id="detalheProntuario" class="font-mono">-</span></div>
+                        <div><strong class="block text-slate-400 text-[10px]">CADASTRO AMBULATORIAL</strong> <span id="detalheProntuario" class="font-mono">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">NBE</strong> <span id="detalheNbe" class="font-mono">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">CNS (SUS)</strong> <span id="detalheCns">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">NASCIMENTO</strong> <span id="detalheNascimento">-</span></div>
@@ -495,7 +504,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false;
+        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -577,7 +586,7 @@
             try{
                 let todos=[];const lote=1000;
                 for(let inicio=0;;inicio+=lote){
-                    const {data,error}=await supabaseClient.from('cirurgias').select('*')
+                    const {data,error}=await supabaseClient.from('cirurgias').select('id,paciente_id,Identificação,Data_da_Cirurgia,prontuario,NBE,Nome_Paciente,TELEFONE,Telefone2,CNS,Data_Nascimento,NOME_MAE,MUNICIPIO,ENDERECO,BAIRRO,CEP,NUMERO,Especialidade,Especialidade_Medico,Sistema,Procedimento1,Procedimento2,Procedimento3,Carater_Atendimento,Situaçao,Medico,CRM_CIR,Anestesista,CRM_ANEST,Anestesia1,Anestesia2,Mot_Cancelam,Obs_Cancelam_ANT,DIGITADO_POR,DIGITADO_EM,NEC_BIOPSIA,ESP_PEÇA_BIOP,sexo,crm_ass,medico_ass,especialidade_ass,Obs_Cancelam')
                         .order('Data_da_Cirurgia',{ascending:false}).order('Identificação',{ascending:true}).range(inicio,inicio+lote-1);
                     if(error)throw error;todos=todos.concat(data||[]);if(!data||data.length<lote)break;
                 }
@@ -631,30 +640,132 @@
         }
         function paginaAnterior(){if(paginaAtual>1){paginaAtual--;renderizarGrid();}}
         function proximaPagina(){const paginas=Math.ceil(registrosFiltrados.length/itensPorPagina);if(paginaAtual<paginas){paginaAtual++;renderizarGrid();}}
+        function normalizarDataParaInput(valor){
+            if(!valor)return '';
+            const texto=String(valor).trim();
+            if(/^\d{4}-\d{2}-\d{2}$/.test(texto))return texto;
+            const partes=texto.split('/');
+            if(partes.length===3&&partes[2].length===4)return partes[2]+'-'+partes[1].padStart(2,'0')+'-'+partes[0].padStart(2,'0');
+            return '';
+        }
+        function bloquearCamposPaciente(bloquear){
+            ['Nome_Paciente','prontuario','CNS','Data_Nascimento','NOME_MAE'].forEach(function(id){
+                const campo=document.getElementById(id);if(campo)campo.readOnly=!!bloquear;
+            });
+            const sexo=document.getElementById('sexo');if(sexo)sexo.disabled=!!bloquear;
+        }
+        function limparPacienteSelecionado(){
+            pacienteSelecionado=null;
+            document.getElementById('buscaPaciente').value='';
+            document.getElementById('resultadosPacientes').innerHTML='';
+            document.getElementById('resultadosPacientes').classList.add('hidden');
+            const info=document.getElementById('pacienteSelecionadoInfo');info.textContent='';info.classList.add('hidden');
+            bloquearCamposPaciente(false);
+            ['Nome_Paciente','prontuario','CNS','Data_Nascimento','NOME_MAE'].forEach(function(id){document.getElementById(id).value='';});
+            document.getElementById('sexo').value='';
+        }
+        function selecionarPaciente(id){
+            const p=pacientesEncontrados.find(function(item){return item.id===id;});if(!p)return;
+            pacienteSelecionado=p;
+            document.getElementById('Nome_Paciente').value=p.nome_paciente||'';
+            document.getElementById('prontuario').value=p.numero_cadastro_ambulatorio||'';
+            document.getElementById('CNS').value=p.cns||'';
+            document.getElementById('Data_Nascimento').value=normalizarDataParaInput(p.data_nascimento);
+            document.getElementById('sexo').value=p.sexo||'';
+            document.getElementById('NOME_MAE').value=p.nome_mae||'';
+            bloquearCamposPaciente(true);
+            const info=document.getElementById('pacienteSelecionadoInfo');
+            info.textContent='Paciente selecionado: '+(p.nome_paciente||'')+' — ID interno '+p.id;
+            info.classList.remove('hidden');
+            document.getElementById('resultadosPacientes').classList.add('hidden');
+        }
+        async function buscarPacientes(){
+            if(timerBuscaPaciente)window.clearTimeout(timerBuscaPaciente);
+            timerBuscaPaciente=window.setTimeout(async function(){
+                const termo=document.getElementById('buscaPaciente').value.trim();
+                const lista=document.getElementById('resultadosPacientes');
+                if(termo.length<3){lista.innerHTML='';lista.classList.add('hidden');return;}
+                if(!usuarioAtual)return;
+                lista.innerHTML='<p class="p-3 text-xs text-slate-500">Buscando pacientes...</p>';lista.classList.remove('hidden');
+                try{
+                    const campos='id,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio';
+                    let consulta=supabaseClient.from('pacientes').select(campos).order('nome_paciente',{ascending:true}).limit(15);
+                    if(/^\d{4,}$/.test(termo)){
+                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo);
+                    }else{
+                        consulta=consulta.ilike('nome_paciente','%'+termo+'%');
+                    }
+                    const {data,error}=await consulta;if(error)throw error;
+                    pacientesEncontrados=data||[];
+                    if(!pacientesEncontrados.length){lista.innerHTML='<p class="p-3 text-xs text-slate-500">Nenhum paciente encontrado. Use “Cadastrar novo paciente” somente após conferir a busca.</p>';return;}
+                    lista.innerHTML=pacientesEncontrados.map(function(p){
+                        const detalhe=[p.data_nascimento||'Nascimento não informado',p.numero_cadastro_ambulatorio?'Cadastro: '+p.numero_cadastro_ambulatorio:''].filter(Boolean).join(' · ');
+                        return '<button type="button" onclick="selecionarPaciente(\''+p.id+'\')" class="block w-full border-b border-slate-100 p-3 text-left last:border-0 hover:bg-teal-50"><span class="block text-xs font-bold text-slate-800">'+escaparHtml(p.nome_paciente)+'</span><span class="mt-1 block text-[10px] text-slate-500">'+escaparHtml(detalhe||'Dados complementares não informados')+'</span></button>';
+                    }).join('');
+                }catch(error){
+                    console.error(error);lista.textContent='Não foi possível pesquisar pacientes: '+error.message;
+                }
+            },300);
+        }
         async function salvarCirurgia(evento){
             evento.preventDefault();
             if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar cirurgias.','erro');return;}
-            const botao=document.getElementById('btnSalvar');botao.disabled=true;botao.textContent='Gravando...';
+            const botao=document.getElementById('btnSalvar');
             const situacao=document.getElementById('Situaçao').value,motivo=document.getElementById('Mot_Cancelam').value;
-            if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast('Informe o motivo do cancelamento.','erro');botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>';return;}
-            const novo={
-                'Identificação':'REG_'+Date.now(),'Data_da_Cirurgia':document.getElementById('Data_da_Cirurgia').value,
-                'Nome_Paciente':document.getElementById('Nome_Paciente').value.toUpperCase().trim(),'prontuario':document.getElementById('prontuario').value.trim(),
-                'NBE':document.getElementById('NBE').value.trim(),'CNS':document.getElementById('CNS').value.trim(),'Data_Nascimento':document.getElementById('Data_Nascimento').value,
-                'sexo':document.getElementById('sexo').value,'NOME_MAE':document.getElementById('NOME_MAE').value.toUpperCase().trim(),
-                'Especialidade':document.getElementById('Especialidade').value,'Carater_Atendimento':document.getElementById('Carater_Atendimento').value,'Situaçao':situacao,
-                'Procedimento1':document.getElementById('Procedimento1').value.toUpperCase().trim(),'Procedimento2':document.getElementById('Procedimento2').value.toUpperCase().trim(),
-                'Procedimento3':document.getElementById('Procedimento3').value.toUpperCase().trim(),'Mot_Cancelam':situacao==='CANCELADA'?motivo.toUpperCase().trim():'',
-                'Medico':document.getElementById('Medico').value.toUpperCase().trim(),'CRM_CIR':document.getElementById('CRM_CIR').value.toUpperCase().trim(),
-                'Anestesista':document.getElementById('Anestesista').value.toUpperCase().trim(),'CRM_ANEST':document.getElementById('CRM_ANEST').value.toUpperCase().trim(),
-                'Anestesia1':document.getElementById('Anestesia1').value,'DIGITADO_POR':usuarioAtual.email||perfilAtual.email,'DIGITADO_EM':new Date().toLocaleString('pt-BR')
-            };
+            if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast('Informe o motivo do cancelamento.','erro');return;}
+            if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
+            botao.disabled=true;botao.textContent='Gravando...';
             try{
+                if(!pacienteSelecionado){
+                    const novoPaciente={
+                        nome_paciente:document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
+                        data_nascimento:document.getElementById('Data_Nascimento').value||null,
+                        cns:document.getElementById('CNS').value.trim()||null,
+                        nome_mae:document.getElementById('NOME_MAE').value.toUpperCase().trim()||null,
+                        sexo:document.getElementById('sexo').value||null,
+                        numero_cadastro_ambulatorio:document.getElementById('prontuario').value.trim()||null
+                    };
+                    const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').insert([novoPaciente]).select('id,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
+                    if(erroPaciente)throw new Error('Falha ao cadastrar paciente: '+erroPaciente.message);
+                    pacienteSelecionado=paciente;
+                    bloquearCamposPaciente(true);
+                    const info=document.getElementById('pacienteSelecionadoInfo');
+                    info.textContent='Novo paciente cadastrado e selecionado: '+paciente.nome_paciente;
+                    info.classList.remove('hidden');
+                }
+                const novo={
+                    'Identificação':'REG_'+Date.now(),'paciente_id':pacienteSelecionado.id,
+                    'Data_da_Cirurgia':document.getElementById('Data_da_Cirurgia').value,
+                    'Nome_Paciente':pacienteSelecionado.nome_paciente||document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
+                    'prontuario':pacienteSelecionado.numero_cadastro_ambulatorio||'',
+                    'NBE':document.getElementById('NBE').value.trim(),
+                    'CNS':pacienteSelecionado.cns||'',
+                    'Data_Nascimento':pacienteSelecionado.data_nascimento||'',
+                    'sexo':pacienteSelecionado.sexo||'',
+                    'NOME_MAE':pacienteSelecionado.nome_mae||'',
+                    'Especialidade':document.getElementById('Especialidade').value,
+                    'Carater_Atendimento':document.getElementById('Carater_Atendimento').value,'Situaçao':situacao,
+                    'Procedimento1':document.getElementById('Procedimento1').value.toUpperCase().trim(),
+                    'Procedimento2':document.getElementById('Procedimento2').value.toUpperCase().trim(),
+                    'Procedimento3':document.getElementById('Procedimento3').value.toUpperCase().trim(),
+                    'Mot_Cancelam':situacao==='CANCELADA'?motivo.toUpperCase().trim():'',
+                    'Medico':document.getElementById('Medico').value.toUpperCase().trim(),
+                    'CRM_CIR':document.getElementById('CRM_CIR').value.toUpperCase().trim(),
+                    'Anestesista':document.getElementById('Anestesista').value.toUpperCase().trim(),
+                    'CRM_ANEST':document.getElementById('CRM_ANEST').value.toUpperCase().trim(),
+                    'Anestesia1':document.getElementById('Anestesia1').value,
+                    'DIGITADO_POR':usuarioAtual.email||perfilAtual.email,'DIGITADO_EM':new Date().toLocaleString('pt-BR')
+                };
                 const {error}=await supabaseClient.from('cirurgias').insert([novo]);if(error)throw error;
-                exibirToast('Registro gravado com sucesso.','sucesso');document.getElementById('formCirurgia').reset();
+                exibirToast('Cirurgia gravada e vinculada ao paciente.','sucesso');
+                document.getElementById('formCirurgia').reset();
+                limparPacienteSelecionado();
                 document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();aoMudarSituacao();toggleFormulario();await carregarDados();
-            }catch(error){console.error(error);exibirToast('Erro ao gravar: '+error.message,'erro');}
-            finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk"></i> <span>Gravar no Prontuário</span>';}
+            }catch(error){
+                console.error(error);exibirToast('Erro ao gravar: '+error.message,'erro');
+            }finally{
+                botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk"></i> <span>Salvar cirurgia</span>';
+            }
         }
         function toggleFormulario(){
             if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
@@ -666,7 +777,7 @@
         }
         function abrirDetalhesIndex(i){
             const r=registrosFiltrados[i];if(!r)return;
-            const v={detalheSubtitulo:'Prontuário: '+(r.prontuario||'N/A'),detalheNome:r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
+            const v={detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
                 detalheNbe:r.NBE||'-',detalheCns:r.CNS||'-',detalheNascimento:formatarData(r.Data_Nascimento),detalheSexo:r.sexo||'-',detalheMae:r.NOME_MAE||'-',
                 detalheEspecialidade:r.Especialidade||'-',detalheDataCirurgia:formatarData(r.Data_da_Cirurgia),detalheProc1:r.Procedimento1||'-',detalheProc2:r.Procedimento2||'-',
                 detalheProc3:r.Procedimento3||'-',detalheMedico:r.Medico||'-',detalheCrmCir:r.CRM_CIR||'-',detalheAnestesista:r.Anestesista||'-',
