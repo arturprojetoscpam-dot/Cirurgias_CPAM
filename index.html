@@ -632,8 +632,10 @@
                 try{
                     const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio';
                     let consulta=supabaseClient.from('pacientes').select(campos).order('nome_paciente',{ascending:true}).limit(15);
-                    if(/^\d{4,}$/.test(termo)){
-                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo);
+                    if(/^PAC-?\d+$/i.test(termo)){
+                        consulta=consulta.eq('codigo_paciente',Number(termo.replace(/\D/g,'')));
+                    }else if(/^\d{4,}$/.test(termo)){
+                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo+',codigo_paciente.eq.'+Number(termo));
                     }else{
                         consulta=consulta.ilike('nome_paciente','%'+termo+'%');
                     }
