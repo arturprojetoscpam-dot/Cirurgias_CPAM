@@ -502,7 +502,7 @@
             try{
                 let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,numero_cadastro_ambulatorio',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
                 if(termoListaPacientes){
-                    if(/^\\d+$/.test(termoListaPacientes)){
+                    if(/^\d+$/.test(termoListaPacientes)){
                         consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
                     }else{
                         consulta=consulta.ilike('nome_paciente','%'+termoListaPacientes.replace(/[%_]/g,'')+'%');
@@ -633,13 +633,13 @@
             timerBuscaPaciente=window.setTimeout(async function(){
                 const termo=document.getElementById('buscaPaciente').value.trim();
                 const lista=document.getElementById('resultadosPacientes');
-                const dataNascimentoBusca=dataInputParaBanco(document.getElementById('buscaDataNascimentoPaciente').value);if(termo.length<3&&!/^\\d+$/.test(termo)&&!dataNascimentoBusca){lista.innerHTML='';lista.classList.add('hidden');return;}
+                const dataNascimentoBusca=dataInputParaBanco(document.getElementById('buscaDataNascimentoPaciente').value);if(termo.length<3&&!/^\d+$/.test(termo)&&!dataNascimentoBusca){lista.innerHTML='';lista.classList.add('hidden');return;}
                 if(!usuarioAtual)return;
                 lista.innerHTML='<p class="p-3 text-xs text-slate-500">Buscando pacientes...</p>';lista.classList.remove('hidden');
                 try{
                     const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio';
                     let consulta=supabaseClient.from('pacientes').select(campos).order('nome_paciente',{ascending:true}).limit(15);
-                    if(/^\\d+$/.test(termo)){
+                    if(/^\d+$/.test(termo)){
                         consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo+',codigo_paciente.eq.'+Number(termo));
                     }else if(termo){
                         consulta=consulta.ilike('nome_paciente','%'+termo.replace(/[%_]/g,'')+'%');
