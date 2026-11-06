@@ -669,7 +669,7 @@
                 if(!pacienteSelecionado){
                     const novoPaciente={
                         nome_paciente:document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
-                        data_nascimento:document.getElementById('Data_Nascimento').value||null,
+                        data_nascimento:dataInputParaBanco(document.getElementById('Data_Nascimento').value)||null,
                         cns:document.getElementById('CNS').value.trim()||null,
                         nome_mae:document.getElementById('NOME_MAE').value.toUpperCase().trim()||null,
                         sexo:document.getElementById('sexo').value||null,
