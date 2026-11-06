@@ -124,6 +124,11 @@
                         <div class="mt-2 max-w-xs"><label for="buscaDataNascimentoPaciente" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input type="date" id="buscaDataNascimentoPaciente" onchange="buscarPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div>
                         <div id="resultadosPacientes" class="mt-2 hidden max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white"></div>
                         <p id="pacienteSelecionadoInfo" class="mt-2 hidden text-xs font-semibold text-emerald-800" aria-live="polite"></p>
+                        <div id="acoesEdicaoPaciente" class="mt-2 hidden flex flex-wrap gap-2">
+                            <button type="button" id="btnEditarPaciente" onclick="editarPacienteSelecionado()" class="rounded-lg border border-teal-300 bg-white px-3 py-2 text-[11px] font-semibold text-teal-800 hover:bg-teal-50"><i class="fa-solid fa-pen-to-square mr-1"></i>Editar dados do paciente</button>
+                            <button type="button" id="btnSalvarEdicaoPaciente" onclick="salvarEdicaoPaciente()" class="hidden rounded-lg bg-teal-700 px-3 py-2 text-[11px] font-semibold text-white"><i class="fa-solid fa-floppy-disk mr-1"></i>Salvar dados</button>
+                            <button type="button" id="btnCancelarEdicaoPaciente" onclick="cancelarEdicaoPaciente()" class="hidden rounded-lg border border-slate-300 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700">Cancelar edição</button>
+                        </div>
                         <p class="mt-2 text-[10px] text-slate-500">Pesquise antes de cadastrar. A seleção vincula esta cirurgia ao cadastro existente; um novo paciente só será criado quando não houver seleção.</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -416,7 +421,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='';
+        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -591,6 +596,26 @@
             return '';
         }
         function bloquearCamposPaciente(bloquear){
+        function editarPacienteSelecionado(){
+            if(!pacienteSelecionado||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
+            modoEdicaoPaciente=true;bloquearCamposPaciente(false);
+            document.getElementById('btnEditarPaciente').classList.add('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.remove('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.remove('hidden');
+            exibirToast('Edite os dados e clique em Salvar dados.','sucesso');
+        }
+        function restaurarCamposPaciente(p){
+            document.getElementById('Nome_Paciente').value=p.nome_paciente||'';document.getElementById('prontuario').value=p.numero_cadastro_ambulatorio||'';document.getElementById('CNS').value=p.cns||'';document.getElementById('Data_Nascimento').value=normalizarDataParaInput(p.data_nascimento);document.getElementById('sexo').value=p.sexo||'';document.getElementById('NOME_MAE').value=p.nome_mae||'';
+        }
+        function cancelarEdicaoPaciente(){if(!pacienteSelecionado)return;restaurarCamposPaciente(pacienteSelecionado);modoEdicaoPaciente=false;bloquearCamposPaciente(true);document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');}
+        async function salvarEdicaoPaciente(){
+            if(!pacienteSelecionado||!modoEdicaoPaciente||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
+            const nome=document.getElementById('Nome_Paciente').value.toUpperCase().trim();if(!nome){exibirToast('O nome do paciente é obrigatório.','erro');return;}
+            const atualizacao={nome_paciente:nome,numero_cadastro_ambulatorio:document.getElementById('prontuario').value.trim()||null,cns:document.getElementById('CNS').value.trim()||null,data_nascimento:dataInputParaBanco(document.getElementById('Data_Nascimento').value)||null,sexo:document.getElementById('sexo').value||null,nome_mae:document.getElementById('NOME_MAE').value.toUpperCase().trim()||null};
+            const {data,error}=await supabaseClient.from('pacientes').update(atualizacao).eq('id',pacienteSelecionado.id).select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
+            if(error){exibirToast('Não foi possível atualizar o cadastro: '+error.message,'erro');return;}
+            pacienteSelecionado=data;pacientesEncontrados=pacientesEncontrados.map(p=>p.id===data.id?data:p);pacientesPagina=pacientesPagina.map(p=>p.id===data.id?data:p);
+            modoEdicaoPaciente=false;bloquearCamposPaciente(true);document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
+            document.getElementById('pacienteSelecionadoInfo').textContent=formatarCodigoPaciente(data.codigo_paciente)+' · '+data.nome_paciente+'. Cadastro atualizado.';exibirToast('Dados do paciente atualizados.','sucesso');
+        }
             ['Nome_Paciente','prontuario','CNS','Data_Nascimento','NOME_MAE'].forEach(function(id){
                 const campo=document.getElementById(id);if(campo)campo.readOnly=!!bloquear;
             });
@@ -663,7 +688,7 @@
             const botao=document.getElementById('btnSalvar');
             const situacao=document.getElementById('Situaçao').value,motivo=document.getElementById('Mot_Cancelam').value;
             if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast('Informe o motivo do cancelamento.','erro');return;}
-            if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
+            if(modoEdicaoPaciente){exibirToast('Salve ou cancele a edição dos dados do paciente antes de gravar a cirurgia.','erro');return;}if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
             botao.disabled=true;botao.textContent='Gravando...';
             try{
                 if(!pacienteSelecionado){
@@ -677,7 +702,7 @@
                     };
                     const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').insert([novoPaciente]).select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
                     if(erroPaciente)throw new Error('Falha ao cadastrar paciente: '+erroPaciente.message);
-                    pacienteSelecionado=paciente;
+                    pacienteSelecionado=paciente;document.getElementById('acoesEdicaoPaciente').classList.remove('hidden');document.getElementById('btnEditarPaciente').classList.remove('hidden');
                     bloquearCamposPaciente(true);
                     const info=document.getElementById('pacienteSelecionadoInfo');
                     info.textContent='Novo paciente '+formatarCodigoPaciente(paciente.codigo_paciente)+' cadastrado e selecionado: '+paciente.nome_paciente;
