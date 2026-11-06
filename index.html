@@ -781,8 +781,9 @@
             sec.classList.toggle('hidden',!abrir);if(abrir){carregarUsuarios();sec.scrollIntoView({behavior:'smooth'});}
         }
         async function carregarUsuarios(){
-            if(!perfilAtual||perfilAtual.role!=='administrador')return;const corpo=document.getElementById('gridUsuarios');
-            corpo.innerHTML='<tr><td colspan="6" class="p-4 text-center text-slate-400">Carregando...</td></tr>';
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;
+            const corpo=document.getElementById('gridUsuarios');
+            corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr>';
             const {data,error}=await supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active,created_at').order('created_at',{ascending:true});
             if(error){corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent=error.message;return;}
             corpo.innerHTML=(data||[]).map(function(p){
@@ -791,9 +792,6 @@
                     '<td class="p-3"><select id="role-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs">'+opts+'</select></td>'+
                     '<td class="p-3"><select id="active-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs"><option value="true"'+(p.active?' selected':'')+'>Ativo</option><option value="false"'+(!p.active?' selected':'')+'>Suspenso</option></select></td>'+
                     '<td class="p-3"><button onclick="salvarPerfilUsuario(\''+p.user_id+'\')" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white">Salvar</button></td></tr>';
-            }).join('')||'<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum usuário cadastrado.</td></tr>';
-        }
-amber-300 px-3 py-2 text-xs font-semibold text-amber-800">Enviar redefinição</button></div></td></tr>';
             }).join('')||'<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum usuário cadastrado.</td></tr>';
         }
         function alternarAuditoria(){
