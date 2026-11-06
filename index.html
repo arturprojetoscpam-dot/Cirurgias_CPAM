@@ -293,7 +293,7 @@
                 <div class="space-y-2"><div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-slate-400"></i><input id="buscaListaPacientes" type="search" oninput="pesquisarListaPacientes()" placeholder="Nº do cadastro ambulatorial, nome ou Cartão SUS (CNS)" class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><div class="max-w-xs"><label for="buscaDataNascimentoLista" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input id="buscaDataNascimentoLista" type="date" onchange="pesquisarListaPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><p class="text-[10px] text-slate-500">A data pode ser usada sozinha ou junto com a pesquisa acima. A busca consulta o banco sem baixar todos os cadastros no navegador.</p></div>
             </div>
             <div class="overflow-x-auto custom-scrollbar"><table class="w-full border-collapse text-left text-xs">
-                <thead class="border-b border-slate-200 bg-slate-100/80 font-semibold uppercase tracking-wider text-slate-600"><tr><th class="p-3.5">Nº</th><th class="p-3.5">Paciente</th><th class="p-3.5">Nascimento</th><th class="p-3.5">CNS</th><th class="p-3.5">Cadastro ambulatorial</th><th class="p-3.5 text-center">Histórico</th></tr></thead>
+                <thead class="border-b border-slate-200 bg-slate-100/80 font-semibold uppercase tracking-wider text-slate-600"><tr><th class="p-3.5">Nº</th><th class="p-3.5">Paciente</th><th class="p-3.5">Nascimento</th><th class="p-3.5">CNS</th><th class="p-3.5">Cadastro ambulatorial</th><th class="p-3.5 text-center">Ações</th></tr></thead>
                 <tbody id="gridPacientes" class="divide-y divide-slate-100"><tr><td colspan="6" class="p-8 text-center text-slate-400">Carregando pacientes...</td></tr></tbody>
             </table></div>
             <div class="flex flex-col items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 p-3.5 text-xs text-slate-500 sm:flex-row">
@@ -421,7 +421,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false;
+        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -506,7 +506,7 @@
             const tbody=document.getElementById('gridPacientes');
             tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2 text-teal-600"></i>Carregando pacientes...</td></tr>';
             try{
-                let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,numero_cadastro_ambulatorio',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
+                let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
                 if(termoListaPacientes){
                     if(/^\d+$/.test(termoListaPacientes)){
                         consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
@@ -525,15 +525,16 @@
                 document.getElementById('btnPacientesAnterior').disabled=paginaPacientes<=1;
                 document.getElementById('btnPacientesProxima').disabled=paginaPacientes>=Math.ceil(totalPacientes/50);
                 if(!pacientesPagina.length){tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-slate-400">Nenhum paciente encontrado.</td></tr>';return;}
-                tbody.innerHTML=pacientesPagina.map(function(p){return '<tr class="transition hover:bg-slate-50"><td class="whitespace-nowrap p-3.5 font-mono font-bold text-teal-800">'+formatarCodigoPaciente(p.codigo_paciente)+'</td><td class="p-3.5 font-semibold text-slate-800">'+escaparHtml(p.nome_paciente||'-')+'</td><td class="whitespace-nowrap p-3.5">'+escaparHtml(formatarData(p.data_nascimento))+'</td><td class="p-3.5 font-mono">'+escaparHtml(p.cns||'-')+'</td><td class="p-3.5 font-mono">'+escaparHtml(p.numero_cadastro_ambulatorio||'-')+'</td><td class="p-3.5 text-center"><button onclick="abrirHistoricoPaciente(\''+p.id+'\')" class="rounded-lg bg-teal-700 px-3 py-2 text-[10px] font-bold text-white hover:bg-teal-800"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Ver cirurgias</button></td></tr>';}).join('');
+                tbody.innerHTML=pacientesPagina.map(function(p){return '<tr class="transition hover:bg-slate-50"><td class="whitespace-nowrap p-3.5 font-mono font-bold text-teal-800">'+formatarCodigoPaciente(p.codigo_paciente)+'</td><td class="p-3.5 font-semibold text-slate-800">'+escaparHtml(p.nome_paciente||'-')+'</td><td class="whitespace-nowrap p-3.5">'+escaparHtml(formatarData(p.data_nascimento))+'</td><td class="p-3.5 font-mono">'+escaparHtml(p.cns||'-')+'</td><td class="p-3.5 font-mono">'+escaparHtml(p.numero_cadastro_ambulatorio||'-')+'</td><td class="p-3.5 text-center"><div class="flex flex-wrap justify-center gap-1"><button onclick="editarPacienteDaLista(\''+p.id+'\')" class="rounded-lg border border-teal-300 bg-white px-3 py-2 text-[10px] font-bold text-teal-800 hover:bg-teal-50"><i class="fa-solid fa-pen-to-square mr-1"></i>Editar</button><button onclick="abrirHistoricoPaciente(\''+p.id+'\')" class="rounded-lg bg-teal-700 px-3 py-2 text-[10px] font-bold text-white hover:bg-teal-800"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Cirurgias</button></div></td></tr>';}).join('');
             }catch(error){console.error(error);tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-rose-600">Falha ao carregar pacientes: '+escaparHtml(error.message)+'</td></tr>';exibirToast('Erro ao carregar pacientes: '+error.message,'erro');}
         }
         function pesquisarListaPacientes(){if(timerListaPacientes)window.clearTimeout(timerListaPacientes);timerListaPacientes=window.setTimeout(function(){termoListaPacientes=document.getElementById('buscaListaPacientes').value.trim();paginaPacientes=1;carregarPacientes();},300);}
+        function editarPacienteDaLista(id){const p=pacientesPagina.find(function(item){return item.id===id;});if(!p||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;pacientesEncontrados=[p];edicaoPacienteSemCirurgia=true;if(document.getElementById('secFormulario').classList.contains('hidden'))toggleFormulario();selecionarPaciente(id);editarPacienteSelecionado();document.getElementById('secFormulario').scrollIntoView({behavior:'smooth'});}
         function paginaPacientesAnterior(){if(paginaPacientes>1){paginaPacientes--;carregarPacientes();}}
         function proximaPaginaPacientes(){if(paginaPacientes<Math.ceil(totalPacientes/50)){paginaPacientes++;carregarPacientes();}}
         async function abrirHistoricoPaciente(id){
             let paciente=pacientesPagina.find(function(p){return p.id===id;});
-            if(!paciente){const {data,error}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente').eq('id',id).single();if(error)throw error;paciente=data;}
+            if(!paciente){const {data,error}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,nome_mae,sexo,data_nascimento,cns,numero_cadastro_ambulatorio').eq('id',id).single();if(error)throw error;paciente=data;}
             pacienteHistoricoAtual=paciente;document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.remove('hidden');
             document.getElementById('tituloPacienteHistorico').textContent=formatarCodigoPaciente(paciente.codigo_paciente)+' · '+paciente.nome_paciente;
             document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="8" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2 text-teal-600"></i>Carregando histórico...</td></tr>';
@@ -618,9 +619,9 @@
             const atualizacao={nome_paciente:nome,numero_cadastro_ambulatorio:document.getElementById('prontuario').value.trim()||null,cns:document.getElementById('CNS').value.trim()||null,data_nascimento:dataInputParaBanco(document.getElementById('Data_Nascimento').value)||null,sexo:document.getElementById('sexo').value||null,nome_mae:document.getElementById('NOME_MAE').value.toUpperCase().trim()||null};
             const {data,error}=await supabaseClient.from('pacientes').update(atualizacao).eq('id',pacienteSelecionado.id).select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
             if(error){exibirToast('Não foi possível atualizar o cadastro: '+error.message,'erro');return;}
-            pacienteSelecionado=data;pacientesEncontrados=pacientesEncontrados.map(p=>p.id===data.id?data:p);pacientesPagina=pacientesPagina.map(p=>p.id===data.id?data:p);
+            pacienteSelecionado=data;if(pacienteHistoricoAtual&&pacienteHistoricoAtual.id===data.id)pacienteHistoricoAtual=data;pacientesEncontrados=pacientesEncontrados.map(p=>p.id===data.id?data:p);pacientesPagina=pacientesPagina.map(p=>p.id===data.id?data:p);
             modoEdicaoPaciente=false;bloquearCamposPaciente(true);document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
-            document.getElementById('pacienteSelecionadoInfo').textContent=formatarCodigoPaciente(data.codigo_paciente)+' · '+data.nome_paciente+'. Cadastro atualizado.';exibirToast('Dados do paciente atualizados.','sucesso');
+            document.getElementById('pacienteSelecionadoInfo').textContent=formatarCodigoPaciente(data.codigo_paciente)+' · '+data.nome_paciente+'. Cadastro atualizado.';exibirToast('Dados do paciente atualizados.','sucesso');if(edicaoPacienteSemCirurgia){edicaoPacienteSemCirurgia=false;await carregarPacientes();toggleFormulario();}
         }
         function limparPacienteSelecionado(){
             pacienteSelecionado=null;modoEdicaoPaciente=false;document.getElementById('acoesEdicaoPaciente').classList.add('hidden');document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
@@ -754,8 +755,8 @@
         }
         function abrirDetalhesIndex(i){
             const r=registrosFiltrados[i];if(!r)return;
-            const v={detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
-                detalheNbe:r.NBE||'-',detalheCns:r.CNS||'-',detalheNascimento:formatarData(r.Data_Nascimento),detalheSexo:r.sexo||'-',detalheMae:r.NOME_MAE||'-',
+            const v={detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_paciente)||r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
+                detalheNbe:r.NBE||'-',detalheCns:(pacienteHistoricoAtual&&pacienteHistoricoAtual.cns)||r.CNS||'-',detalheNascimento:formatarData((pacienteHistoricoAtual&&pacienteHistoricoAtual.data_nascimento)||r.Data_Nascimento),detalheSexo:(pacienteHistoricoAtual&&pacienteHistoricoAtual.sexo)||r.sexo||'-',detalheMae:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_mae)||r.NOME_MAE||'-',
                 detalheEspecialidade:r.Especialidade||'-',detalheDataCirurgia:formatarData(r.Data_da_Cirurgia),detalheProc1:r.Procedimento1||'-',detalheProc2:r.Procedimento2||'-',
                 detalheProc3:r.Procedimento3||'-',detalheMedico:r.Medico||'-',detalheCrmCir:r.CRM_CIR||'-',detalheAnestesista:r.Anestesista||'-',
                 detalheCrmAnest:r.CRM_ANEST||'-',detalheAnestesia:r.Anestesia1||'-',detalheDigitadoInfo:(r.DIGITADO_POR||'SISTEMA')+' em '+(r.DIGITADO_EM||'-'),detalheCaraterBadge:r.Carater_Atendimento||'-'};
