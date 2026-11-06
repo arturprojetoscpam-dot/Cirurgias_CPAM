@@ -596,6 +596,11 @@
             return '';
         }
         function bloquearCamposPaciente(bloquear){
+            ['Nome_Paciente','prontuario','CNS','Data_Nascimento','NOME_MAE'].forEach(function(id){
+                const campo=document.getElementById(id);if(campo)campo.readOnly=!!bloquear;
+            });
+            const sexo=document.getElementById('sexo');if(sexo)sexo.disabled=!!bloquear;
+        }
         function editarPacienteSelecionado(){
             if(!pacienteSelecionado||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
             modoEdicaoPaciente=true;bloquearCamposPaciente(false);
@@ -615,11 +620,6 @@
             pacienteSelecionado=data;pacientesEncontrados=pacientesEncontrados.map(p=>p.id===data.id?data:p);pacientesPagina=pacientesPagina.map(p=>p.id===data.id?data:p);
             modoEdicaoPaciente=false;bloquearCamposPaciente(true);document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
             document.getElementById('pacienteSelecionadoInfo').textContent=formatarCodigoPaciente(data.codigo_paciente)+' · '+data.nome_paciente+'. Cadastro atualizado.';exibirToast('Dados do paciente atualizados.','sucesso');
-        }
-            ['Nome_Paciente','prontuario','CNS','Data_Nascimento','NOME_MAE'].forEach(function(id){
-                const campo=document.getElementById(id);if(campo)campo.readOnly=!!bloquear;
-            });
-            const sexo=document.getElementById('sexo');if(sexo)sexo.disabled=!!bloquear;
         }
         function limparPacienteSelecionado(){
             pacienteSelecionado=null;
