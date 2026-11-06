@@ -622,7 +622,7 @@
             document.getElementById('pacienteSelecionadoInfo').textContent=formatarCodigoPaciente(data.codigo_paciente)+' · '+data.nome_paciente+'. Cadastro atualizado.';exibirToast('Dados do paciente atualizados.','sucesso');
         }
         function limparPacienteSelecionado(){
-            pacienteSelecionado=null;
+            pacienteSelecionado=null;modoEdicaoPaciente=false;document.getElementById('acoesEdicaoPaciente').classList.add('hidden');document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
             document.getElementById('buscaPaciente').value='';
             document.getElementById('buscaDataNascimentoPaciente').value='';
             document.getElementById('resultadosPacientes').innerHTML='';
@@ -640,7 +640,7 @@
         }
         function selecionarPaciente(id){
             const p=pacientesEncontrados.find(function(item){return item.id===id;});if(!p)return;
-            pacienteSelecionado=p;
+            pacienteSelecionado=p;modoEdicaoPaciente=false;document.getElementById('acoesEdicaoPaciente').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
             document.getElementById('Nome_Paciente').value=p.nome_paciente||'';
             document.getElementById('prontuario').value=p.numero_cadastro_ambulatorio||'';
             document.getElementById('CNS').value=p.cns||'';
