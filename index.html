@@ -359,6 +359,15 @@
               <div class="md:col-span-12"><label for="paciente_prontuario" class="mb-1 block text-xs font-semibold text-slate-700">Nº do Cadastro Ambulatorial (referência legada, se houver)</label><input id="paciente_prontuario" class="campo-paciente-modal" placeholder="Cadastro ambulatorial existente"></div>
             </div>
           </section>
+
+          <section id="secHistoricoPacienteModal" class="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3">
+              <div><h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-teal-700"></i>Histórico Cirúrgico do Paciente</h3><p class="mt-1 text-[10px] text-slate-500">Registros vinculados exclusivamente a este cadastro.</p></div>
+              <button id="btnNovaCirurgiaPacienteModal" type="button" onclick="abrirModalCirurgiaNovaDoPaciente()" class="hidden rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-800"><i class="fa-solid fa-plus mr-1"></i>Registrar Nova Cirurgia</button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full min-w-[760px] border-collapse text-left text-xs"><thead class="bg-slate-100 text-[10px] font-bold uppercase tracking-wide text-slate-600"><tr><th class="p-3">Data da Cirurgia</th><th class="p-3">Procedimento</th><th class="p-3">Médico Cirurgião</th><th class="p-3">Caráter</th><th class="p-3">Status</th><th class="p-3 text-center">Ações</th></tr></thead><tbody id="gridHistoricoPacienteModal" class="divide-y divide-slate-100"><tr><td colspan="6" class="p-6 text-center text-slate-500">Salve o cadastro do paciente para registrar cirurgias.</td></tr></tbody></table></div>
+          </section>
+
           <div class="mt-7 flex flex-col-reverse gap-2 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
             <button type="button" onclick="fecharModalPaciente()" class="rounded-xl border border-slate-300 px-5 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">Voltar para Pesquisa / Cancelar</button>
             <button id="btnSalvarPacienteModal" type="submit" class="rounded-xl bg-emerald-700 px-6 py-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cadastro</button>
@@ -531,7 +540,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let pacienteModalAtual=null,cirurgiaModalAtual=null,usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false;
+        let pacienteModalAtual=null,cirurgiaModalAtual=null,cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -617,11 +626,11 @@
             if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar ou editar pacientes.','erro');return;}
             pacienteModalAtual=null;document.getElementById('formModalPaciente').reset();preencherCampo('paciente_codigo','');
             if(id){
-                try{const {data,error}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(error)throw error;pacienteModalAtual=data;
+                try{const {data,error}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(error)throw error;pacienteModalAtual=data;pacienteHistoricoAtual=data;
                     preencherCampo('paciente_codigo',formatarCodigoPaciente(data.codigo_paciente));preencherCampo('paciente_prontuario',data.numero_cadastro_ambulatorio);preencherCampo('paciente_be_vitai',data.numero_be_vitai);preencherCampo('paciente_cpf',data.cpf);preencherCampo('paciente_cns',data.cns);preencherCampo('paciente_nome',data.nome_paciente);preencherCampo('paciente_nascimento',normalizarDataParaInput(data.data_nascimento));preencherCampo('paciente_mae',data.nome_mae);preencherCampo('paciente_telefone',data.telefone);preencherCampo('paciente_cep',data.cep);preencherCampo('paciente_endereco',data.endereco);preencherCampo('paciente_numero',data.numero);preencherCampo('paciente_bairro',data.bairro);preencherCampo('paciente_municipio',data.municipio);
-                    document.getElementById('tituloModalPaciente').textContent='Prontuário interno #'+formatarCodigoPaciente(data.codigo_paciente)+' · Edição';
+                    document.getElementById('tituloModalPaciente').textContent='Prontuário interno #'+formatarCodigoPaciente(data.codigo_paciente)+' · Edição';await carregarHistoricoPacienteModal(data.id);
                 }catch(error){exibirToast('Não foi possível carregar o paciente: '+error.message,'erro');return;}
-            }else{document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';}
+            }else{pacienteHistoricoAtual=null;document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';await carregarHistoricoPacienteModal(null);}
             const modal=document.getElementById('modalPaciente');modal.classList.remove('hidden');modal.classList.add('flex');document.getElementById('paciente_nome').focus();
         }
         function fecharModalPaciente(){const modal=document.getElementById('modalPaciente');modal.classList.add('hidden');modal.classList.remove('flex');}
@@ -634,11 +643,11 @@
                 let resposta;if(pacienteModalAtual)resposta=await supabaseClient.from('pacientes').update(payload).eq('id',pacienteModalAtual.id).select(CAMPOS_PACIENTE_MODAL).single();
                 else resposta=await supabaseClient.from('pacientes').insert([payload]).select(CAMPOS_PACIENTE_MODAL).single();
                 if(resposta.error)throw resposta.error;
-                pacienteModalAtual=resposta.data;
+                pacienteModalAtual=resposta.data;pacienteHistoricoAtual=resposta.data;preencherCampo('paciente_codigo',formatarCodigoPaciente(resposta.data.codigo_paciente));document.getElementById('tituloModalPaciente').textContent='Prontuário interno #'+formatarCodigoPaciente(resposta.data.codigo_paciente)+' · Edição';
                 pacientesPagina=pacientesPagina.map(p=>p.id===resposta.data.id?resposta.data:p);
                 pacientesEncontrados=pacientesEncontrados.map(p=>p.id===resposta.data.id?resposta.data:p);
                 if(pacienteHistoricoAtual&&pacienteHistoricoAtual.id===resposta.data.id){pacienteHistoricoAtual=resposta.data;atualizarResumoPacienteHistorico(resposta.data);}
-                fecharModalPaciente();await carregarPacientes();
+                await carregarHistoricoPacienteModal(resposta.data.id);await carregarPacientes();
                 exibirToast(eraEdicao?'Cadastro do paciente atualizado com sucesso.':'Paciente cadastrado com sucesso.','sucesso');
             }catch(error){console.error(error);exibirToast('Não foi possível salvar o cadastro: '+error.message,'erro');}
             finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cadastro';}
@@ -648,6 +657,27 @@
             preencherTexto('histPacienteNome',p.nome_paciente);preencherTexto('histPacienteCodigo',formatarCodigoPaciente(p.codigo_paciente));preencherTexto('histPacienteBe',p.numero_be_vitai);preencherTexto('histPacienteCpf',p.cpf);
         }
         function preencherTexto(id,valor){const el=document.getElementById(id);if(el)el.textContent=valor||'-';}
+        async function carregarHistoricoPacienteModal(id){
+            const corpo=document.getElementById('gridHistoricoPacienteModal');if(!id){cirurgiasPacienteModal=[];corpo.innerHTML='<tr><td colspan="6" class="p-6 text-center text-slate-500">Salve o cadastro do paciente para registrar cirurgias.</td></tr>';document.getElementById('btnNovaCirurgiaPacienteModal').classList.add('hidden');return;}
+            document.getElementById('btnNovaCirurgiaPacienteModal').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));
+            corpo.innerHTML='<tr><td colspan="6" class="p-6 text-center text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando histórico...</td></tr>';
+            try{
+                const campos='id,paciente_id,Identificação,Data_da_Cirurgia,prontuario,NBE,Nome_Paciente,CNS,Data_Nascimento,NOME_MAE,sexo,Especialidade,Procedimento1,Procedimento2,Procedimento3,Carater_Atendimento,Situaçao,Medico,CRM_CIR,Anestesista,CRM_ANEST,Anestesia1,Mot_Cancelam,horario_inicio,horario_fim,sala_cirurgica,codigo_tuss_sus,medico_auxiliar,instrumentador_enfermagem,biopsia_encaminhada,encaminhado_uti,necessitou_hemoderivados,descricao_cirurgica,DIGITADO_POR,DIGITADO_EM';
+                const {data,error}=await supabaseClient.from('cirurgias').select(campos).eq('paciente_id',id).order('Data_da_Cirurgia',{ascending:false}).order('Identificação',{ascending:true});
+                if(error)throw error;cirurgiasPacienteModal=data||[];
+                if(!cirurgiasPacienteModal.length){corpo.innerHTML='<tr><td colspan="6" class="p-6 text-center text-slate-500">Nenhuma cirurgia registrada para este paciente.</td></tr>';return;}
+                corpo.innerHTML=cirurgiasPacienteModal.map(function(r,i){
+                    const status=(r.Situaçao||'').toUpperCase(),realizada=status==='REALIZADA',andamento=status==='EM ANDAMENTO';
+                    const badge=realizada?'<span class="rounded-full border border-emerald-200 bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-800">REALIZADA</span>':andamento?'<span class="rounded-full border border-amber-200 bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-900">EM ANDAMENTO</span>':'<span class="rounded-full border border-rose-200 bg-rose-100 px-2 py-1 text-[10px] font-bold text-rose-800">CANCELADA</span>';
+                    const carater=(r.Carater_Atendimento||'').toUpperCase(),car=carater==='ELETIVA'?'<span class="text-blue-800">ELETIVA</span>':'<span class="text-amber-800">'+(carater==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA')+'</span>';
+                    return '<tr class="hover:bg-slate-50"><td class="whitespace-nowrap p-3 font-mono">'+escaparHtml(formatarData(r.Data_da_Cirurgia))+'</td><td class="p-3"><div class="font-semibold text-slate-800">'+escaparHtml(r.Procedimento1||'Procedimento não informado')+'</div><div class="mt-1 text-[10px] text-slate-500">'+escaparHtml(r.Especialidade||'')+(r.Procedimento2?' · '+escaparHtml(r.Procedimento2):'')+'</div></td><td class="p-3">'+escaparHtml(r.Medico||'-')+'</td><td class="p-3">'+car+'</td><td class="p-3">'+badge+'</td><td class="p-3"><div class="flex justify-center gap-1"><button type="button" onclick="verCirurgiaHistoricoPacienteModal('+i+')" class="rounded-lg p-2 text-slate-500 hover:bg-teal-50 hover:text-teal-700" title="Ver cirurgia"><i class="fa-solid fa-eye"></i></button>'+(['administrador','coordenacao','cadastro'].includes(perfilAtual.role)?'<button type="button" onclick="editarCirurgiaHistoricoPacienteModal('+i+')" class="rounded-lg p-2 text-teal-700 hover:bg-teal-50" title="Editar cirurgia"><i class="fa-solid fa-pen-to-square"></i></button>':'')+'</div></td></tr>';
+                }).join('');
+            }catch(error){console.error(error);corpo.innerHTML='<tr><td colspan="6" class="p-6 text-center text-rose-700">Não foi possível carregar o histórico: '+escaparHtml(error.message)+'</td></tr>';}
+        }
+        function verCirurgiaHistoricoPacienteModal(indice){const r=cirurgiasPacienteModal[indice];if(r){pacienteHistoricoAtual=pacienteModalAtual;abrirDetalhesIndex(r);}}
+        function editarCirurgiaHistoricoPacienteModal(indice){const r=cirurgiasPacienteModal[indice];if(r&&pacienteModalAtual){pacienteHistoricoAtual=pacienteModalAtual;abrirModalCirurgia(r);}}
+        function abrirModalCirurgiaNovaDoPaciente(){if(!pacienteModalAtual){exibirToast('Salve o cadastro do paciente antes de registrar uma cirurgia.','erro');return;}pacienteHistoricoAtual=pacienteModalAtual;abrirModalCirurgiaNova();}
+
         function abrirModalCirurgiaNova(){
             if(!pacienteHistoricoAtual){exibirToast('Abra o histórico de um paciente antes de registrar uma cirurgia.','erro');return;}
             if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite registrar cirurgias.','erro');return;}
@@ -675,7 +705,7 @@
                 else{payload['Identificação']='REG_'+Date.now();resposta=await supabaseClient.from('cirurgias').insert([payload]).select('id').single();}
                 if(resposta.error)throw resposta.error;
                 fecharModalCirurgia();fecharModalDetalhes();exibirToast(cirurgiaModalAtual?'Cirurgia atualizada com sucesso.':'Cirurgia registrada e vinculada ao paciente.','sucesso');
-                await abrirHistoricoPaciente(p.id);
+                if(document.getElementById('modalPaciente').classList.contains('flex')){await carregarHistoricoPacienteModal(p.id);}else{await abrirHistoricoPaciente(p.id);}
             }catch(error){console.error(error);exibirToast('Não foi possível salvar a cirurgia: '+error.message,'erro');}
             finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cirurgia';}
         }
@@ -934,7 +964,7 @@
             document.getElementById('boxMotivoCancelamento').classList.toggle('hidden',!cancelada);document.getElementById('Mot_Cancelam').required=cancelada;
         }
         function abrirDetalhesIndex(i){
-            const r=registrosFiltrados[i];if(!r)return;
+            const r=(i&&typeof i==='object')?i:registrosFiltrados[i];if(!r)return;
             cirurgiaModalAtual=r;const v={detalheHorario:[r.horario_inicio,r.horario_fim].filter(Boolean).join(' – ')||'-',detalheSala:r.sala_cirurgica||'-',detalheCodigo:r.codigo_tuss_sus||'-',detalheAuxiliar:r.medico_auxiliar||'-',detalheInstrumentador:r.instrumentador_enfermagem||'-',detalheBiopsia:r.biopsia_encaminhada==null?'-':(r.biopsia_encaminhada?'Sim':'Não'),detalheUti:r.encaminhado_uti==null?'-':(r.encaminhado_uti?'Sim':'Não'),detalheHemoderivados:r.necessitou_hemoderivados==null?'-':(r.necessitou_hemoderivados?'Sim':'Não'),detalheDescricao:r.descricao_cirurgica||'-',detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_paciente)||r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
                 detalheNbe:r.NBE||'-',detalheCns:(pacienteHistoricoAtual&&pacienteHistoricoAtual.cns)||r.CNS||'-',detalheNascimento:formatarData((pacienteHistoricoAtual&&pacienteHistoricoAtual.data_nascimento)||r.Data_Nascimento),detalheSexo:(pacienteHistoricoAtual&&pacienteHistoricoAtual.sexo)||r.sexo||'-',detalheMae:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_mae)||r.NOME_MAE||'-',
                 detalheEspecialidade:r.Especialidade||'-',detalheDataCirurgia:formatarData(r.Data_da_Cirurgia),detalheProc1:r.Procedimento1||'-',detalheProc2:r.Procedimento2||'-',
