@@ -721,7 +721,7 @@
                 let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio,cpf',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
                 if(termoListaPacientes){
                     if(/^\d+$/.test(termoListaPacientes)){
-                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',cpf.eq.'+termoListaPacientes+',numero_be_vitai.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
+                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',cpf.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
                     }else{
                         const busca=termoListaPacientes.replace(/[%_,()]/g,'');consulta=consulta.or('nome_paciente.ilike.%'+busca+'%');
                     }
@@ -874,7 +874,7 @@
                 if(!usuarioAtual)return;
                 lista.innerHTML='<p class="p-3 text-xs text-slate-500">Buscando pacientes...</p>';lista.classList.remove('hidden');
                 try{
-                    const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio,cpf,numero_be_vitai';
+                    const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio,cpf';
                     let consulta=supabaseClient.from('pacientes').select(campos).order('nome_paciente',{ascending:true}).limit(15);
                     if(/^\d+$/.test(termo)){
                         consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo+',codigo_paciente.eq.'+Number(termo));
