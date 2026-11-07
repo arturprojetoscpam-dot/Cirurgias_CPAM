@@ -377,7 +377,7 @@
     </div>
 
     <!-- MODAL DE REGISTRO, VISUALIZAÇÃO E EDIÇÃO DE CIRURGIA -->
-    <div id="modalCirurgia" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/50 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="tituloModalCirurgia">
+    <div id="modalCirurgia" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="tituloModalCirurgia">
       <div class="flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
         <div class="flex shrink-0 items-center justify-between gap-3 bg-gradient-to-r from-teal-950 to-slate-900 px-5 py-4 text-white sm:px-7">
           <div><p class="text-[10px] font-bold uppercase tracking-[.18em] text-teal-300">Bloco Cirúrgico</p><h2 id="tituloModalCirurgia" class="mt-1 text-lg font-bold">Registro de Cirurgia</h2><p class="mt-1 text-xs text-slate-300">Registro de procedimento realizado — não é agendamento futuro</p></div>
@@ -441,7 +441,7 @@
     </div>
 
     <!-- MODAL DE DETALHES COMPLETO DA CIRURGIA -->
-    <div id="modalDetalhes" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="modalDetalhes" class="fixed inset-0 z-[90] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden border border-slate-200 flex flex-col max-h-[90vh]">
             <!-- Header Modal -->
             <div class="bg-gradient-to-r from-teal-900 to-slate-900 text-white p-4 px-6 flex justify-between items-center">
@@ -638,7 +638,7 @@
             evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
             const eraEdicao=!!pacienteModalAtual;const cpfDigitado=lerCampo('paciente_cpf').replace(/\D/g,'');if(cpfDigitado&&cpfDigitado.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}const nome=lerCampo('paciente_nome');if(!nome){exibirToast('Informe o nome completo do paciente.','erro');return;}
             const botao=document.getElementById('btnSalvarPacienteModal');botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
-            const payload={nome_paciente:nome,numero_cadastro_ambulatorio:lerCampo('paciente_prontuario')||null,numero_be_vitai:lerCampo('paciente_be_vitai')||null,cpf:lerCampo('paciente_cpf').replace(/\\D/g,'')||null,cns:lerCampo('paciente_cns')||null,data_nascimento:dataInputParaBanco(lerCampo('paciente_nascimento'))||null,nome_mae:lerCampo('paciente_mae')||null,telefone:lerCampo('paciente_telefone')||null,cep:lerCampo('paciente_cep')||null,endereco:lerCampo('paciente_endereco')||null,numero:lerCampo('paciente_numero')||null,bairro:lerCampo('paciente_bairro')||null,municipio:lerCampo('paciente_municipio')||null};
+            const payload={nome_paciente:nome,numero_cadastro_ambulatorio:lerCampo('paciente_prontuario')||null,numero_be_vitai:lerCampo('paciente_be_vitai')||null,cpf:lerCampo('paciente_cpf').replace(/\D/g,'')||null,cns:lerCampo('paciente_cns')||null,data_nascimento:dataInputParaBanco(lerCampo('paciente_nascimento'))||null,nome_mae:lerCampo('paciente_mae')||null,telefone:lerCampo('paciente_telefone')||null,cep:lerCampo('paciente_cep')||null,endereco:lerCampo('paciente_endereco')||null,numero:lerCampo('paciente_numero')||null,bairro:lerCampo('paciente_bairro')||null,municipio:lerCampo('paciente_municipio')||null};
             try{
                 let resposta;if(pacienteModalAtual)resposta=await supabaseClient.from('pacientes').update(payload).eq('id',pacienteModalAtual.id).select(CAMPOS_PACIENTE_MODAL).single();
                 else resposta=await supabaseClient.from('pacientes').insert([payload]).select(CAMPOS_PACIENTE_MODAL).single();
