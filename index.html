@@ -877,7 +877,7 @@
                     const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio,cpf';
                     let consulta=supabaseClient.from('pacientes').select(campos).order('nome_paciente',{ascending:true}).limit(15);
                     if(/^\d+$/.test(termo)){
-                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo+',codigo_paciente.eq.'+Number(termo));
+                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo+',cpf.eq.'+termo+',codigo_paciente.eq.'+Number(termo));
                     }else if(termo){
                         const busca=termo.replace(/[%_,()]/g,'');consulta=consulta.or('nome_paciente.ilike.%'+busca+'%');
                     }
