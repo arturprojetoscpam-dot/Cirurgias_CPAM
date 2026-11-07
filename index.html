@@ -299,7 +299,7 @@
                 <div class="space-y-2"><div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-slate-400"></i><input id="buscaListaPacientes" type="search" oninput="pesquisarListaPacientes()" placeholder="Nº do cadastro ambulatorial, nome ou Cartão SUS (CNS)" class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><div class="max-w-xs"><label for="buscaDataNascimentoLista" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input id="buscaDataNascimentoLista" type="date" onchange="pesquisarListaPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><p class="text-[10px] text-slate-500">A data pode ser usada sozinha ou junto com a pesquisa acima. A busca consulta o banco sem baixar todos os cadastros no navegador.</p></div>
             </div>
             <div class="overflow-x-auto custom-scrollbar"><table class="w-full border-collapse text-left text-xs">
-                <thead class="border-b border-slate-200 bg-slate-100/80 font-semibold uppercase tracking-wider text-slate-600"><tr><th class="p-3.5">Nº</th><th class="p-3.5">Paciente</th><th class="p-3.5">Nascimento</th><th class="p-3.5">CNS</th><th class="p-3.5">Cadastro ambulatorial</th><th class="p-3.5 text-center">Ações</th></tr></thead>
+                <thead class="border-b border-slate-200 bg-slate-100/80 font-semibold uppercase tracking-wider text-slate-600"><tr><th class="p-3.5">Nº interno</th><th class="p-3.5">Paciente</th><th class="p-3.5">Nascimento</th><th class="p-3.5">CNS</th><th class="p-3.5">Cadastro ambulatorial</th><th class="p-3.5 text-center">Ações</th></tr></thead>
                 <tbody id="gridPacientes" class="divide-y divide-slate-100"><tr><td colspan="6" class="p-8 text-center text-slate-400">Carregando pacientes...</td></tr></tbody>
             </table></div>
             <div class="flex flex-col items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 p-3.5 text-xs text-slate-500 sm:flex-row">
@@ -343,7 +343,7 @@
           <section class="space-y-4">
             <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente</h3></div>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
-              <div class="md:col-span-4"><label for="paciente_codigo" class="mb-1 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-700">Nº do Prontuário <span class="rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-teal-900">Gerado automaticamente</span></label><input id="paciente_codigo" readonly disabled placeholder="Gerado ao salvar" class="campo-paciente-modal bg-slate-100 font-mono font-bold"></div>
+              <div class="md:col-span-4"><label for="paciente_codigo" class="mb-1 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-700">Nº do Prontuário Interno <span class="rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-teal-900">Gerado automaticamente</span></label><input id="paciente_codigo" readonly disabled placeholder="Gerado ao salvar" class="campo-paciente-modal bg-slate-100 font-mono font-bold"></div>
               <div class="md:col-span-8"><label for="paciente_be_vitai" class="mb-1 block text-xs font-semibold text-slate-700">Nº da BE VITAI</label><input id="paciente_be_vitai" class="campo-paciente-modal" placeholder="Identificação BE VITAI"></div>
               <div class="md:col-span-6"><label for="paciente_cpf" class="mb-1 block text-xs font-semibold text-slate-700">CPF</label><input id="paciente_cpf" inputmode="numeric" class="campo-paciente-modal" placeholder="000.000.000-00"></div>
               <div class="md:col-span-6"><label for="paciente_cns" class="mb-1 block text-xs font-semibold text-slate-700">Cartão do SUS (CNS)</label><input id="paciente_cns" inputmode="numeric" class="campo-paciente-modal" placeholder="Número do CNS"></div>
@@ -619,7 +619,7 @@
             if(id){
                 try{const {data,error}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(error)throw error;pacienteModalAtual=data;
                     preencherCampo('paciente_codigo',formatarCodigoPaciente(data.codigo_paciente));preencherCampo('paciente_prontuario',data.numero_cadastro_ambulatorio);preencherCampo('paciente_be_vitai',data.numero_be_vitai);preencherCampo('paciente_cpf',data.cpf);preencherCampo('paciente_cns',data.cns);preencherCampo('paciente_nome',data.nome_paciente);preencherCampo('paciente_nascimento',normalizarDataParaInput(data.data_nascimento));preencherCampo('paciente_mae',data.nome_mae);preencherCampo('paciente_telefone',data.telefone);preencherCampo('paciente_cep',data.cep);preencherCampo('paciente_endereco',data.endereco);preencherCampo('paciente_numero',data.numero);preencherCampo('paciente_bairro',data.bairro);preencherCampo('paciente_municipio',data.municipio);
-                    document.getElementById('tituloModalPaciente').textContent='Prontuário #'+formatarCodigoPaciente(data.codigo_paciente)+' · Edição';
+                    document.getElementById('tituloModalPaciente').textContent='Prontuário interno #'+formatarCodigoPaciente(data.codigo_paciente)+' · Edição';
                 }catch(error){exibirToast('Não foi possível carregar o paciente: '+error.message,'erro');return;}
             }else{document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';}
             const modal=document.getElementById('modalPaciente');modal.classList.remove('hidden');modal.classList.add('flex');document.getElementById('paciente_nome').focus();
@@ -681,7 +681,7 @@
         }
         function editarCirurgiaDetalhe(){if(!cirurgiaModalAtual)return;if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;abrirModalCirurgia(cirurgiaModalAtual);}
 
-        function formatarCodigoPaciente(codigo){return String(codigo||'');}
+        function formatarCodigoPaciente(codigo){return codigo==null||codigo===''?'':String(codigo).padStart(7,'0');}
         function dataInputParaBanco(valor){if(!valor)return '';const p=valor.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
         async function carregarPacientes(){
             if(!usuarioAtual||!perfilAtual)return;
