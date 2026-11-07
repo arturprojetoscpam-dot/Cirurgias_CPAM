@@ -42,6 +42,12 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+        .campo-paciente-modal,.campo-cirurgia { width:100%; border:1px solid #cbd5e1; border-radius:.65rem; background:#fff; padding:.68rem .8rem; color:#0f172a; font-size:.78rem; outline:none; transition:border-color .15s,box-shadow .15s; }
+        .campo-paciente-modal:focus,.campo-cirurgia:focus { border-color:#059669; box-shadow:0 0 0 2px rgba(5,150,105,.2); }
+        .campo-paciente-modal:disabled,.campo-paciente-modal[readonly],.campo-cirurgia:disabled { background:#f1f5f9; color:#475569; }
+        .label-cirurgia { display:block; margin-bottom:.3rem; color:#334155; font-size:.72rem; font-weight:600; }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -88,9 +94,9 @@
                 <span class="w-2.5 h-2.5 rounded-full bg-teal-600"></span>
                 <h2 class="text-base font-bold text-slate-800">Operações do Bloco</h2>
             </div>
-            <button onclick="toggleFormulario()" id="btnToggleForm" class="bg-teal-700 hover:bg-teal-800 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-2">
-                <i class="fa-solid fa-plus"></i>
-                <span>Novo Registro Cirúrgico</span>
+            <button onclick="abrirCadastroPaciente()" id="btnToggleForm" class="bg-teal-700 hover:bg-teal-800 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-sm transition flex items-center gap-2">
+                <i class="fa-solid fa-user-plus"></i>
+                <span>Novo Paciente</span>
             </button>
         </div>
 
@@ -289,7 +295,7 @@
         <!-- LISTA INICIAL DE PACIENTES: apenas 50 por página -->
         <section id="secPacientes" class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
             <div class="space-y-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:p-5">
-                <div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-users mr-2 text-teal-700"></i>Pacientes cadastrados</h2><p class="mt-1 text-xs text-slate-500">Pesquise por número do cadastro ambulatorial, nome ou Cartão SUS (CNS). Nos registros antigos, o cadastro ambulatorial aparece no campo chamado “prontuário”. O histórico é carregado somente quando você abre um paciente.</p></div>
+                <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-users mr-2 text-teal-700"></i>Pacientes cadastrados</h2><p class="mt-1 text-xs text-slate-500">Pesquise por nome, prontuário interno, cadastro ambulatorial, BE VITAI, CPF ou Cartão SUS. O histórico é carregado somente quando você abre um paciente.</p></div><button type="button" onclick="abrirCadastroPaciente()" class="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-800"><i class="fa-solid fa-plus mr-1"></i>Novo Paciente</button></div>
                 <div class="space-y-2"><div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-slate-400"></i><input id="buscaListaPacientes" type="search" oninput="pesquisarListaPacientes()" placeholder="Nº do cadastro ambulatorial, nome ou Cartão SUS (CNS)" class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><div class="max-w-xs"><label for="buscaDataNascimentoLista" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input id="buscaDataNascimentoLista" type="date" onchange="pesquisarListaPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><p class="text-[10px] text-slate-500">A data pode ser usada sozinha ou junto com a pesquisa acima. A busca consulta o banco sem baixar todos os cadastros no navegador.</p></div>
             </div>
             <div class="overflow-x-auto custom-scrollbar"><table class="w-full border-collapse text-left text-xs">
@@ -302,14 +308,15 @@
             </div>
         </section>
         <div id="secHistoricoCirurgias" class="hidden space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-teal-700"></i>Histórico de cirurgias</h2><p id="tituloPacienteHistorico" class="mt-1 text-xs text-slate-500"></p></div><button type="button" onclick="voltarListaPacientes()" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar aos pacientes</button></div>
+            <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-teal-700"></i>Histórico de cirurgias</h2><p id="tituloPacienteHistorico" class="mt-1 text-xs text-slate-500"></p></div><div class="flex flex-wrap gap-2"><button type="button" onclick="abrirCadastroPaciente(pacienteHistoricoAtual&&pacienteHistoricoAtual.id)" class="rounded-xl border border-teal-300 bg-white px-4 py-2 text-xs font-semibold text-teal-800 hover:bg-teal-50"><i class="fa-solid fa-pen-to-square mr-1"></i>Editar paciente</button><button id="btnNovaCirurgiaHistorico" type="button" onclick="abrirModalCirurgiaNova()" class="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-800"><i class="fa-solid fa-plus mr-1"></i>Registrar Nova Cirurgia</button><button type="button" onclick="voltarListaPacientes()" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar aos pacientes</button></div></div>
+            <section class="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm"><div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"><div><span class="block text-[10px] font-bold uppercase text-slate-400">Paciente</span><strong id="histPacienteNome" class="mt-1 block text-sm text-slate-900">-</strong></div><div><span class="block text-[10px] font-bold uppercase text-slate-400">Prontuário interno</span><strong id="histPacienteCodigo" class="mt-1 block font-mono text-sm text-teal-800">-</strong></div><div><span class="block text-[10px] font-bold uppercase text-slate-400">BE VITAI</span><strong id="histPacienteBe" class="mt-1 block text-sm text-slate-800">-</strong></div><div><span class="block text-[10px] font-bold uppercase text-slate-400">CPF</span><strong id="histPacienteCpf" class="mt-1 block text-sm text-slate-800">-</strong></div></div></section>
             <section class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
                 <div class="space-y-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:p-5"><div class="flex flex-col justify-between gap-3 md:flex-row">
                     <div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-slate-400"></i><input type="text" id="txtBusca" oninput="aplicarFiltros()" placeholder="Buscar neste histórico..." class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div>
                     <div class="flex flex-wrap gap-2">
                         <select id="filtroEspecialidade" onchange="aplicarFiltros()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todas Especialidades</option><option value="CIRURGIA GERAL">CIRURGIA GERAL</option><option value="PEQUENAS CIRURGIAS">PEQUENAS CIRURGIAS</option><option value="ORTOPEDIA">ORTOPEDIA</option><option value="OTORRINOLARINGOLOGIA">OTORRINO</option><option value="NEUROCIRURGIA">NEUROCIRURGIA</option></select>
                         <select id="filtroCarater" onchange="aplicarFiltros()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todo Caráter</option><option value="URGENCIA">URGÊNCIA</option><option value="ELETIVA">ELETIVA</option></select>
-                        <select id="filtroSituacao" onchange="aplicarFiltros()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todas Situações</option><option value="REALIZADA">REALIZADAS</option><option value="CANCELADA">CANCELADAS</option></select>
+                        <select id="filtroSituacao" onchange="aplicarFiltros()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todas Situações</option><option value="REALIZADA">REALIZADAS</option><option value="CANCELADA">CANCELADAS</option><option value="EM ANDAMENTO">EM ANDAMENTO</option></select>
                     </div>
                 </div></div>
                 <div class="overflow-x-auto custom-scrollbar"><table class="w-full border-collapse text-left text-xs">
@@ -321,6 +328,109 @@
         </div>
 
     </main>
+    </div>
+
+
+    <!-- MODAL DE CADASTRO E EDIÇÃO DO PACIENTE -->
+    <div id="modalPaciente" class="fixed inset-0 z-[70] hidden items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="tituloModalPaciente">
+      <div class="flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div class="flex items-center justify-between gap-3 border-b border-slate-200 bg-gradient-to-r from-teal-950 to-slate-900 px-5 py-4 text-white sm:px-7">
+          <div><p class="text-[10px] font-bold uppercase tracking-[.18em] text-teal-300">Bloco Cirúrgico</p><h2 id="tituloModalPaciente" class="mt-1 text-lg font-bold">Novo Cadastro</h2><p class="mt-1 text-xs text-slate-300">Ficha cadastral do paciente</p></div>
+          <button type="button" onclick="fecharModalPaciente()" aria-label="Fechar cadastro" class="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-7">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-teal-100 bg-teal-50/70 p-4">
+            <div><p class="text-xs font-bold text-teal-950">Identificação do prontuário</p><p class="mt-1 text-[11px] text-slate-600">Código sequencial criado automaticamente pelo banco de dados.</p></div>
+            <div class="flex items-center gap-2"><span class="rounded-full bg-teal-100 px-3 py-1 text-[10px] font-bold text-teal-900"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Gerado automaticamente</span><input id="paciente_codigo" readonly disabled placeholder="Gerado ao salvar" class="w-36 rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-center font-mono text-sm font-bold text-slate-700"></div>
+          </div>
+          <section class="space-y-4">
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente</h3></div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+              <div class="md:col-span-4"><label for="paciente_prontuario" class="mb-1 block text-xs font-semibold text-slate-700">Nº do Cadastro Ambulatorial</label><input id="paciente_prontuario" class="campo-paciente-modal" placeholder="Cadastro legado, se houver"></div>
+              <div class="md:col-span-8"><label for="paciente_be_vitai" class="mb-1 block text-xs font-semibold text-slate-700">Nº da BE VITAI</label><input id="paciente_be_vitai" class="campo-paciente-modal" placeholder="Identificação BE VITAI"></div>
+              <div class="md:col-span-6"><label for="paciente_cpf" class="mb-1 block text-xs font-semibold text-slate-700">CPF</label><input id="paciente_cpf" inputmode="numeric" class="campo-paciente-modal" placeholder="000.000.000-00"></div>
+              <div class="md:col-span-6"><label for="paciente_cns" class="mb-1 block text-xs font-semibold text-slate-700">Cartão do SUS (CNS)</label><input id="paciente_cns" inputmode="numeric" class="campo-paciente-modal" placeholder="Número do CNS"></div>
+              <div class="md:col-span-8"><label for="paciente_nome" class="mb-1 block text-xs font-semibold text-slate-700">Nome Completo do Paciente <span class="text-rose-600">*</span></label><input id="paciente_nome" required class="campo-paciente-modal" placeholder="Nome completo, sem abreviações"></div>
+              <div class="md:col-span-4"><label for="paciente_nascimento" class="mb-1 block text-xs font-semibold text-slate-700">Data de Nascimento</label><input id="paciente_nascimento" type="date" class="campo-paciente-modal"></div>
+              <div class="md:col-span-8"><label for="paciente_mae" class="mb-1 block text-xs font-semibold text-slate-700">Nome da Mãe</label><input id="paciente_mae" class="campo-paciente-modal" placeholder="Nome completo da mãe"></div>
+              <div class="md:col-span-4"><label for="paciente_telefone" class="mb-1 block text-xs font-semibold text-slate-700">Telefone / WhatsApp</label><input id="paciente_telefone" type="tel" class="campo-paciente-modal" placeholder="(00) 00000-0000"></div>
+              <div class="md:col-span-3"><label for="paciente_cep" class="mb-1 block text-xs font-semibold text-slate-700">CEP</label><input id="paciente_cep" class="campo-paciente-modal" placeholder="00000-000"></div>
+              <div class="md:col-span-6"><label for="paciente_endereco" class="mb-1 block text-xs font-semibold text-slate-700">Endereço / Rua</label><input id="paciente_endereco" class="campo-paciente-modal" placeholder="Logradouro"></div>
+              <div class="md:col-span-3"><label for="paciente_numero" class="mb-1 block text-xs font-semibold text-slate-700">Número</label><input id="paciente_numero" class="campo-paciente-modal" placeholder="Nº / S/N"></div>
+              <div class="md:col-span-6"><label for="paciente_bairro" class="mb-1 block text-xs font-semibold text-slate-700">Bairro</label><input id="paciente_bairro" class="campo-paciente-modal" placeholder="Bairro"></div>
+              <div class="md:col-span-6"><label for="paciente_municipio" class="mb-1 block text-xs font-semibold text-slate-700">Cidade</label><input id="paciente_municipio" class="campo-paciente-modal" placeholder="Município"></div>
+            </div>
+          </section>
+          <div class="mt-7 flex flex-col-reverse gap-2 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+            <button type="button" onclick="fecharModalPaciente()" class="rounded-xl border border-slate-300 px-5 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">Voltar para Pesquisa / Cancelar</button>
+            <button id="btnSalvarPacienteModal" type="submit" class="rounded-xl bg-emerald-700 px-6 py-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cadastro</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL DE REGISTRO, VISUALIZAÇÃO E EDIÇÃO DE CIRURGIA -->
+    <div id="modalCirurgia" class="fixed inset-0 z-[80] hidden items-center justify-center bg-black/50 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="tituloModalCirurgia">
+      <div class="flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div class="flex shrink-0 items-center justify-between gap-3 bg-gradient-to-r from-teal-950 to-slate-900 px-5 py-4 text-white sm:px-7">
+          <div><p class="text-[10px] font-bold uppercase tracking-[.18em] text-teal-300">Bloco Cirúrgico</p><h2 id="tituloModalCirurgia" class="mt-1 text-lg font-bold">Registro de Cirurgia</h2><p class="mt-1 text-xs text-slate-300">Registro de procedimento realizado — não é agendamento futuro</p></div>
+          <button type="button" onclick="fecharModalCirurgia()" aria-label="Fechar cirurgia" class="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <form id="formModalCirurgia" onsubmit="salvarCirurgiaModal(event)" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-7">
+          <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div class="mb-3 flex items-center gap-2 text-xs font-bold text-amber-950"><i class="fa-solid fa-shield-heart"></i> CONFIRMAÇÃO DE SEGURANÇA DO PACIENTE</div>
+            <div class="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2 lg:grid-cols-4">
+              <div><span class="block text-[10px] font-semibold uppercase text-slate-500">Paciente</span><strong id="cirPacienteNome" class="mt-1 block text-slate-900">-</strong></div>
+              <div><span class="block text-[10px] font-semibold uppercase text-slate-500">Prontuário interno</span><strong id="cirPacienteCodigo" class="mt-1 block font-mono text-slate-900">-</strong></div>
+              <div><span class="block text-[10px] font-semibold uppercase text-slate-500">BE VITAI</span><strong id="cirPacienteBe" class="mt-1 block font-mono text-slate-900">-</strong></div>
+              <div><span class="block text-[10px] font-semibold uppercase text-slate-500">CPF</span><strong id="cirPacienteCpf" class="mt-1 block font-mono text-slate-900">-</strong></div>
+            </div>
+          </div>
+          <section class="space-y-4">
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-file-medical text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">1. Dados do Procedimento</h3></div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+              <div class="md:col-span-4"><label for="cir_data" class="label-cirurgia">Data da Cirurgia *</label><input id="cir_data" type="date" required class="campo-cirurgia"></div>
+              <div class="md:col-span-2"><label for="cir_inicio" class="label-cirurgia">Horário Início</label><input id="cir_inicio" type="time" class="campo-cirurgia"></div>
+              <div class="md:col-span-2"><label for="cir_fim" class="label-cirurgia">Horário Fim</label><input id="cir_fim" type="time" class="campo-cirurgia"></div>
+              <div class="md:col-span-4"><label for="cir_sala" class="label-cirurgia">Sala Cirúrgica / Bloco</label><input id="cir_sala" class="campo-cirurgia" placeholder="Sala / bloco"></div>
+              <div class="md:col-span-4"><label for="cir_especialidade" class="label-cirurgia">Especialidade Médica *</label><select id="cir_especialidade" required class="campo-cirurgia"><option value="">Selecione</option><option>CIRURGIA GERAL</option><option>PEQUENAS CIRURGIAS</option><option>ORTOPEDIA</option><option>OTORRINOLARINGOLOGIA</option><option>NEUROCIRURGIA</option><option>ODONTOLOGIA</option><option>PLÁSTICA</option><option>OFTALMOLOGIA</option><option>VASCULAR</option><option>OUTRA</option></select></div>
+              <div class="md:col-span-4"><label for="cir_carater" class="label-cirurgia">Caráter da Cirurgia *</label><select id="cir_carater" required class="campo-cirurgia"><option value="ELETIVA">Eletiva</option><option value="URGENCIA">Urgência</option><option value="EMERGENCIA">Emergência</option></select></div>
+              <div class="md:col-span-4"><label for="cir_status" class="label-cirurgia">Status da Cirurgia *</label><select id="cir_status" required onchange="aoMudarStatusCirurgiaModal()" class="campo-cirurgia"><option value="REALIZADA">Realizada</option><option value="EM ANDAMENTO">Em andamento</option><option value="CANCELADA">Cancelada</option></select></div>
+              <div class="md:col-span-8"><label for="cir_procedimento" class="label-cirurgia">Procedimento Realizado *</label><input id="cir_procedimento" required class="campo-cirurgia" placeholder="Descrição do procedimento principal"></div>
+              <div class="md:col-span-4"><label for="cir_codigo" class="label-cirurgia">Código TUSS / SUS</label><input id="cir_codigo" class="campo-cirurgia" placeholder="Código"></div>
+              <div id="cir_box_cancelamento" class="hidden md:col-span-12"><label for="cir_motivo_cancelamento" class="label-cirurgia">Motivo do Cancelamento *</label><input id="cir_motivo_cancelamento" class="campo-cirurgia" placeholder="Descreva o motivo"></div>
+            </div>
+          </section>
+          <section class="mt-7 space-y-4">
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-user-doctor text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">2. Equipe Cirúrgica</h3></div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+              <div class="md:col-span-6"><label for="cir_cirurgiao" class="label-cirurgia">Médico Cirurgião Principal *</label><input id="cir_cirurgiao" required class="campo-cirurgia" placeholder="Nome do cirurgião"></div>
+              <div class="md:col-span-6"><label for="cir_auxiliar" class="label-cirurgia">Médico Auxiliar</label><input id="cir_auxiliar" class="campo-cirurgia" placeholder="Nome do médico auxiliar"></div>
+              <div class="md:col-span-6"><label for="cir_anestesista" class="label-cirurgia">Anestesista</label><input id="cir_anestesista" class="campo-cirurgia" placeholder="Nome do anestesista"></div>
+              <div class="md:col-span-6"><label for="cir_instrumentador" class="label-cirurgia">Instrumentador / Enfermagem</label><input id="cir_instrumentador" class="campo-cirurgia" placeholder="Profissional responsável"></div>
+              <div class="md:col-span-6"><label for="cir_crm_cir" class="label-cirurgia">CRM do Cirurgião</label><input id="cir_crm_cir" class="campo-cirurgia" placeholder="CRM/UF"></div>
+              <div class="md:col-span-6"><label for="cir_crm_anest" class="label-cirurgia">CRM do Anestesista</label><input id="cir_crm_anest" class="campo-cirurgia" placeholder="CRM/UF"></div>
+              <div class="md:col-span-6"><label for="cir_anestesia" class="label-cirurgia">Tipo de Anestesia</label><select id="cir_anestesia" class="campo-cirurgia"><option value="">Selecione</option><option>GERAL</option><option>SEDAÇÃO</option><option>RAQUI</option><option>LOCAL</option><option>PERIDURAL</option><option>BLOQUEIO REGIONAL</option></select></div>
+            </div>
+          </section>
+          <section class="mt-7 space-y-4">
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-heart-pulse text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">3. Parâmetros e Indicadores Clínicos</h3></div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+              <div class="md:col-span-4"><label for="cir_biopsia" class="label-cirurgia">Biópsia / Anatomopatológico encaminhado?</label><select id="cir_biopsia" class="campo-cirurgia"><option value="">Não informado</option><option value="true">Sim</option><option value="false">Não</option></select></div>
+              <div class="md:col-span-4"><label for="cir_uti" class="label-cirurgia">Encaminhado para UTI?</label><select id="cir_uti" class="campo-cirurgia"><option value="">Não informado</option><option value="true">Sim</option><option value="false">Não</option></select></div>
+              <div class="md:col-span-4"><label for="cir_hemoderivados" class="label-cirurgia">Necessitou de Hemoderivados/Sangue?</label><select id="cir_hemoderivados" class="campo-cirurgia"><option value="">Não informado</option><option value="true">Sim</option><option value="false">Não</option></select></div>
+            </div>
+          </section>
+          <section class="mt-7 space-y-3">
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-notes-medical text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">4. Observações / Descrição Cirúrgica</h3></div>
+            <label for="cir_descricao" class="sr-only">Observações e intercorrências</label><textarea id="cir_descricao" rows="5" class="campo-cirurgia resize-y" placeholder="Descreva o procedimento, achados, intercorrências e observações relevantes..."></textarea>
+          </section>
+          <div class="mt-7 flex flex-col-reverse gap-2 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+            <button type="button" onclick="fecharModalCirurgia()" class="rounded-xl border border-slate-300 px-5 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancelar / Fechar</button>
+            <button id="btnSalvarCirurgiaModal" type="submit" class="rounded-xl bg-emerald-700 px-6 py-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cirurgia</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- MODAL DE DETALHES COMPLETO DA CIRURGIA -->
@@ -384,6 +494,9 @@
                     </div>
                 </div>
 
+
+                <div class="space-y-2"><h4 class="border-b pb-1 text-[11px] font-bold uppercase text-teal-800"><i class="fa-solid fa-clipboard-list mr-1"></i> Dados complementares do procedimento</h4><div class="grid grid-cols-2 gap-3 sm:grid-cols-3"><div><strong class="block text-[10px] text-slate-400">HORÁRIO</strong><span id="detalheHorario">-</span></div><div><strong class="block text-[10px] text-slate-400">SALA / BLOCO</strong><span id="detalheSala">-</span></div><div><strong class="block text-[10px] text-slate-400">CÓDIGO TUSS / SUS</strong><span id="detalheCodigo">-</span></div><div><strong class="block text-[10px] text-slate-400">MÉDICO AUXILIAR</strong><span id="detalheAuxiliar">-</span></div><div><strong class="block text-[10px] text-slate-400">INSTRUMENTADOR / ENFERMAGEM</strong><span id="detalheInstrumentador">-</span></div><div><strong class="block text-[10px] text-slate-400">BIÓPSIA</strong><span id="detalheBiopsia">-</span></div><div><strong class="block text-[10px] text-slate-400">ENCAMINHADO À UTI</strong><span id="detalheUti">-</span></div><div><strong class="block text-[10px] text-slate-400">HEMODERIVADOS</strong><span id="detalheHemoderivados">-</span></div><div class="col-span-2 sm:col-span-3"><strong class="block text-[10px] text-slate-400">OBSERVAÇÕES / INTERCORRÊNCIAS</strong><p id="detalheDescricao" class="mt-1 whitespace-pre-wrap text-slate-700">-</p></div></div></div>
+
                 <!-- Motivo Cancelamento (Se houver) -->
                 <div id="detalheBoxCancelamento" class="hidden p-3 bg-rose-50 rounded-xl border border-rose-200">
                     <strong class="block text-rose-800 text-[10px] uppercase font-bold">Motivo do Cancelamento</strong>
@@ -407,10 +520,9 @@
             </div>
 
             <!-- Footer Modal -->
-            <div class="bg-slate-50 p-4 border-t border-slate-100 flex justify-end">
-                <button onclick="fecharModalDetalhes()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs transition">
-                    Fechar
-                </button>
+            <div class="bg-slate-50 p-4 border-t border-slate-100 flex flex-wrap justify-end gap-2">
+                <button id="btnEditarCirurgiaDetalhe" onclick="editarCirurgiaDetalhe()" class="hidden rounded-xl bg-teal-700 px-5 py-2 text-xs font-semibold text-white hover:bg-teal-800"><i class="fa-solid fa-pen-to-square mr-1"></i>Editar Cirurgia</button>
+                <button onclick="fecharModalDetalhes()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-xs transition">Fechar</button>
             </div>
         </div>
     </div>
@@ -421,7 +533,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false;
+        let pacienteModalAtual=null,cirurgiaModalAtual=null,usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -499,6 +611,78 @@
             const ind=document.getElementById('indicatorConexao'),txt=document.getElementById('textConexao');if(!ind||!txt)return;
             txt.textContent=texto;ind.className=ok?'w-2.5 h-2.5 rounded-full bg-emerald-400':'w-2.5 h-2.5 rounded-full bg-rose-500';
         }
+
+        const CAMPOS_PACIENTE_MODAL='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,telefone,municipio,endereco,bairro,cep,numero,numero_cadastro_ambulatorio,cpf,numero_be_vitai';
+        function preencherCampo(id,valor){const el=document.getElementById(id);if(el)el.value=valor==null?'':String(valor);}
+        function lerCampo(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+        async function abrirCadastroPaciente(id){
+            if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar ou editar pacientes.','erro');return;}
+            pacienteModalAtual=null;document.getElementById('formModalPaciente').reset();preencherCampo('paciente_codigo','');
+            if(id){
+                try{const {data,error}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(error)throw error;pacienteModalAtual=data;
+                    preencherCampo('paciente_codigo',formatarCodigoPaciente(data.codigo_paciente));preencherCampo('paciente_prontuario',data.numero_cadastro_ambulatorio);preencherCampo('paciente_be_vitai',data.numero_be_vitai);preencherCampo('paciente_cpf',data.cpf);preencherCampo('paciente_cns',data.cns);preencherCampo('paciente_nome',data.nome_paciente);preencherCampo('paciente_nascimento',normalizarDataParaInput(data.data_nascimento));preencherCampo('paciente_mae',data.nome_mae);preencherCampo('paciente_telefone',data.telefone);preencherCampo('paciente_cep',data.cep);preencherCampo('paciente_endereco',data.endereco);preencherCampo('paciente_numero',data.numero);preencherCampo('paciente_bairro',data.bairro);preencherCampo('paciente_municipio',data.municipio);
+                    document.getElementById('tituloModalPaciente').textContent='Prontuário #'+formatarCodigoPaciente(data.codigo_paciente)+' · Edição';
+                }catch(error){exibirToast('Não foi possível carregar o paciente: '+error.message,'erro');return;}
+            }else{document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';}
+            const modal=document.getElementById('modalPaciente');modal.classList.remove('hidden');modal.classList.add('flex');document.getElementById('paciente_nome').focus();
+        }
+        function fecharModalPaciente(){const modal=document.getElementById('modalPaciente');modal.classList.add('hidden');modal.classList.remove('flex');}
+        async function salvarPacienteModal(evento){
+            evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
+            const nome=lerCampo('paciente_nome');if(!nome){exibirToast('Informe o nome completo do paciente.','erro');return;}
+            const botao=document.getElementById('btnSalvarPacienteModal');botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
+            const payload={nome_paciente:nome,numero_cadastro_ambulatorio:lerCampo('paciente_prontuario')||null,numero_be_vitai:lerCampo('paciente_be_vitai')||null,cpf:lerCampo('paciente_cpf')||null,cns:lerCampo('paciente_cns')||null,data_nascimento:dataInputParaBanco(lerCampo('paciente_nascimento'))||null,nome_mae:lerCampo('paciente_mae')||null,telefone:lerCampo('paciente_telefone')||null,cep:lerCampo('paciente_cep')||null,endereco:lerCampo('paciente_endereco')||null,numero:lerCampo('paciente_numero')||null,bairro:lerCampo('paciente_bairro')||null,municipio:lerCampo('paciente_municipio')||null};
+            try{
+                let resposta;if(pacienteModalAtual)resposta=await supabaseClient.from('pacientes').update(payload).eq('id',pacienteModalAtual.id).select(CAMPOS_PACIENTE_MODAL).single();
+                else resposta=await supabaseClient.from('pacientes').insert([payload]).select(CAMPOS_PACIENTE_MODAL).single();
+                if(resposta.error)throw resposta.error;
+                pacienteModalAtual=resposta.data;
+                pacientesPagina=pacientesPagina.map(p=>p.id===resposta.data.id?resposta.data:p);
+                pacientesEncontrados=pacientesEncontrados.map(p=>p.id===resposta.data.id?resposta.data:p);
+                if(pacienteHistoricoAtual&&pacienteHistoricoAtual.id===resposta.data.id){pacienteHistoricoAtual=resposta.data;atualizarResumoPacienteHistorico(resposta.data);}
+                fecharModalPaciente();await carregarPacientes();
+                exibirToast(pacienteModalAtual?'Cadastro do paciente salvo com sucesso.':'Paciente cadastrado com sucesso.','sucesso');
+            }catch(error){console.error(error);exibirToast('Não foi possível salvar o cadastro: '+error.message,'erro');}
+            finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cadastro';}
+        }
+        function atualizarResumoPacienteHistorico(p){
+            if(!p)return;document.getElementById('tituloPacienteHistorico').textContent=formatarCodigoPaciente(p.codigo_paciente)+' · '+(p.nome_paciente||'');
+            preencherTexto('histPacienteNome',p.nome_paciente);preencherTexto('histPacienteCodigo',formatarCodigoPaciente(p.codigo_paciente));preencherTexto('histPacienteBe',p.numero_be_vitai);preencherTexto('histPacienteCpf',p.cpf);
+        }
+        function preencherTexto(id,valor){const el=document.getElementById(id);if(el)el.textContent=valor||'-';}
+        function abrirModalCirurgiaNova(){
+            if(!pacienteHistoricoAtual){exibirToast('Abra o histórico de um paciente antes de registrar uma cirurgia.','erro');return;}
+            if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite registrar cirurgias.','erro');return;}
+            abrirModalCirurgia(null);
+        }
+        function fecharModalCirurgia(){const modal=document.getElementById('modalCirurgia');modal.classList.add('hidden');modal.classList.remove('flex');}
+        function aoMudarStatusCirurgiaModal(){const cancelada=lerCampo('cir_status')==='CANCELADA';document.getElementById('cir_box_cancelamento').classList.toggle('hidden',!cancelada);document.getElementById('cir_motivo_cancelamento').required=cancelada;}
+        function valorBooleano(valor){return valor===''?null:valor==='true';}
+        function abrirModalCirurgia(registro){
+            if(!pacienteHistoricoAtual)return;
+            cirurgiaModalAtual=registro||null;const form=document.getElementById('formModalCirurgia');form.reset();
+            const p=pacienteHistoricoAtual;
+            preencherTexto('cirPacienteNome',p.nome_paciente);preencherTexto('cirPacienteCodigo',formatarCodigoPaciente(p.codigo_paciente));preencherTexto('cirPacienteBe',p.numero_be_vitai);preencherTexto('cirPacienteCpf',p.cpf);
+            const r=registro||{};preencherCampo('cir_data',normalizarDataParaInput(r.Data_da_Cirurgia)||new Date().toISOString().slice(0,10));preencherCampo('cir_inicio',r.horario_inicio);preencherCampo('cir_fim',r.horario_fim);preencherCampo('cir_sala',r.sala_cirurgica);preencherCampo('cir_especialidade',r.Especialidade);preencherCampo('cir_carater',r.Carater_Atendimento||'ELETIVA');preencherCampo('cir_status',r.Situaçao||'REALIZADA');preencherCampo('cir_procedimento',r.Procedimento1);preencherCampo('cir_codigo',r.codigo_tuss_sus);preencherCampo('cir_motivo_cancelamento',r.Mot_Cancelam);preencherCampo('cir_cirurgiao',r.Medico);preencherCampo('cir_auxiliar',r.medico_auxiliar);preencherCampo('cir_anestesista',r.Anestesista);preencherCampo('cir_instrumentador',r.instrumentador_enfermagem);preencherCampo('cir_crm_cir',r.CRM_CIR);preencherCampo('cir_crm_anest',r.CRM_ANEST);preencherCampo('cir_anestesia',r.Anestesia1);preencherCampo('cir_biopsia',r.biopsia_encaminhada==null?'':String(r.biopsia_encaminhada));preencherCampo('cir_uti',r.encaminhado_uti==null?'':String(r.encaminhado_uti));preencherCampo('cir_hemoderivados',r.necessitou_hemoderivados==null?'':String(r.necessitou_hemoderivados));preencherCampo('cir_descricao',r.descricao_cirurgica);
+            document.getElementById('tituloModalCirurgia').textContent=registro?'Editar Cirurgia · '+(registro.Identificação||registro.id):'Registro de Cirurgia';
+            const modal=document.getElementById('modalCirurgia');modal.classList.remove('hidden');modal.classList.add('flex');aoMudarStatusCirurgiaModal();
+        }
+        async function salvarCirurgiaModal(evento){
+            evento.preventDefault();if(!pacienteHistoricoAtual||!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
+            if(lerCampo('cir_status')==='CANCELADA'&&!lerCampo('cir_motivo_cancelamento')){exibirToast('Informe o motivo do cancelamento.','erro');return;}
+            const p=pacienteHistoricoAtual,botao=document.getElementById('btnSalvarCirurgiaModal');botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
+            const payload={'paciente_id':p.id,'Data_da_Cirurgia':lerCampo('cir_data'),'Nome_Paciente':p.nome_paciente||'','prontuario':p.numero_cadastro_ambulatorio||'','NBE':p.numero_be_vitai||'','CNS':p.cns||'','Data_Nascimento':p.data_nascimento||'','NOME_MAE':p.nome_mae||'','TELEFONE':p.telefone||'','MUNICIPIO':p.municipio||'','ENDERECO':p.endereco||'','BAIRRO':p.bairro||'','CEP':p.cep||'','NUMERO':p.numero||'','sexo':p.sexo||'','Especialidade':lerCampo('cir_especialidade'),'Carater_Atendimento':lerCampo('cir_carater'),'Situaçao':lerCampo('cir_status'),'Procedimento1':lerCampo('cir_procedimento'),'Procedimento2':'','Procedimento3':'','Mot_Cancelam':lerCampo('cir_status')==='CANCELADA'?lerCampo('cir_motivo_cancelamento'):null,'Medico':lerCampo('cir_cirurgiao'),'CRM_CIR':lerCampo('cir_crm_cir'),'medico_ass':lerCampo('cir_auxiliar'),'Anestesista':lerCampo('cir_anestesista'),'CRM_ANEST':lerCampo('cir_crm_anest'),'Anestesia1':lerCampo('cir_anestesia'),'horario_inicio':lerCampo('cir_inicio')||null,'horario_fim':lerCampo('cir_fim')||null,'sala_cirurgica':lerCampo('cir_sala')||null,'codigo_tuss_sus':lerCampo('cir_codigo')||null,'medico_auxiliar':lerCampo('cir_auxiliar')||null,'instrumentador_enfermagem':lerCampo('cir_instrumentador')||null,'biopsia_encaminhada':valorBooleano(lerCampo('cir_biopsia')),'encaminhado_uti':valorBooleano(lerCampo('cir_uti')),'necessitou_hemoderivados':valorBooleano(lerCampo('cir_hemoderivados')),'descricao_cirurgica':lerCampo('cir_descricao')||null,'DIGITADO_POR':usuarioAtual.email||perfilAtual.email,'DIGITADO_EM':new Date().toLocaleString('pt-BR')};
+            try{
+                let resposta;if(cirurgiaModalAtual){resposta=await supabaseClient.from('cirurgias').update(payload).eq('id',cirurgiaModalAtual.id).select('id').single();}
+                else{payload['Identificação']='REG_'+Date.now();resposta=await supabaseClient.from('cirurgias').insert([payload]).select('id').single();}
+                if(resposta.error)throw resposta.error;
+                fecharModalCirurgia();fecharModalDetalhes();exibirToast(cirurgiaModalAtual?'Cirurgia atualizada com sucesso.':'Cirurgia registrada e vinculada ao paciente.','sucesso');
+                await abrirHistoricoPaciente(p.id);
+            }catch(error){console.error(error);exibirToast('Não foi possível salvar a cirurgia: '+error.message,'erro');}
+            finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cirurgia';}
+        }
+        function editarCirurgiaDetalhe(){if(!cirurgiaModalAtual)return;if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;abrirModalCirurgia(cirurgiaModalAtual);}
+
         function formatarCodigoPaciente(codigo){return String(codigo||'');}
         function dataInputParaBanco(valor){if(!valor)return '';const p=valor.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
         async function carregarPacientes(){
@@ -506,10 +690,10 @@
             const tbody=document.getElementById('gridPacientes');
             tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2 text-teal-600"></i>Carregando pacientes...</td></tr>';
             try{
-                let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
+                let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio,cpf,numero_be_vitai',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
                 if(termoListaPacientes){
                     if(/^\d+$/.test(termoListaPacientes)){
-                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
+                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',cpf.eq.'+termoListaPacientes+',numero_be_vitai.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
                     }else{
                         consulta=consulta.ilike('nome_paciente','%'+termoListaPacientes.replace(/[%_]/g,'')+'%');
                     }
@@ -529,18 +713,17 @@
             }catch(error){console.error(error);tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-rose-600">Falha ao carregar pacientes: '+escaparHtml(error.message)+'</td></tr>';exibirToast('Erro ao carregar pacientes: '+error.message,'erro');}
         }
         function pesquisarListaPacientes(){if(timerListaPacientes)window.clearTimeout(timerListaPacientes);timerListaPacientes=window.setTimeout(function(){termoListaPacientes=document.getElementById('buscaListaPacientes').value.trim();paginaPacientes=1;carregarPacientes();},300);}
-        function editarPacienteDaLista(id){const p=pacientesPagina.find(function(item){return item.id===id;});if(!p||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;pacientesEncontrados=[p];edicaoPacienteSemCirurgia=true;if(document.getElementById('secFormulario').classList.contains('hidden'))toggleFormulario();selecionarPaciente(id);editarPacienteSelecionado();document.getElementById('secFormulario').scrollIntoView({behavior:'smooth'});}
+        function editarPacienteDaLista(id){abrirCadastroPaciente(id);}
         function paginaPacientesAnterior(){if(paginaPacientes>1){paginaPacientes--;carregarPacientes();}}
         function proximaPaginaPacientes(){if(paginaPacientes<Math.ceil(totalPacientes/50)){paginaPacientes++;carregarPacientes();}}
         async function abrirHistoricoPaciente(id){
-            let paciente=pacientesPagina.find(function(p){return p.id===id;});
-            if(!paciente){const {data,error}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,nome_mae,sexo,data_nascimento,cns,numero_cadastro_ambulatorio').eq('id',id).single();if(error)throw error;paciente=data;}
-            pacienteHistoricoAtual=paciente;document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.remove('hidden');
+            const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(erroPaciente)throw erroPaciente;
+            pacienteHistoricoAtual=paciente;atualizarResumoPacienteHistorico(paciente);document.getElementById('btnNovaCirurgiaHistorico').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.remove('hidden');
             document.getElementById('tituloPacienteHistorico').textContent=formatarCodigoPaciente(paciente.codigo_paciente)+' · '+paciente.nome_paciente;
             document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="8" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2 text-teal-600"></i>Carregando histórico...</td></tr>';
             document.getElementById('txtBusca').value='';document.getElementById('filtroEspecialidade').value='';document.getElementById('filtroCarater').value='';document.getElementById('filtroSituacao').value='';
             try{let todos=[];const lote=500;for(let inicio=0;;inicio+=lote){
-                const {data,error}=await supabaseClient.from('cirurgias').select('id,paciente_id,Identificação,Data_da_Cirurgia,prontuario,NBE,Nome_Paciente,TELEFONE,Telefone2,CNS,Data_Nascimento,NOME_MAE,MUNICIPIO,ENDERECO,BAIRRO,CEP,NUMERO,Especialidade,Especialidade_Medico,Sistema,Procedimento1,Procedimento2,Procedimento3,Carater_Atendimento,Situaçao,Medico,CRM_CIR,Anestesista,CRM_ANEST,Anestesia1,Anestesia2,Mot_Cancelam,Obs_Cancelam_ANT,DIGITADO_POR,DIGITADO_EM,NEC_BIOPSIA,ESP_PEÇA_BIOP,sexo,crm_ass,medico_ass,especialidade_ass,Obs_Cancelam').eq('paciente_id',id).order('Data_da_Cirurgia',{ascending:false}).order('Identificação',{ascending:true}).range(inicio,inicio+lote-1);
+                const {data,error}=await supabaseClient.from('cirurgias').select('id,paciente_id,Identificação,Data_da_Cirurgia,prontuario,NBE,Nome_Paciente,TELEFONE,Telefone2,CNS,Data_Nascimento,NOME_MAE,MUNICIPIO,ENDERECO,BAIRRO,CEP,NUMERO,Especialidade,Especialidade_Medico,Sistema,Procedimento1,Procedimento2,Procedimento3,Carater_Atendimento,Situaçao,Medico,CRM_CIR,Anestesista,CRM_ANEST,Anestesia1,Anestesia2,Mot_Cancelam,Obs_Cancelam_ANT,DIGITADO_POR,DIGITADO_EM,NEC_BIOPSIA,ESP_PEÇA_BIOP,sexo,crm_ass,medico_ass,especialidade_ass,Obs_Cancelam,horario_inicio,horario_fim,sala_cirurgica,codigo_tuss_sus,medico_auxiliar,instrumentador_enfermagem,biopsia_encaminhada,encaminhado_uti,necessitou_hemoderivados,descricao_cirurgica').eq('paciente_id',id).order('Data_da_Cirurgia',{ascending:false}).order('Identificação',{ascending:true}).range(inicio,inicio+lote-1);
                 if(error)throw error;todos=todos.concat(data||[]);if(!data||data.length<lote)break;
             }todosRegistros=todos;aplicarFiltros();}
             catch(error){console.error(error);document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="8" class="p-8 text-center text-rose-600">Falha ao buscar histórico: '+escaparHtml(error.message)+'</td></tr>';exibirToast('Erro ao carregar histórico: '+error.message,'erro');}
@@ -573,14 +756,14 @@
             if(!total){tbody.innerHTML='<tr><td colspan="8" class="p-8 text-center text-slate-400">Nenhum registro encontrado.</td></tr>';atualizarBotoesPaginacao(0);return;}
             const paginas=Math.ceil(total/itensPorPagina),inicio=(paginaAtual-1)*itensPorPagina,itens=registrosFiltrados.slice(inicio,inicio+itensPorPagina);
             tbody.innerHTML=itens.map(function(reg,idx){
-                const realizada=(reg.Situaçao||'').toUpperCase()==='REALIZADA',urgencia=(reg.Carater_Atendimento||'').toUpperCase()==='URGENCIA',i=inicio+idx;
-                const sit=realizada?'<span class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800"><i class="fa-solid fa-circle-check"></i> REALIZADA</span>':'<span class="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800"><i class="fa-solid fa-circle-xmark"></i> CANCELADA</span>';
-                const car=urgencia?'<span class="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800"><i class="fa-solid fa-triangle-exclamation"></i> URGÊNCIA</span>':'<span class="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-800"><i class="fa-solid fa-calendar-check"></i> ELETIVA</span>';
+                const status=(reg.Situaçao||'').toUpperCase(),realizada=status==='REALIZADA',andamento=status==='EM ANDAMENTO',urgencia=(reg.Carater_Atendimento||'').toUpperCase()!=='ELETIVA',i=inicio+idx;
+                const sit=realizada?'<span class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800"><i class="fa-solid fa-circle-check"></i> REALIZADA</span>':andamento?'<span class="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900"><i class="fa-solid fa-clock"></i> EM ANDAMENTO</span>':'<span class="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800"><i class="fa-solid fa-circle-xmark"></i> CANCELADA</span>';
+                const car=urgencia?'<span class="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800"><i class="fa-solid fa-triangle-exclamation"></i> '+(status==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA')+'</span>':'<span class="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-800"><i class="fa-solid fa-calendar-check"></i> ELETIVA</span>';
                 return '<tr class="group cursor-pointer transition hover:bg-slate-50" onclick="abrirDetalhesIndex('+i+')"><td class="p-3.5 font-mono">'+escaparHtml(formatarData(reg.Data_da_Cirurgia))+'</td>'+
                     '<td class="p-3.5 font-mono"><div>'+escaparHtml(reg.prontuario||'-')+'</div><div class="text-[10px] text-slate-400">'+escaparHtml(reg.NBE?'NBE: '+reg.NBE:'')+'</div></td>'+
                     '<td class="p-3.5 font-bold">'+escaparHtml(reg.Nome_Paciente||'NÃO INFORMADO')+'</td><td class="p-3.5">'+escaparHtml(reg.Especialidade||'-')+'</td>'+
                     '<td class="p-3.5">'+escaparHtml(reg.Medico||'-')+'</td><td class="p-3.5">'+car+'</td><td class="p-3.5">'+sit+'</td>'+
-                    '<td class="p-3.5 text-center" onclick="event.stopPropagation()"><button onclick="abrirDetalhesIndex('+i+')" class="rounded-lg p-1.5 text-slate-400 hover:bg-teal-50 hover:text-teal-600" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button></td></tr>';
+                    '<td class="p-3.5 text-center" onclick="event.stopPropagation()"><div class="flex justify-center gap-1"><button onclick="abrirDetalhesIndex('+i+')" class="rounded-lg p-1.5 text-slate-500 hover:bg-teal-50 hover:text-teal-700" title="Ver detalhes"><i class="fa-solid fa-eye"></i></button>'+(['administrador','coordenacao','cadastro'].includes(perfilAtual.role)?'<button onclick="abrirModalCirurgia(registrosFiltrados['+i+'])" class="rounded-lg p-1.5 text-teal-700 hover:bg-teal-50" title="Editar cirurgia"><i class="fa-solid fa-pen-to-square"></i></button>':'')+'</div></td></tr>';
             }).join('');atualizarBotoesPaginacao(paginas);
         }
         function atualizarBotoesPaginacao(paginas){
@@ -664,7 +847,7 @@
                 if(!usuarioAtual)return;
                 lista.innerHTML='<p class="p-3 text-xs text-slate-500">Buscando pacientes...</p>';lista.classList.remove('hidden');
                 try{
-                    const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio';
+                    const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio,cpf,numero_be_vitai';
                     let consulta=supabaseClient.from('pacientes').select(campos).order('nome_paciente',{ascending:true}).limit(15);
                     if(/^\d+$/.test(termo)){
                         consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo+',codigo_paciente.eq.'+Number(termo));
@@ -755,18 +938,18 @@
         }
         function abrirDetalhesIndex(i){
             const r=registrosFiltrados[i];if(!r)return;
-            const v={detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_paciente)||r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
+            cirurgiaModalAtual=r;const v={detalheHorario:[r.horario_inicio,r.horario_fim].filter(Boolean).join(' – ')||'-',detalheSala:r.sala_cirurgica||'-',detalheCodigo:r.codigo_tuss_sus||'-',detalheAuxiliar:r.medico_auxiliar||'-',detalheInstrumentador:r.instrumentador_enfermagem||'-',detalheBiopsia:r.biopsia_encaminhada==null?'-':(r.biopsia_encaminhada?'Sim':'Não'),detalheUti:r.encaminhado_uti==null?'-':(r.encaminhado_uti?'Sim':'Não'),detalheHemoderivados:r.necessitou_hemoderivados==null?'-':(r.necessitou_hemoderivados?'Sim':'Não'),detalheDescricao:r.descricao_cirurgica||'-',detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_paciente)||r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
                 detalheNbe:r.NBE||'-',detalheCns:(pacienteHistoricoAtual&&pacienteHistoricoAtual.cns)||r.CNS||'-',detalheNascimento:formatarData((pacienteHistoricoAtual&&pacienteHistoricoAtual.data_nascimento)||r.Data_Nascimento),detalheSexo:(pacienteHistoricoAtual&&pacienteHistoricoAtual.sexo)||r.sexo||'-',detalheMae:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_mae)||r.NOME_MAE||'-',
                 detalheEspecialidade:r.Especialidade||'-',detalheDataCirurgia:formatarData(r.Data_da_Cirurgia),detalheProc1:r.Procedimento1||'-',detalheProc2:r.Procedimento2||'-',
                 detalheProc3:r.Procedimento3||'-',detalheMedico:r.Medico||'-',detalheCrmCir:r.CRM_CIR||'-',detalheAnestesista:r.Anestesista||'-',
                 detalheCrmAnest:r.CRM_ANEST||'-',detalheAnestesia:r.Anestesia1||'-',detalheDigitadoInfo:(r.DIGITADO_POR||'SISTEMA')+' em '+(r.DIGITADO_EM||'-'),detalheCaraterBadge:r.Carater_Atendimento||'-'};
             Object.keys(v).forEach(function(id){document.getElementById(id).textContent=v[id];});
             const realizada=(r.Situaçao||'').toUpperCase()==='REALIZADA',badge=document.getElementById('detalheSituacaoBadge');
-            badge.innerHTML=realizada?'<i class="fa-solid fa-circle-check mr-1"></i>REALIZADA':'<i class="fa-solid fa-circle-xmark mr-1"></i>CANCELADA';badge.className=realizada?'font-bold text-emerald-700':'font-bold text-rose-700';
-            document.getElementById('detalheBoxCancelamento').classList.toggle('hidden',realizada);
+            const andamento=(r.Situaçao||'').toUpperCase()==='EM ANDAMENTO';badge.innerHTML=realizada?'<i class="fa-solid fa-circle-check mr-1"></i>REALIZADA':andamento?'<i class="fa-solid fa-clock mr-1"></i>EM ANDAMENTO':'<i class="fa-solid fa-circle-xmark mr-1"></i>CANCELADA';badge.className=realizada?'font-bold text-emerald-700':andamento?'font-bold text-amber-700':'font-bold text-rose-700';
+            document.getElementById('detalheBoxCancelamento').classList.toggle('hidden',realizada||andamento);
             if(!realizada)document.getElementById('detalheMotivoCancelamento').textContent=r.Mot_Cancelam||'Não informado';
-            const carater=(r.Carater_Atendimento||'').toUpperCase()==='URGENCIA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>URGÊNCIA':'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className=carater?'font-bold text-amber-700':'font-bold text-blue-700';
-            document.getElementById('modalDetalhes').classList.remove('hidden');
+            const carater=(r.Carater_Atendimento||'').toUpperCase()!=='ELETIVA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>'+(String(r.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA'):'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className=carater?'font-bold text-amber-700':'font-bold text-blue-700';
+            document.getElementById('btnEditarCirurgiaDetalhe').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('modalDetalhes').classList.remove('hidden');
         }
         function fecharModalDetalhes(){document.getElementById('modalDetalhes').classList.add('hidden');}
         function formatarData(d){if(!d)return '-';if(d.includes('/'))return d;const p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
