@@ -643,7 +643,7 @@
         const CAMPOS_PACIENTE_MODAL='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,telefone,municipio,endereco,bairro,cep,numero,numero_cadastro_ambulatorio,cpf';
         function preencherCampo(id,valor){const el=document.getElementById(id);if(el)el.value=valor==null?'':String(valor);}
         function lerCampo(id){const el=document.getElementById(id);return el?el.value.trim():'';}
-        function normalizarNomeComparacao(valor){return String(valor||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\\s+/g,' ').trim();}
+        function normalizarNomeComparacao(valor){return String(valor||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
         function limparAlertaDuplicidadePaciente(){if(timerDuplicidadeNomePaciente)clearTimeout(timerDuplicidadeNomePaciente);sequenciaDuplicidadeNomePaciente++;const box=document.getElementById('alertaDuplicidadePaciente');if(box){box.innerHTML='';box.classList.add('hidden');}}
         async function verificarDuplicidadeNomePaciente(){
             if(timerDuplicidadeNomePaciente)clearTimeout(timerDuplicidadeNomePaciente);
@@ -653,7 +653,7 @@
             box.classList.remove('hidden');box.innerHTML='<span class="font-semibold"><i class="fa-solid fa-magnifying-glass mr-1"></i>Verificando possíveis cadastros repetidos...</span>';
             timerDuplicidadeNomePaciente=setTimeout(async function(){
                 try{
-                    const termo=nome.trim().replace(/[%,_]/g,' ').replace(/\\s+/g,' ');
+                    const termo=nome.trim().replace(/[%,_]/g,' ').replace(/\s+/g,' ');
                     const {data,error}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,nome_mae').ilike('nome_paciente','%'+termo+'%').order('nome_paciente',{ascending:true}).limit(8);
                     if(seq!==sequenciaDuplicidadeNomePaciente)return;
                     if(error)throw error;
@@ -687,8 +687,8 @@
                     const {data:possiveis,error:erroBusca}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento').ilike('nome_paciente',nome.trim()).limit(5);
                     if(erroBusca)throw erroBusca;
                     if(possiveis&&possiveis.length){
-                        const resumo=possiveis.map(p=>'• '+p.nome_paciente+' — prontuário '+formatarCodigoPaciente(p.codigo_paciente)+' — nascimento '+formatarData(p.data_nascimento)).join('\\n');
-                        if(!confirm('ATENÇÃO: já existe(m) cadastro(s) com este mesmo nome:\\n\\n'+resumo+'\\n\\nConfira se não é a mesma pessoa. Deseja realmente cadastrar outro paciente com esse nome?'))return;
+                        const resumo=possiveis.map(p=>'• '+p.nome_paciente+' — prontuário '+formatarCodigoPaciente(p.codigo_paciente)+' — nascimento '+formatarData(p.data_nascimento)).join('\n');
+                        if(!confirm('ATENÇÃO: já existe(m) cadastro(s) com este mesmo nome:\n\n'+resumo+'\n\nConfira se não é a mesma pessoa. Deseja realmente cadastrar outro paciente com esse nome?'))return;
                     }
                 }catch(error){console.error(error);exibirToast('Não foi possível verificar duplicidade do nome. Tente novamente antes de salvar.','erro');return;}
             }
