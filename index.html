@@ -728,10 +728,12 @@
             const valor=document.getElementById(campo)?.value||'',item=cancelamentosCache.find(x=>String(x.id_cancelamento)===valor);
             const select=document.getElementById(campoResponsabilidadeCancelamento(campo)),box=document.getElementById(boxResponsabilidadeCancelamento(campo));
             if(!select||!box)return;
-            const exigeEscolha=!!(valor.startsWith('legacy:')||item?.tipo==='AMBOS');
+            const tipoAtual=item?.tipo||(valor.startsWith('legacy:')?'AMBOS':'');
+            const exigeEscolha=tipoAtual==='AMBOS';
             box.classList.toggle('hidden',!exigeEscolha);select.required=exigeEscolha;
-            if(exigeEscolha){if(!select.value&&!valor.startsWith('legacy:')&&item?.tipo==='AMBOS')select.value='';}
+            if(exigeEscolha){if((select.dataset.tipoMotivoAnterior||'')!=='AMBOS')select.value='';}
             else select.value=item?.tipo||'';
+            select.dataset.tipoMotivoAnterior=tipoAtual;
         }
         function definirMotivoCancelamento(campo,id,motivo,responsabilidade){
             const el=document.getElementById(campo);if(!el)return;
