@@ -724,13 +724,16 @@
         }
         function definirMotivoCancelamento(campo,id,motivo){
             const el=document.getElementById(campo);if(!el)return;
-            const idTexto=id==null?'':String(id);
-            if(idTexto&&Array.from(el.options).some(o=>o.value===idTexto)){el.value=idTexto;return;}
+            const idTexto=id==null?'':String(id),detalheCampo=campo==='Mot_Cancelam'?'Mot_Cancelam_outro':'cir_motivo_cancelamento_outro',det=document.getElementById(detalheCampo);
+            if(idTexto&&Array.from(el.options).some(o=>o.value===idTexto)){
+                el.value=idTexto;
+                if(det){const prefixo='Outro - ';det.value=idTexto==='16'&&motivo&&motivo.startsWith(prefixo)?motivo.slice(prefixo.length):'';det.classList.toggle('hidden',idTexto!=='16');}
+                return;
+            }
             if(motivo){
-                const existente=Array.from(el.options).find(o=>o.textContent===motivo);
-                if(existente){el.value=existente.value;return;}
                 const legado='legacy:'+motivo;el.add(new Option('Motivo já registrado: '+motivo,legado));el.value=legado;
             }else el.value='';
+            if(det){det.value='';det.classList.add('hidden');}
         }
         function lerMotivoCancelamento(campo,detalheCampo){
             const valor=document.getElementById(campo)?.value||'';
