@@ -403,7 +403,7 @@
               <div class="md:col-span-4"><label for="cir_especialidade" class="label-cirurgia">Especialidade Médica *</label><select id="cir_especialidade" required class="campo-cirurgia"><option value="">Selecione</option><option>CIRURGIA GERAL</option><option>PEQUENAS CIRURGIAS</option><option>ORTOPEDIA</option><option>OTORRINOLARINGOLOGIA</option><option>NEUROCIRURGIA</option><option>ODONTOLOGIA</option><option>PLÁSTICA</option><option>OFTALMOLOGIA</option><option>VASCULAR</option><option>OUTRA</option></select></div>
               <div class="md:col-span-4"><label for="cir_carater" class="label-cirurgia">Caráter da Cirurgia *</label><select id="cir_carater" required class="campo-cirurgia"><option value="ELETIVA">Eletiva</option><option value="URGENCIA">Urgência</option><option value="EMERGENCIA">Emergência</option></select></div>
               <div class="md:col-span-4"><label for="cir_status" class="label-cirurgia">Status da Cirurgia *</label><select id="cir_status" required onchange="aoMudarStatusCirurgiaModal()" class="campo-cirurgia"><option value="REALIZADA">Realizada</option><option value="EM ANDAMENTO">Em andamento</option><option value="CANCELADA">Cancelada</option></select></div>
-              <div class="md:col-span-8 relative"><label for="cir_procedimento" class="label-cirurgia">Procedimento Realizado *</label><input id="cir_procedimento" required class="campo-cirurgia" placeholder="Digite o nome ou código para pesquisar no catálogo" autocomplete="off" oninput="buscarProcedimentosCatalogo()"><input type="hidden" id="cir_procedimento_catalogo_codigo"><div id="resultadosProcedimentosCatalogo" class="hidden absolute z-[120] mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl"></div><p class="mt-1 text-[10px] text-slate-500">Pesquise pelo nome ou código. Se não encontrar, você pode informar o procedimento manualmente.</p></div>
+              <div class="md:col-span-8 relative"><label for="cir_procedimento" class="label-cirurgia">Procedimento Realizado *</label><input id="cir_procedimento" required class="campo-cirurgia" placeholder="Digite o nome ou código para pesquisar no catálogo" autocomplete="off" oninput="buscarProcedimentosCatalogo()"><input type="hidden" id="cir_procedimento_catalogo_codigo"><div id="resultadosProcedimentosCatalogo" class="hidden absolute z-[120] mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl"></div><p class="mt-1 text-[10px] text-slate-500">Pesquise pelo nome ou código. Se não encontrar, você pode informar o procedimento manualmente.</p><div id="cir_box_importar_catalogo" class="hidden mt-2 rounded-lg border border-dashed border-teal-300 bg-teal-50 p-2"><div class="flex flex-wrap items-center gap-2"><button type="button" onclick="document.getElementById('arquivoImportacaoProcedimentos').click()" class="rounded-lg bg-teal-700 px-3 py-2 text-[10px] font-bold text-white hover:bg-teal-800"><i class="fa-solid fa-file-arrow-up mr-1"></i>Importar / atualizar catálogo XML</button><span id="statusImportacaoProcedimentos" class="text-[10px] text-slate-600">Apenas administradores. A importação pode ser repetida sem duplicar códigos.</span></div><input id="arquivoImportacaoProcedimentos" type="file" accept=".xml,text/xml,application/xml" class="hidden" onchange="importarCatalogoProcedimentos(event)"></div></div>
               <div class="md:col-span-4"><label for="cir_codigo" class="label-cirurgia">Código TUSS / SUS</label><input id="cir_codigo" class="campo-cirurgia" placeholder="Código" oninput="document.getElementById('cir_procedimento_catalogo_codigo').value=''"></div>
               <div id="cir_box_cancelamento" class="hidden md:col-span-12"><label for="cir_motivo_cancelamento" class="label-cirurgia">Motivo do Cancelamento *</label><input id="cir_motivo_cancelamento" class="campo-cirurgia" placeholder="Descreva o motivo"></div>
             </div>
@@ -719,6 +719,40 @@
             document.getElementById('cir_procedimento_catalogo_codigo').value=item.cod_proced||'';
             ocultarResultadosProcedimentos();
         }
+        async function importarCatalogoProcedimentos(evento){
+            const arquivo=evento.target.files&&evento.target.files[0];if(!arquivo)return;
+            if(!perfilAtual||perfilAtual.role!=='administrador'){exibirToast('Somente administradores podem importar o catálogo.','erro');evento.target.value='';return;}
+            const status=document.getElementById('statusImportacaoProcedimentos'),botao=document.querySelector('#cir_box_importar_catalogo button');
+            botao.disabled=true;status.textContent='Lendo arquivo XML...';
+            try{
+                const texto=await arquivo.text(),doc=new DOMParser().parseFromString(texto,'application/xml');
+                if(doc.querySelector('parsererror'))throw new Error('O arquivo não contém um XML válido.');
+                const nos=Array.from(doc.getElementsByTagName('Tb_Procedimentos_BC'));
+                if(!nos.length)throw new Error('Não encontrei registros Tb_Procedimentos_BC no arquivo.');
+                const registros=nos.map(function(no){
+                    const valor=function(nome){const el=no.getElementsByTagName(nome)[0];return el?(el.textContent||'').trim():'';};
+                    return {codigo_origem:Number(valor('Código')),inicio:valor('INICIO'),cod_proced:valor('COD_PROCED'),procedimento:valor('PROCEDIMENTO'),sistema:valor('SISTEMA')||null,especialidade:valor('ESPECIALIDADE')||null};
+                });
+                const codigos=new Set();
+                for(const r of registros){
+                    if(!Number.isInteger(r.codigo_origem)||!r.cod_proced||!r.procedimento)throw new Error('O XML possui registro sem Código, COD_PROCED ou PROCEDIMENTO válido.');
+                    if(codigos.has(r.cod_proced))throw new Error('O XML possui código de procedimento duplicado: '+r.cod_proced);
+                    codigos.add(r.cod_proced);
+                }
+                const lote=250,total=Math.ceil(registros.length/lote);
+                for(let i=0;i<registros.length;i+=lote){
+                    const parte=registros.slice(i,i+lote);
+                    const {error}=await supabaseClient.from('procedimentos').upsert(parte,{onConflict:'cod_proced'});
+                    if(error)throw new Error('Falha no lote '+(Math.floor(i/lote)+1)+' de '+total+': '+error.message);
+                    status.textContent='Importando '+Math.min(i+parte.length,registros.length).toLocaleString('pt-BR')+' de '+registros.length.toLocaleString('pt-BR')+' procedimentos...';
+                }
+                const {count,error}=await supabaseClient.from('procedimentos').select('cod_proced',{count:'exact',head:true});
+                if(error)throw error;
+                status.textContent='Catálogo atualizado: '+registros.length.toLocaleString('pt-BR')+' registros processados; '+Number(count||0).toLocaleString('pt-BR')+' disponíveis no banco.';
+                exibirToast('Catálogo de procedimentos importado/atualizado com sucesso.','sucesso');
+            }catch(error){console.error(error);status.textContent='Importação interrompida: '+error.message;exibirToast('Não foi possível concluir a importação: '+error.message,'erro');}
+            finally{botao.disabled=false;evento.target.value='';}
+        }
         document.addEventListener('click',function(evento){
             const painel=document.getElementById('resultadosProcedimentosCatalogo');
             if(painel&&!painel.contains(evento.target)&&evento.target!==document.getElementById('cir_procedimento'))ocultarResultadosProcedimentos();
@@ -728,6 +762,7 @@
             if(!pacienteHistoricoAtual)return;
             cirurgiaModalAtual=registro||null;const form=document.getElementById('formModalCirurgia');form.reset();
             document.getElementById('cir_procedimento_catalogo_codigo').value='';ocultarResultadosProcedimentos();
+            document.getElementById('cir_box_importar_catalogo').classList.toggle('hidden',!perfilAtual||perfilAtual.role!=='administrador');
             const p=pacienteHistoricoAtual;
             preencherTexto('cirPacienteNome',p.nome_paciente);preencherTexto('cirPacienteCodigo',formatarCodigoPaciente(p.codigo_paciente));preencherTexto('cirPacienteCpf',p.cpf);
             const r=registro||{};if(r.Especialidade&&!Array.from(document.getElementById('cir_especialidade').options).some(o=>o.value===r.Especialidade)){document.getElementById('cir_especialidade').add(new Option(r.Especialidade,r.Especialidade));}preencherCampo('cir_be_vitai',r.NBE);preencherCampo('cir_data',normalizarDataParaInput(r.Data_da_Cirurgia)||new Date().toISOString().slice(0,10));preencherCampo('cir_inicio',r.horario_inicio?String(r.horario_inicio).slice(0,5):'');preencherCampo('cir_fim',r.horario_fim?String(r.horario_fim).slice(0,5):'');preencherCampo('cir_sala',r.sala_cirurgica);preencherCampo('cir_especialidade',r.Especialidade);preencherCampo('cir_carater',r.Carater_Atendimento||'ELETIVA');preencherCampo('cir_status',r.Situaçao||'REALIZADA');preencherCampo('cir_procedimento',r.Procedimento1);preencherCampo('cir_codigo',r.codigo_tuss_sus);preencherCampo('cir_procedimento_catalogo_codigo',r.procedimento_catalogo_codigo);preencherCampo('cir_motivo_cancelamento',r.Mot_Cancelam);preencherCampo('cir_cirurgiao',r.Medico);preencherCampo('cir_auxiliar',r.medico_auxiliar);preencherCampo('cir_anestesista',r.Anestesista);preencherCampo('cir_instrumentador',r.instrumentador_enfermagem);preencherCampo('cir_crm_cir',r.CRM_CIR);preencherCampo('cir_crm_anest',r.CRM_ANEST);preencherCampo('cir_anestesia',r.Anestesia1);preencherCampo('cir_biopsia',r.biopsia_encaminhada==null?'':String(r.biopsia_encaminhada));preencherCampo('cir_uti',r.encaminhado_uti==null?'':String(r.encaminhado_uti));preencherCampo('cir_hemoderivados',r.necessitou_hemoderivados==null?'':String(r.necessitou_hemoderivados));preencherCampo('cir_descricao',r.descricao_cirurgica);
