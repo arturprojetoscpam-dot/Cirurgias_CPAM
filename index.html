@@ -364,7 +364,7 @@
               
               <div class="md:col-span-6"><label for="paciente_cpf" class="mb-1 block text-xs font-semibold text-slate-700">CPF</label><input id="paciente_cpf" inputmode="numeric" class="campo-paciente-modal" placeholder="000.000.000-00"></div>
               <div class="md:col-span-6"><label for="paciente_cns" class="mb-1 block text-xs font-semibold text-slate-700">Cartão do SUS (CNS)</label><input id="paciente_cns" inputmode="numeric" class="campo-paciente-modal" placeholder="Número do CNS"></div>
-              <div class="md:col-span-8"><label for="paciente_nome" class="mb-1 block text-xs font-semibold text-slate-700">Nome Completo do Paciente <span class="text-rose-600">*</span></label><input id="paciente_nome" required class="campo-paciente-modal" placeholder="Nome completo, sem abreviações"></div>
+              <div class="md:col-span-8"><label for="paciente_nome" class="mb-1 block text-xs font-semibold text-slate-700">Nome Completo do Paciente <span class="text-rose-600">*</span></label><input id="paciente_nome" required oninput="verificarDuplicidadeNomePaciente()" class="campo-paciente-modal" placeholder="Nome completo, sem abreviações" autocomplete="off"><div id="alertaDuplicidadePaciente" class="mt-2 hidden rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-950" aria-live="polite"></div></div>
               <div class="md:col-span-4"><label for="paciente_nascimento" class="mb-1 block text-xs font-semibold text-slate-700">Data de Nascimento</label><input id="paciente_nascimento" type="date" class="campo-paciente-modal"></div>
               <div class="md:col-span-8"><label for="paciente_mae" class="mb-1 block text-xs font-semibold text-slate-700">Nome da Mãe</label><input id="paciente_mae" class="campo-paciente-modal" placeholder="Nome completo da mãe"></div>
               <div class="md:col-span-4"><label for="paciente_telefone" class="mb-1 block text-xs font-semibold text-slate-700">Telefone / WhatsApp</label><input id="paciente_telefone" type="tel" class="campo-paciente-modal" placeholder="(00) 00000-0000"></div>
@@ -397,13 +397,10 @@
     <div id="modalCirurgia" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 p-2 backdrop-blur-sm sm:p-5" role="dialog" aria-modal="true" aria-labelledby="tituloModalCirurgia">
       <div class="flex max-h-[95vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
         <div class="flex shrink-0 items-center justify-between gap-3 bg-gradient-to-r from-teal-950 to-slate-900 px-5 py-4 text-white sm:px-7">
-          <div><p class="text-[10px] font-bold uppercase tracking-[.18em] text-teal-300">Bloco Cirúrgico</p><h2 id="tituloModalCirurgia" class="mt-1 text-lg font-bold">Registro de Cirurgia</h2><p class="mt-1 text-xs text-slate-300">Registro de procedimento realizado — não é agendamento futuro</p></div>
+          <div class="min-w-0"><p class="text-[10px] font-bold uppercase tracking-[.18em] text-teal-300">Bloco Cirúrgico</p><h2 id="tituloModalCirurgia" class="mt-1 text-lg font-bold">Registro de Cirurgia</h2><p class="mt-1 text-xs text-slate-300">Registro de procedimento realizado — não é agendamento futuro</p><p class="mt-2 inline-flex max-w-full items-center gap-2 rounded-lg border border-teal-500/40 bg-teal-800/70 px-3 py-1.5 text-xs text-teal-50"><i class="fa-solid fa-user-shield shrink-0 text-teal-200"></i><span class="shrink-0 font-semibold text-teal-200">Paciente:</span><strong id="cirPacienteNomeSticky" class="truncate font-extrabold">-</strong></p></div>
           <button type="button" onclick="fecharModalCirurgia()" aria-label="Fechar cirurgia" class="rounded-lg p-2 text-slate-300 hover:bg-white/10 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
         <form id="formModalCirurgia" onsubmit="salvarCirurgiaModal(event)" class="min-h-0 flex-1 overflow-y-auto p-4 sm:p-7">
-          <div class="sticky top-0 z-30 -mx-4 mb-4 border-b border-teal-200 bg-teal-950 px-4 py-2.5 text-white shadow-md sm:-mx-7 sm:px-7">
-            <div class="flex min-w-0 items-center gap-2"><i class="fa-solid fa-user-shield shrink-0 text-teal-300"></i><span class="shrink-0 text-[10px] font-bold uppercase tracking-wide text-teal-200">Paciente:</span><strong id="cirPacienteNomeSticky" class="truncate text-sm font-extrabold">-</strong></div>
-          </div>
           <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
             <div class="mb-3 flex items-center gap-2 text-xs font-bold text-amber-950"><i class="fa-solid fa-shield-heart"></i> CONFIRMAÇÃO DE SEGURANÇA DO PACIENTE</div>
             <div class="grid grid-cols-1 gap-3 text-xs sm:grid-cols-2 lg:grid-cols-3">
@@ -563,7 +560,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let pacienteModalAtual=null,cirurgiaModalAtual=null,cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false;
+        let pacienteModalAtual=null,cirurgiaModalAtual=null,cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -646,9 +643,33 @@
         const CAMPOS_PACIENTE_MODAL='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,telefone,municipio,endereco,bairro,cep,numero,numero_cadastro_ambulatorio,cpf';
         function preencherCampo(id,valor){const el=document.getElementById(id);if(el)el.value=valor==null?'':String(valor);}
         function lerCampo(id){const el=document.getElementById(id);return el?el.value.trim():'';}
+        function normalizarNomeComparacao(valor){return String(valor||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toUpperCase().replace(/[^A-Z0-9 ]/g,' ').replace(/\\s+/g,' ').trim();}
+        function limparAlertaDuplicidadePaciente(){if(timerDuplicidadeNomePaciente)clearTimeout(timerDuplicidadeNomePaciente);sequenciaDuplicidadeNomePaciente++;const box=document.getElementById('alertaDuplicidadePaciente');if(box){box.innerHTML='';box.classList.add('hidden');}}
+        async function verificarDuplicidadeNomePaciente(){
+            if(timerDuplicidadeNomePaciente)clearTimeout(timerDuplicidadeNomePaciente);
+            const box=document.getElementById('alertaDuplicidadePaciente'),nome=lerCampo('paciente_nome'),seq=++sequenciaDuplicidadeNomePaciente;
+            if(!box)return;
+            if(pacienteModalAtual||nome.trim().length<4){box.innerHTML='';box.classList.add('hidden');return;}
+            box.classList.remove('hidden');box.innerHTML='<span class="font-semibold"><i class="fa-solid fa-magnifying-glass mr-1"></i>Verificando possíveis cadastros repetidos...</span>';
+            timerDuplicidadeNomePaciente=setTimeout(async function(){
+                try{
+                    const termo=nome.trim().replace(/[%,_]/g,' ').replace(/\\s+/g,' ');
+                    const {data,error}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,nome_mae').ilike('nome_paciente','%'+termo+'%').order('nome_paciente',{ascending:true}).limit(8);
+                    if(seq!==sequenciaDuplicidadeNomePaciente)return;
+                    if(error)throw error;
+                    const digitado=normalizarNomeComparacao(nome);
+                    const encontrados=(data||[]).filter(p=>{const existente=normalizarNomeComparacao(p.nome_paciente);return existente.includes(digitado)||digitado.includes(existente);});
+                    if(!encontrados.length){box.innerHTML='<span class="font-semibold text-emerald-800"><i class="fa-solid fa-check-circle mr-1"></i>Nenhum cadastro com esse trecho do nome foi encontrado.</span>';return;}
+                    box.innerHTML='<div class="mb-2 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Possíveis cadastros existentes. Confira antes de criar outro:</div>'+encontrados.map(function(p){
+                        const exato=normalizarNomeComparacao(p.nome_paciente)===digitado;
+                        return '<div class="border-t border-amber-200 py-2 first:border-0"><div class="font-bold">'+escaparHtml(p.nome_paciente||'Nome não informado')+(exato?' <span class="ml-1 rounded bg-rose-100 px-1.5 py-0.5 text-[9px] text-rose-800">NOME IDÊNTICO</span>':'')+'</div><div class="mt-0.5 text-[10px] text-amber-900">Prontuário interno: '+escaparHtml(formatarCodigoPaciente(p.codigo_paciente))+' · Nascimento: '+escaparHtml(formatarData(p.data_nascimento))+(p.nome_mae?' · Mãe: '+escaparHtml(p.nome_mae):'')+'</div></div>';
+                    }).join('')+'<p class="mt-1 text-[10px]">Se for a mesma pessoa, utilize o cadastro existente. Se for outra pessoa, confira os demais dados antes de continuar.</p>';
+                }catch(error){if(seq!==sequenciaDuplicidadeNomePaciente)return;console.error('Falha ao verificar duplicidade:',error);box.innerHTML='<span class="font-semibold text-rose-800"><i class="fa-solid fa-circle-exclamation mr-1"></i>Não foi possível concluir a verificação. Tente novamente antes de salvar.</span>';}
+            },450);
+        }
         async function abrirCadastroPaciente(id){
             if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar ou editar pacientes.','erro');return;}
-            pacienteModalAtual=null;document.getElementById('formModalPaciente').reset();preencherCampo('paciente_codigo','');
+            limparAlertaDuplicidadePaciente();pacienteModalAtual=null;document.getElementById('formModalPaciente').reset();preencherCampo('paciente_codigo','');
             if(id){
                 try{const {data,error}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(error)throw error;pacienteModalAtual=data;pacienteHistoricoAtual=data;
                     preencherCampo('paciente_codigo',formatarCodigoPaciente(data.codigo_paciente));preencherCampo('paciente_prontuario',data.numero_cadastro_ambulatorio);preencherCampo('paciente_cpf',data.cpf);preencherCampo('paciente_cns',data.cns);preencherCampo('paciente_nome',data.nome_paciente);preencherCampo('paciente_nascimento',normalizarDataParaInput(data.data_nascimento));preencherCampo('paciente_mae',data.nome_mae);preencherCampo('paciente_telefone',data.telefone);preencherCampo('paciente_cep',data.cep);preencherCampo('paciente_endereco',data.endereco);preencherCampo('paciente_numero',data.numero);preencherCampo('paciente_bairro',data.bairro);preencherCampo('paciente_municipio',data.municipio);
@@ -661,6 +682,16 @@
         async function salvarPacienteModal(evento){
             evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
             const eraEdicao=!!pacienteModalAtual;const cpfDigitado=lerCampo('paciente_cpf').replace(/\D/g,'');if(cpfDigitado&&cpfDigitado.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}const nome=lerCampo('paciente_nome');if(!nome){exibirToast('Informe o nome completo do paciente.','erro');return;}
+            if(!eraEdicao){
+                try{
+                    const {data:possiveis,error:erroBusca}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento').ilike('nome_paciente',nome.trim()).limit(5);
+                    if(erroBusca)throw erroBusca;
+                    if(possiveis&&possiveis.length){
+                        const resumo=possiveis.map(p=>'• '+p.nome_paciente+' — prontuário '+formatarCodigoPaciente(p.codigo_paciente)+' — nascimento '+formatarData(p.data_nascimento)).join('\\n');
+                        if(!confirm('ATENÇÃO: já existe(m) cadastro(s) com este mesmo nome:\\n\\n'+resumo+'\\n\\nConfira se não é a mesma pessoa. Deseja realmente cadastrar outro paciente com esse nome?'))return;
+                    }
+                }catch(error){console.error(error);exibirToast('Não foi possível verificar duplicidade do nome. Tente novamente antes de salvar.','erro');return;}
+            }
             const botao=document.getElementById('btnSalvarPacienteModal');botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
             const payload={nome_paciente:nome,numero_cadastro_ambulatorio:lerCampo('paciente_prontuario')||null,cpf:lerCampo('paciente_cpf').replace(/\D/g,'')||null,cns:lerCampo('paciente_cns')||null,data_nascimento:dataInputParaBanco(lerCampo('paciente_nascimento'))||null,nome_mae:lerCampo('paciente_mae')||null,telefone:lerCampo('paciente_telefone')||null,cep:lerCampo('paciente_cep')||null,endereco:lerCampo('paciente_endereco')||null,numero:lerCampo('paciente_numero')||null,bairro:lerCampo('paciente_bairro')||null,municipio:lerCampo('paciente_municipio')||null};
             try{
