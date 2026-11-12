@@ -733,7 +733,7 @@
             if(motivo){
                 const legado='legacy:'+motivo;el.add(new Option('Motivo já registrado: '+motivo,legado));el.value=legado;
             }else el.value='';
-            if(det){det.value='';det.classList.add('hidden');}
+            if(det){det.value='';det.classList.add('hidden');det.required=false;}
         }
         function lerMotivoCancelamento(campo,detalheCampo){
             const valor=document.getElementById(campo)?.value||'';
@@ -767,7 +767,7 @@
         function selecionarProfissionalCampo(campo,indice){const cfg=CONFIG_PROFISSIONAIS_CIRURGIA[campo],p=(profissionaisBusca[campo]||[])[indice];if(!cfg||!p)return;document.getElementById(campo).value=p.nome;document.getElementById(campo+'_profissional_id').value=p.id;if(cfg.registro)document.getElementById(cfg.registro).value=p.crm||'';ocultarResultadosProfissionais();}
         document.addEventListener('click',function(e){const campos=Object.keys(CONFIG_PROFISSIONAIS_CIRURGIA);if(!campos.some(c=>e.target.closest('#'+CONFIG_PROFISSIONAIS_CIRURGIA[c].painel)||e.target===document.getElementById(c)))ocultarResultadosProfissionais();});
         
-        function aoMudarStatusCirurgiaModal(){const cancelada=lerCampo('cir_status')==='CANCELADA';document.getElementById('cir_box_cancelamento').classList.toggle('hidden',!cancelada);document.getElementById('cir_motivo_cancelamento').required=cancelada;if(cancelada)carregarCatalogoCancelamentos();}
+        function aoMudarStatusCirurgiaModal(){const cancelada=lerCampo('cir_status')==='CANCELADA',motivo=document.getElementById('cir_motivo_cancelamento');document.getElementById('cir_box_cancelamento').classList.toggle('hidden',!cancelada);motivo.required=cancelada;document.getElementById('cir_motivo_cancelamento_outro').required=cancelada&&motivo.value==='16';if(cancelada)carregarCatalogoCancelamentos();}
         let timerBuscaProcedimento=null,procedimentosEncontrados=[];
         function ocultarResultadosProcedimentos(){const el=document.getElementById('resultadosProcedimentosCatalogo');if(el)el.classList.add('hidden');}
         function buscarProcedimentosCatalogo(){
@@ -1102,7 +1102,8 @@
         }
         function aoMudarSituacao(){
             const cancelada=document.getElementById('Situaçao').value==='CANCELADA';
-            document.getElementById('boxMotivoCancelamento').classList.toggle('hidden',!cancelada);document.getElementById('Mot_Cancelam').required=cancelada;
+            const select=document.getElementById('Mot_Cancelam'),detalhe=document.getElementById('Mot_Cancelam_outro');
+            document.getElementById('boxMotivoCancelamento').classList.toggle('hidden',!cancelada);select.required=cancelada;detalhe.required=cancelada&&select.value==='16';
             if(cancelada)carregarCatalogoCancelamentos();
         }
         async function abrirDetalhesIndex(i){
