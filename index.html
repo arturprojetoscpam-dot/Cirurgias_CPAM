@@ -767,14 +767,16 @@
         async function resolverNomeProcedimento(registro){
             if(!registro)return '';
             const descricao=String(registro.Procedimento1||'').trim();
-            if(descricao)return descricao;
-            const codigoCatalogo=String(registro.procedimento_catalogo_codigo||registro.codigo_tuss_sus||'').trim();
-            if(!codigoCatalogo)return '';
+            // Em registros antigos, Procedimento1 pode conter o código SUS em vez da descrição.
+            const descricaoEhCodigo=/^\\d{6,12}$/.test(descricao);
+            if(descricao&&!descricaoEhCodigo)return descricao;
+            const codigoCatalogo=String((descricaoEhCodigo?descricao:'')||registro.procedimento_catalogo_codigo||registro.codigo_tuss_sus||'').trim();
+            if(!codigoCatalogo)return descricao;
             try{
                 const {data,error}=await supabaseClient.from('procedimentos').select('cod_proced,procedimento').eq('cod_proced',codigoCatalogo).maybeSingle();
                 if(error)throw error;
-                return data&&data.procedimento?String(data.procedimento).trim():'';
-            }catch(error){console.warn('Não foi possível resolver a descrição do procedimento no catálogo:',error);return '';}
+                return data&&data.procedimento?String(data.procedimento).trim():(descricao||'');
+            }catch(error){console.warn('Não foi possível resolver a descrição do procedimento no catálogo:',error);return descricao||'';}
         }
         async function abrirModalCirurgia(registro){
             if(!pacienteHistoricoAtual)return;
@@ -1056,7 +1058,7 @@
         }
         async function abrirDetalhesIndex(i){
             const r=(i&&typeof i==='object')?i:registrosFiltrados[i];if(!r)return;
-            cirurgiaModalAtual=r;const procedimentoResolvido=await resolverNomeProcedimento(r);const v={detalheHorario:[r.horario_inicio,r.horario_fim].filter(Boolean).join(' – ')||'-',detalheSala:r.sala_cirurgica||'-',detalheCodigo:r.codigo_tuss_sus||'-',detalheAuxiliar:r.medico_auxiliar||'-',detalheInstrumentador:r.instrumentador_enfermagem||'-',detalheBiopsia:r.biopsia_encaminhada==null?'-':(r.biopsia_encaminhada?'Sim':'Não'),detalheUti:r.encaminhado_uti==null?'-':(r.encaminhado_uti?'Sim':'Não'),detalheHemoderivados:r.necessitou_hemoderivados==null?'-':(r.necessitou_hemoderivados?'Sim':'Não'),detalheDescricao:r.descricao_cirurgica||'-',detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_paciente)||r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
+            cirurgiaModalAtual=r;const procedimentoResolvido=await resolverNomeProcedimento(r);const v={detalheHorario:[r.horario_inicio,r.horario_fim].filter(Boolean).join(' – ')||'-',detalheSala:r.sala_cirurgica||'-',detalheCodigo:r.codigo_tuss_sus||(/^\\d{6,12}$/.test(String(r.Procedimento1||'').trim())?String(r.Procedimento1).trim():'-'),detalheAuxiliar:r.medico_auxiliar||'-',detalheInstrumentador:r.instrumentador_enfermagem||'-',detalheBiopsia:r.biopsia_encaminhada==null?'-':(r.biopsia_encaminhada?'Sim':'Não'),detalheUti:r.encaminhado_uti==null?'-':(r.encaminhado_uti?'Sim':'Não'),detalheHemoderivados:r.necessitou_hemoderivados==null?'-':(r.necessitou_hemoderivados?'Sim':'Não'),detalheDescricao:r.descricao_cirurgica||'-',detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_paciente)||r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
                 detalheNbe:r.NBE||'-',detalheCns:(pacienteHistoricoAtual&&pacienteHistoricoAtual.cns)||r.CNS||'-',detalheNascimento:formatarData((pacienteHistoricoAtual&&pacienteHistoricoAtual.data_nascimento)||r.Data_Nascimento),detalheSexo:(pacienteHistoricoAtual&&pacienteHistoricoAtual.sexo)||r.sexo||'-',detalheMae:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_mae)||r.NOME_MAE||'-',
                 detalheEspecialidade:r.Especialidade||'-',detalheDataCirurgia:formatarData(r.Data_da_Cirurgia),detalheProc1:r.Procedimento1||procedimentoResolvido||'-',detalheProc2:r.Procedimento2||'-',
                 detalheProc3:r.Procedimento3||'-',detalheMedico:r.Medico||'-',detalheCrmCir:r.CRM_CIR||'-',detalheAnestesista:r.Anestesista||'-',
