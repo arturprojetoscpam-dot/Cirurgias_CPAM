@@ -360,6 +360,36 @@
             </section>
         </div>
 
+        <section id="secCancelamentos" class="hidden space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-calendar-xmark mr-2 text-rose-600"></i>Cancelamentos cirúrgicos</h2><p class="mt-1 text-xs text-slate-500">Consulta dos registros cancelados, com classificação do motivo e da responsabilidade.</p></div><button type="button" onclick="carregarCancelamentos(true)" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-1"></i>Atualizar</button></div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Cancelamentos no filtro</p><p id="cancelTotal" class="mt-1 text-2xl font-extrabold text-slate-800">—</p></div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Responsabilidade paciente</p><p id="cancelPaciente" class="mt-1 text-2xl font-extrabold text-amber-700">—</p></div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Responsabilidade extra-paciente</p><p id="cancelExtra" class="mt-1 text-2xl font-extrabold text-teal-700">—</p></div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Sem classificação</p><p id="cancelSemResp" class="mt-1 text-2xl font-extrabold text-slate-500">—</p></div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+                    <div><label class="mb-1 block text-[11px] font-semibold text-slate-600" for="filtroCancelInicio">Data inicial</label><input id="filtroCancelInicio" type="date" onchange="renderizarCancelamentos()" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"></div>
+                    <div><label class="mb-1 block text-[11px] font-semibold text-slate-600" for="filtroCancelFim">Data final</label><input id="filtroCancelFim" type="date" onchange="renderizarCancelamentos()" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"></div>
+                    <div><label class="mb-1 block text-[11px] font-semibold text-slate-600" for="filtroCancelResp">Responsabilidade</label><select id="filtroCancelResp" onchange="renderizarCancelamentos()" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todas</option><option value="PACIENTE">Paciente</option><option value="EXTRA-PACIENTE">Extra-paciente</option><option value="SEM">Não informada</option></select></div>
+                    <div><label class="mb-1 block text-[11px] font-semibold text-slate-600" for="filtroCancelBusca">Pesquisar</label><input id="filtroCancelBusca" type="search" oninput="renderizarCancelamentos()" placeholder="Paciente, motivo ou especialidade" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs"></div>
+                </div>
+                <div class="mt-4 overflow-x-auto"><table class="w-full min-w-[850px] text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">Data</th><th class="p-3">Paciente</th><th class="p-3">Especialidade</th><th class="p-3">Motivo</th><th class="p-3">Responsabilidade</th></tr></thead><tbody id="gridCancelamentos" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-5 text-center text-slate-400">Carregue os cancelamentos para visualizar.</td></tr></tbody></table></div>
+                <div class="mt-3 flex items-center justify-between text-[11px] text-slate-500"><span id="lblCancelamentos">—</span><div class="flex gap-2"><button type="button" onclick="paginaCancelamentos(-1)" class="rounded-lg border border-slate-200 px-3 py-1.5">Anterior</button><span id="paginaCancelamentosLabel" class="px-2 py-1.5">1</span><button type="button" onclick="paginaCancelamentos(1)" class="rounded-lg border border-slate-200 px-3 py-1.5">Próxima</button></div></div>
+            </div>
+        </section>
+        <section id="secDashboards" class="hidden space-y-4">
+            <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-chart-pie mr-2 text-teal-700"></i>Dashboards do bloco cirúrgico</h2><p class="mt-1 text-xs text-slate-500">Indicadores calculados a partir dos registros de cirurgia disponíveis para seu perfil.</p></div><button type="button" onclick="carregarDashboard(true)" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-1"></i>Atualizar dados</button></div>
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Cirurgias no período</p><p id="dashCirTotal" class="mt-1 text-2xl font-extrabold text-slate-800">—</p></div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Realizadas</p><p id="dashCirRealizadas" class="mt-1 text-2xl font-extrabold text-emerald-700">—</p></div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Canceladas</p><p id="dashCirCanceladas" class="mt-1 text-2xl font-extrabold text-rose-700">—</p></div>
+                <div class="rounded-xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Taxa de realização</p><p id="dashCirTaxa" class="mt-1 text-2xl font-extrabold text-teal-700">—</p></div>
+            </div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div class="mb-3 flex flex-wrap items-end gap-3"><div><label for="filtroDashInicio" class="mb-1 block text-[11px] font-semibold text-slate-600">Data inicial</label><input id="filtroDashInicio" type="date" onchange="renderizarDashboard()" class="rounded-lg border border-slate-300 px-3 py-2 text-xs"></div><div><label for="filtroDashFim" class="mb-1 block text-[11px] font-semibold text-slate-600">Data final</label><input id="filtroDashFim" type="date" onchange="renderizarDashboard()" class="rounded-lg border border-slate-300 px-3 py-2 text-xs"></div><button type="button" onclick="limparFiltrosDashboard()" class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600">Todo o período</button></div><p id="dashPeriodoLabel" class="mb-4 text-[11px] text-slate-500">Todos os registros disponíveis</p><div class="grid grid-cols-1 gap-5 lg:grid-cols-2"><div><h3 class="mb-3 text-sm font-bold text-slate-700">Situação das cirurgias</h3><div id="graficoSituacoes" class="space-y-3"></div></div><div><h3 class="mb-3 text-sm font-bold text-slate-700">Cancelamentos por responsabilidade</h3><div id="graficoResponsabilidade" class="space-y-3"></div></div><div class="lg:col-span-2"><h3 class="mb-3 text-sm font-bold text-slate-700">Volume por ano</h3><div id="graficoAnos" class="space-y-3"></div></div><div class="lg:col-span-2"><h3 class="mb-3 text-sm font-bold text-slate-700">Principais motivos de cancelamento</h3><div id="graficoMotivos" class="space-y-3"></div></div></div></div>
+            <p id="dashFonteInfo" class="text-[10px] text-slate-400">Os indicadores não alteram registros e não incluem dados clínicos identificáveis.</p>
+        </section>
         </main>
     </div>
     </div>
@@ -1231,38 +1261,113 @@
             i.className=ok?'fa-solid fa-circle-check text-emerald-400':'fa-solid fa-triangle-exclamation text-rose-400';s.textContent=mensagem;t.appendChild(i);t.appendChild(s);
             document.getElementById('toastContainer').appendChild(t);window.setTimeout(function(){t.remove();},4500);
         }
+        let dadosRelatoriosCirurgias=null,dadosRelatorioCancelamentos=null,carregandoRelatorios=false,carregandoCancelamentos=false,paginaAtualCancelamentos=1;
+        const TAMANHO_PAGINA_CANCELAMENTOS=50;
+        function dataRelatorioParaDate(valor){
+            if(!valor)return null;const v=String(valor).trim();let p;
+            if(/^\d{4}-\d{2}-\d{2}/.test(v)){p=v.slice(0,10).split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+            if(/^\d{2}\/\d{2}\/\d{4}$/.test(v)){p=v.split('/').map(Number);return new Date(p[2],p[1]-1,p[0]);}
+            return null;
+        }
+        function dataRelatorioISO(valor){const d=dataRelatorioParaDate(valor);return d?d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'):'';}
+        async function buscarDadosRelatorios(){
+            if(dadosRelatoriosCirurgias)return dadosRelatoriosCirurgias;
+            if(carregandoRelatorios)throw new Error('Os indicadores já estão sendo carregados. Aguarde.');
+            carregandoRelatorios=true;
+            try{
+                const todos=[];let inicio=0,lote=[];
+                do{const {data,error}=await supabaseClient.from('cirurgias').select('Data_da_Cirurgia,Situaçao,Especialidade,id_cancelamento,responsabilidade_cancelamento,Mot_Cancelam,cancelamentos(motivo,tipo)').order('Identificação',{ascending:true}).range(inicio,inicio+999);if(error)throw error;lote=data||[];todos.push(...lote);inicio+=lote.length;}while(lote.length===1000);
+                dadosRelatoriosCirurgias=todos;return todos;
+            }finally{carregandoRelatorios=false;}
+        }
+        async function buscarDadosCancelamentos(){
+            if(dadosRelatorioCancelamentos)return dadosRelatorioCancelamentos;
+            if(carregandoCancelamentos)throw new Error('Os cancelamentos já estão sendo carregados. Aguarde.');
+            carregandoCancelamentos=true;
+            try{
+                const todos=[];let inicio=0,lote=[];
+                do{const {data,error}=await supabaseClient.from('cirurgias').select('Data_da_Cirurgia,Nome_Paciente,Especialidade,Situaçao,Mot_Cancelam,id_cancelamento,responsabilidade_cancelamento,cancelamentos(motivo,tipo)').eq('Situaçao','CANCELADA').order('Identificação',{ascending:true}).range(inicio,inicio+999);if(error)throw error;lote=data||[];todos.push(...lote);inicio+=lote.length;}while(lote.length===1000);
+                dadosRelatorioCancelamentos=todos;return todos;
+            }finally{carregandoCancelamentos=false;}
+        }
+        async function carregarCancelamentos(forcar){
+            const corpo=document.getElementById('gridCancelamentos');if(!corpo)return;
+            corpo.innerHTML='<tr><td colspan="5" class="p-5 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando cancelamentos...</td></tr>';
+            try{if(forcar)dadosRelatorioCancelamentos=null;await buscarDadosCancelamentos();paginaAtualCancelamentos=1;renderizarCancelamentos();}
+            catch(error){corpo.innerHTML='<tr><td colspan="5" class="p-5 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent='Não foi possível carregar os cancelamentos: '+error.message;}
+        }
+        function obterCancelamentosFiltrados(){
+            const dados=dadosRelatorioCancelamentos||[],inicio=document.getElementById('filtroCancelInicio').value,fim=document.getElementById('filtroCancelFim').value,resp=document.getElementById('filtroCancelResp').value,busca=document.getElementById('filtroCancelBusca').value.trim().toLocaleLowerCase('pt-BR');
+            return dados.filter(function(r){
+                const iso=dataRelatorioISO(r.Data_da_Cirurgia);if(inicio&&(!iso||iso<inicio))return false;if(fim&&(!iso||iso>fim))return false;
+                const responsabilidade=r.responsabilidade_cancelamento||'SEM';if(resp&&responsabilidade!==resp)return false;
+                const motivo=(r.cancelamentos&&r.cancelamentos.motivo)||r.Mot_Cancelam||'Não informado';
+                return !busca||[r.Nome_Paciente,motivo,r.Especialidade].some(function(x){return String(x||'').toLocaleLowerCase('pt-BR').includes(busca);});
+            }).sort(function(a,b){return (dataRelatorioISO(b.Data_da_Cirurgia)||'').localeCompare(dataRelatorioISO(a.Data_da_Cirurgia)||'');});
+        }
+        function renderizarCancelamentos(){
+            const corpo=document.getElementById('gridCancelamentos');if(!corpo)return;
+            if(!dadosRelatorioCancelamentos){corpo.innerHTML='<tr><td colspan="5" class="p-5 text-center text-slate-400">Os dados ainda não foram carregados.</td></tr>';return;}
+            const lista=obterCancelamentosFiltrados(),total=lista.length,ini=(paginaAtualCancelamentos-1)*TAMANHO_PAGINA_CANCELAMENTOS,visiveis=lista.slice(ini,ini+TAMANHO_PAGINA_CANCELAMENTOS);
+            document.getElementById('cancelTotal').textContent=total.toLocaleString('pt-BR');
+            document.getElementById('cancelPaciente').textContent=lista.filter(r=>r.responsabilidade_cancelamento==='PACIENTE').length.toLocaleString('pt-BR');
+            document.getElementById('cancelExtra').textContent=lista.filter(r=>r.responsabilidade_cancelamento==='EXTRA-PACIENTE').length.toLocaleString('pt-BR');
+            document.getElementById('cancelSemResp').textContent=lista.filter(r=>!r.responsabilidade_cancelamento).length.toLocaleString('pt-BR');
+            corpo.innerHTML=visiveis.map(function(r){
+                const motivo=(r.cancelamentos&&r.cancelamentos.motivo)||r.Mot_Cancelam||'Não informado',resp=r.responsabilidade_cancelamento||'Não informada';
+                const classe=resp==='PACIENTE'?'bg-amber-50 text-amber-800':resp==='EXTRA-PACIENTE'?'bg-teal-50 text-teal-800':'bg-slate-100 text-slate-600';
+                return '<tr><td class="whitespace-nowrap p-3">'+escaparHtml(r.Data_da_Cirurgia||'—')+'</td><td class="p-3 font-semibold">'+escaparHtml(r.Nome_Paciente||'Não informado')+'</td><td class="p-3">'+escaparHtml(r.Especialidade||'—')+'</td><td class="p-3">'+escaparHtml(motivo)+'</td><td class="p-3"><span class="rounded-full px-2 py-1 text-[10px] font-bold '+classe+'">'+escaparHtml(resp)+'</span></td></tr>';
+            }).join('')||'<tr><td colspan="5" class="p-5 text-center text-slate-400">Nenhum cancelamento encontrado para os filtros selecionados.</td></tr>';
+            document.getElementById('lblCancelamentos').textContent='Exibindo '+(total?ini+1:0)+'–'+Math.min(ini+TAMANHO_PAGINA_CANCELAMENTOS,total)+' de '+total.toLocaleString('pt-BR');
+            document.getElementById('paginaCancelamentosLabel').textContent='Página '+paginaAtualCancelamentos+' / '+Math.max(1,Math.ceil(total/TAMANHO_PAGINA_CANCELAMENTOS));
+        }
+        function paginaCancelamentos(delta){const total=obterCancelamentosFiltrados().length;paginaAtualCancelamentos=Math.max(1,Math.min(Math.ceil(total/TAMANHO_PAGINA_CANCELAMENTOS)||1,paginaAtualCancelamentos+delta));renderizarCancelamentos();}
+        async function carregarDashboard(forcar){
+            try{if(forcar)dadosRelatoriosCirurgias=null;document.getElementById('dashFonteInfo').textContent='Carregando indicadores...';await buscarDadosRelatorios();renderizarDashboard();}
+            catch(error){document.getElementById('dashFonteInfo').textContent='Não foi possível carregar os indicadores: '+error.message;}
+        }
+        function limparFiltrosDashboard(){document.getElementById('filtroDashInicio').value='';document.getElementById('filtroDashFim').value='';renderizarDashboard();}
+        function desenharBarras(id,itens,cor){
+            const el=document.getElementById(id);if(!el)return;const max=Math.max(1,...itens.map(x=>x.valor));
+            el.innerHTML=itens.length?itens.map(function(x){const pct=Math.max(0,x.valor/max*100);return '<div><div class="mb-1 flex items-center justify-between gap-3 text-xs"><span class="truncate text-slate-600">'+escaparHtml(x.nome)+'</span><strong class="shrink-0 text-slate-700">'+x.valor.toLocaleString('pt-BR')+'</strong></div><div class="h-2.5 overflow-hidden rounded-full bg-slate-100"><div class="h-full rounded-full '+cor+'" style="width:'+pct.toFixed(1)+'%"></div></div></div>';}).join(''):'<p class="text-xs text-slate-400">Sem dados para o período.</p>';
+        }
+        function renderizarDashboard(){
+            if(!dadosRelatoriosCirurgias)return;
+            const inicio=document.getElementById('filtroDashInicio').value,fim=document.getElementById('filtroDashFim').value;
+            const lista=dadosRelatoriosCirurgias.filter(function(r){const iso=dataRelatorioISO(r.Data_da_Cirurgia);return (!inicio||(iso&&iso>=inicio))&&(!fim||(iso&&iso<=fim));});
+            const total=lista.length,realizadas=lista.filter(r=>String(r.Situaçao||'').toUpperCase()==='REALIZADA').length,canceladas=lista.filter(r=>String(r.Situaçao||'').toUpperCase()==='CANCELADA').length;
+            document.getElementById('dashCirTotal').textContent=total.toLocaleString('pt-BR');document.getElementById('dashCirRealizadas').textContent=realizadas.toLocaleString('pt-BR');document.getElementById('dashCirCanceladas').textContent=canceladas.toLocaleString('pt-BR');document.getElementById('dashCirTaxa').textContent=(total?(realizadas/total*100):0).toLocaleString('pt-BR',{maximumFractionDigits:1})+'%';
+            document.getElementById('dashPeriodoLabel').textContent=(inicio||fim)?'Período: '+(inicio||'início não definido')+' até '+(fim||'data atual'):'Todos os registros disponíveis';
+            const situacoes={};lista.forEach(r=>{const k=String(r.Situaçao||'Não informada').trim().toUpperCase();situacoes[k]=(situacoes[k]||0)+1;});
+            desenharBarras('graficoSituacoes',Object.entries(situacoes).map(([nome,valor])=>({nome,valor})).sort((a,b)=>b.valor-a.valor),'bg-teal-600');
+            const cancel=lista.filter(r=>String(r.Situaçao||'').toUpperCase()==='CANCELADA'),resp={PACIENTE:0,'EXTRA-PACIENTE':0,'Não informada':0};
+            cancel.forEach(r=>{const k=r.responsabilidade_cancelamento||'Não informada';resp[k]=(resp[k]||0)+1;});
+            desenharBarras('graficoResponsabilidade',Object.entries(resp).map(([nome,valor])=>({nome,valor})),'bg-amber-500');
+            const anos={};lista.forEach(r=>{const d=dataRelatorioParaDate(r.Data_da_Cirurgia);if(d){const y=String(d.getFullYear());anos[y]=(anos[y]||0)+1;}});
+            desenharBarras('graficoAnos',Object.entries(anos).sort((a,b)=>a[0].localeCompare(b[0])).map(([nome,valor])=>({nome,valor})),'bg-sky-600');
+            const motivos={};cancel.forEach(r=>{const nome=(r.cancelamentos&&r.cancelamentos.motivo)||r.Mot_Cancelam||'Não informado';motivos[nome]=(motivos[nome]||0)+1;});
+            desenharBarras('graficoMotivos',Object.entries(motivos).map(([nome,valor])=>({nome,valor})).sort((a,b)=>b.valor-a.valor).slice(0,10),'bg-rose-500');
+            document.getElementById('dashFonteInfo').textContent='Fonte: '+total.toLocaleString('pt-BR')+' registros da tabela cirurgias. Dados atualizados em '+new Date().toLocaleString('pt-BR')+'.';
+        }
         function alternarMenuLateral(){
             const menu=document.getElementById('menuLateral'),backdrop=document.getElementById('sidebarBackdrop');
-            const abrir=menu.classList.contains('-translate-x-full');
-            menu.classList.toggle('-translate-x-full',!abrir);menu.classList.toggle('translate-x-0',abrir);
-            backdrop.classList.toggle('hidden',!abrir);
+            const abrir=menu.classList.contains('-translate-x-full');menu.classList.toggle('-translate-x-full',!abrir);menu.classList.toggle('translate-x-0',abrir);backdrop.classList.toggle('hidden',!abrir);
         }
-        function fecharMenuLateral(){
-            const menu=document.getElementById('menuLateral');
-            menu.classList.add('-translate-x-full');menu.classList.remove('translate-x-0');
-            document.getElementById('sidebarBackdrop').classList.add('hidden');
-        }
+        function fecharMenuLateral(){const menu=document.getElementById('menuLateral');menu.classList.add('-translate-x-full');menu.classList.remove('translate-x-0');document.getElementById('sidebarBackdrop').classList.add('hidden');}
+        function alternarLarguraSidebar(){const menu=document.getElementById('menuLateral');menu.classList.toggle('sidebar-recolhida');const icone=document.getElementById('iconeLarguraSidebar');if(icone)icone.className=menu.classList.contains('sidebar-recolhida')?'fa-solid fa-angles-right':'fa-solid fa-angles-left';}
+        function alternarVisibilidadeSidebar(){document.getElementById('menuLateral').classList.toggle('sidebar-oculta');}
         function navegarSistema(destino){
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
-            if((destino==='registro'||destino==='medicos')&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
-            ['secFormulario','secProfissionais','secPacientes','secHistoricoCirurgias','secAdmin','secAuditoria'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-            if(destino==='registro'){
-                document.getElementById('secFormulario').classList.remove('hidden');
-            }else if(destino==='medicos'){
-                document.getElementById('secProfissionais').classList.remove('hidden');
-                carregarProfissionais();
-            }else if(destino==='pesquisa'){
-                document.getElementById('secPacientes').classList.remove('hidden');
-                pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];
-                carregarPacientes();
-            }
-            document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){
-                const ativo=btn.getAttribute('data-nav')===destino;
-                btn.classList.toggle('nav-ativo',ativo);
-                btn.setAttribute('aria-current',ativo?'page':'false');
-            });
-            fecharMenuLateral();
-            window.scrollTo({top:0,behavior:'smooth'});
+            if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
+            ['secFormulario','secProfissionais','secPacientes','secHistoricoCirurgias','secAdmin','secAuditoria','secCancelamentos','secDashboards'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+            if(destino==='registro'){document.getElementById('secFormulario').classList.remove('hidden');}
+            else if(destino==='medicos'){document.getElementById('secProfissionais').classList.remove('hidden');carregarProfissionais();}
+            else if(destino==='pesquisa'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];carregarPacientes();}
+            else if(destino==='novoPaciente'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;carregarPacientes();setTimeout(function(){abrirCadastroPaciente();},0);}
+            else if(destino==='cancelamentos'){document.getElementById('secCancelamentos').classList.remove('hidden');carregarCancelamentos();}
+            else if(destino==='dashboards'){document.getElementById('secDashboards').classList.remove('hidden');carregarDashboard();}
+            document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){const ativo=btn.getAttribute('data-nav')===destino;btn.classList.toggle('nav-ativo',ativo);btn.setAttribute('aria-current',ativo?'page':'false');});
+            fecharMenuLateral();window.scrollTo({top:0,behavior:'smooth'});
         }
         function alternarPainelUsuarios(){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;const sec=document.getElementById('secAdmin'),abrir=sec.classList.contains('hidden');
