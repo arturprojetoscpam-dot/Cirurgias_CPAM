@@ -46,6 +46,7 @@
         .campo-paciente-modal,.campo-cirurgia { width:100%; border:1px solid #cbd5e1; border-radius:.65rem; background:#fff; padding:.68rem .8rem; color:#0f172a; font-size:.78rem; outline:none; transition:border-color .15s,box-shadow .15s; }
         .campo-paciente-modal:focus,.campo-cirurgia:focus { border-color:#059669; box-shadow:0 0 0 2px rgba(5,150,105,.2); }
         .campo-paciente-modal:disabled,.campo-paciente-modal[readonly],.campo-cirurgia:disabled { background:#f1f5f9; color:#475569; }
+        @media (min-width:1024px) { #menuLateral.sidebar-recolhida { width:5rem; } #menuLateral.sidebar-recolhida .sidebar-brand, #menuLateral.sidebar-recolhida nav [data-nav] span, #menuLateral.sidebar-recolhida .sidebar-footer-text { display:none; } #menuLateral.sidebar-recolhida nav [data-nav] { justify-content:center; padding-left:.5rem; padding-right:.5rem; } #menuLateral.sidebar-oculta { display:none; } }
         .label-cirurgia { display:block; margin-bottom:.3rem; color:#334155; font-size:.72rem; font-weight:600; }
         #menuLateral [data-nav].nav-ativo { background:#f0fdfa; color:#0f766e; box-shadow:inset 3px 0 0 #0d9488; }
         @media (min-width:1024px) { #menuLateral { align-self:stretch; } }
@@ -75,7 +76,7 @@
 
             <div class="flex items-center gap-3">
                 <!-- Status da Conexão / Botão Config -->
-                <div class="flex items-center gap-3"><div class="hidden sm:block text-right"><p id="usuarioEmail" class="text-xs font-semibold"></p><p id="usuarioPerfil" class="text-[10px] text-teal-300"></p></div><button id="btnAuditoria" onclick="alternarAuditoria()" class="hidden rounded-lg border border-slate-500 bg-slate-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-clipboard-list mr-1"></i>Auditoria</button><button id="btnUsuarios" onclick="alternarPainelUsuarios()" class="hidden rounded-lg border border-teal-500/40 bg-teal-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-users mr-1"></i>Usuários</button><button onclick="sair()" class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Sair</button></div>
+                <div class="flex items-center gap-2"><button type="button" onclick="alternarVisibilidadeSidebar()" class="hidden lg:inline-flex rounded-lg border border-teal-500/40 bg-teal-800/60 px-3 py-2 text-white" aria-label="Ocultar ou reexibir menu lateral"><i class="fa-solid fa-bars-staggered"></i></button><div class="hidden sm:block text-right"><p id="usuarioEmail" class="text-xs font-extrabold"></p><p id="usuarioEmailSecundario" class="text-[9px] text-slate-300"></p><p id="usuarioPerfil" class="text-[10px] text-teal-300"></p></div></div><div class="flex items-center gap-2"><button id="btnAuditoria" onclick="alternarAuditoria()" class="hidden rounded-lg border border-slate-500 bg-slate-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-clipboard-list mr-1"></i>Auditoria</button><button id="btnUsuarios" onclick="alternarPainelUsuarios()" class="hidden rounded-lg border border-teal-500/40 bg-teal-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-users mr-1"></i>Usuários</button><button onclick="sair()" class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Sair</button></div>
             </div>
         </div>
     </header>
@@ -85,13 +86,16 @@
         <div id="sidebarBackdrop" onclick="fecharMenuLateral()" class="fixed inset-0 z-40 hidden bg-slate-950/50 backdrop-blur-[1px] lg:hidden"></div>
         <aside id="menuLateral" class="fixed inset-y-[4.5rem] left-0 z-50 w-64 -translate-x-full border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 lg:sticky lg:top-[4.5rem] lg:z-20 lg:h-[calc(100vh-4.5rem)] lg:w-64 lg:translate-x-0 lg:flex-shrink-0 lg:shadow-none">
             <div class="flex h-full flex-col px-3 py-5">
-                <div class="px-3 pb-4"><p class="text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Menu principal</p><p class="mt-1 text-xs text-slate-500">Navegação do sistema</p></div>
+                <div class="mb-3 flex items-center justify-between px-2"><div class="sidebar-brand"><p class="text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Menu principal</p><p class="mt-1 text-xs text-slate-500">Navegação do sistema</p></div><button type="button" onclick="alternarLarguraSidebar()" class="hidden rounded-lg p-2 text-slate-500 hover:bg-slate-100 lg:inline-flex" aria-label="Recolher ou expandir menu"><i id="iconeLarguraSidebar" class="fa-solid fa-angles-left"></i></button></div>
                 <nav class="space-y-1" aria-label="Navegação principal">
+                    <button id="navNovoPaciente" data-nav="novoPaciente" onclick="navegarSistema('novoPaciente')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-user-plus w-5 text-center text-base"></i><span>Novo paciente</span></button>
                     <button id="navRegistro" data-nav="registro" onclick="navegarSistema('registro')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-file-circle-plus w-5 text-center text-base"></i><span>Novo registro</span></button>
                     <button id="navMedicos" data-nav="medicos" onclick="navegarSistema('medicos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-user-doctor w-5 text-center text-base"></i><span>Incluir médico</span></button>
-                    <button id="navPesquisa" data-nav="pesquisa" onclick="navegarSistema('pesquisa')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-magnifying-glass w-5 text-center text-base"></i><span>Tela de pesquisa</span></button>
+                    <button id="navPesquisa" data-nav="pesquisa" onclick="navegarSistema('pesquisa')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-magnifying-glass w-5 text-center text-base"></i><span>Pesquisa de pacientes</span></button>
+                    <button id="navCancelamentos" data-nav="cancelamentos" onclick="navegarSistema('cancelamentos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-calendar-xmark w-5 text-center text-base"></i><span>Cancelamentos</span></button>
+                    <button id="navDashboards" data-nav="dashboards" onclick="navegarSistema('dashboards')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-chart-pie w-5 text-center text-base"></i><span>Dashboards</span></button>
                 </nav>
-                <div class="mt-auto border-t border-slate-100 px-3 pt-4"><div class="flex items-center gap-2 text-[10px] font-medium text-slate-400"><i class="fa-solid fa-shield-halved text-teal-600"></i><span>Acesso protegido por perfil</span></div></div>
+                <div class="sidebar-footer-text mt-auto border-t border-slate-100 px-3 pt-4"><div class="flex items-center gap-2 text-[10px] font-medium text-slate-400"><i class="fa-solid fa-shield-halved text-teal-600"></i><span>Acesso protegido por perfil</span></div><div class="mt-3 border-t border-slate-100 pt-3"><p id="sidebarNomeUsuario" class="truncate text-xs font-extrabold text-slate-700"></p><p id="sidebarPerfilUsuario" class="mt-0.5 text-[10px] text-slate-500"></p><button type="button" onclick="sair()" class="mt-3 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs font-semibold text-rose-700 hover:bg-rose-50"><i class="fa-solid fa-right-from-bracket"></i><span>Sair do sistema</span></button></div></div>
             </div>
         </aside>
         <main class="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 space-y-6">
@@ -642,7 +646,10 @@
                 if(!perfil||!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Acesso suspenso. Procure o administrador.');return;}
                 usuarioAtual=usuario;perfilAtual=perfil;
                 document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
-                document.getElementById('usuarioEmail').textContent=usuario.email||perfil.email;
+                document.getElementById('usuarioEmail').textContent=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email;
+                document.getElementById('usuarioEmailSecundario').textContent=usuario.email||perfil.email||'';
+                document.getElementById('sidebarNomeUsuario').textContent=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
+                document.getElementById('sidebarPerfilUsuario').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
                 document.getElementById('usuarioPerfil').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
                 document.getElementById('btnUsuarios').classList.toggle('hidden',perfil.role!=='administrador');
                 document.getElementById('btnAuditoria').classList.toggle('hidden',perfil.role!=='administrador');
@@ -651,6 +658,8 @@
                 document.getElementById('navRegistro').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navMedicos').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navPesquisa').classList.remove('hidden');
+                document.getElementById('navNovoPaciente').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
+                document.getElementById('navCancelamentos').classList.remove('hidden');document.getElementById('navDashboards').classList.remove('hidden');
                 document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
                 document.getElementById('secFormulario').classList.add('hidden');
                 atualizarBadgeConexao(true,'Sessão autenticada');await carregarPacientes();
@@ -1381,7 +1390,7 @@
             if(error){corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent=error.message;return;}
             corpo.innerHTML=(data||[]).map(function(p){
                 const opts=Object.keys(ROTULOS_PERFIL).map(function(role){return '<option value="'+role+'"'+(p.role===role?' selected':'')+'>'+ROTULOS_PERFIL[role]+'</option>';}).join('');
-                return '<tr><td class="p-3 font-medium">'+escaparHtml(p.email)+'</td><td class="p-3">'+escaparHtml(p.full_name||'-')+'</td>'+
+                return '<tr><td class="p-3 font-medium">'+escaparHtml(p.email)+'</td><td class="p-3"><input id="nome-usuario-'+p.user_id+'" value="'+escaparHtml(p.full_name||'')+'" placeholder="Nome de exibição" class="w-40 rounded-lg border border-slate-300 p-2 text-xs" maxlength="120"></td>'+
                     '<td class="p-3"><select id="role-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs">'+opts+'</select></td>'+
                     '<td class="p-3"><select id="active-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs"><option value="true"'+(p.active?' selected':'')+'>Ativo</option><option value="false"'+(!p.active?' selected':'')+'>Suspenso</option></select></td>'+
                     '<td class="p-3"><button onclick="salvarPerfilUsuario(\''+p.user_id+'\')" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white">Salvar</button></td></tr>';
@@ -1412,11 +1421,12 @@
         async function enviarLinkRedefinicao(emailCodificado){if(!perfilAtual||perfilAtual.role!=='administrador')return;const email=decodeURIComponent(emailCodificado||'');if(!email)return;const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});if(error){exibirToast('Não foi possível enviar o link: '+error.message,'erro');return;}exibirToast('Link de redefinição enviado para '+email+'.','sucesso');}
         async function salvarPerfilUsuario(id){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
-            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true';
-            const {error}=await supabaseClient.from('user_profiles').update({role:role,active:active}).eq('user_id',id);
+            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true',full_name=document.getElementById('nome-usuario-'+id).value.trim();
+            const {error}=await supabaseClient.from('user_profiles').update({role:role,active:active,full_name:full_name||null}).eq('user_id',id);
             if(error){exibirToast('Não foi possível atualizar: '+error.message,'erro');return;}
             exibirToast('Perfil atualizado.','sucesso');
             if(id===usuarioAtual.id&&(!active||role!=='administrador')){await supabaseClient.auth.signOut();mostrarLogin();return;}
+            if(id===usuarioAtual.id){perfilAtual.full_name=full_name;document.getElementById('usuarioEmail').textContent=full_name||usuarioAtual.email||perfilAtual.email;document.getElementById('sidebarNomeUsuario').textContent=full_name||usuarioAtual.email||perfilAtual.email;}
             await carregarUsuarios();
         }
     </script>
