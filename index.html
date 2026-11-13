@@ -47,6 +47,8 @@
         .campo-paciente-modal:focus,.campo-cirurgia:focus { border-color:#059669; box-shadow:0 0 0 2px rgba(5,150,105,.2); }
         .campo-paciente-modal:disabled,.campo-paciente-modal[readonly],.campo-cirurgia:disabled { background:#f1f5f9; color:#475569; }
         .label-cirurgia { display:block; margin-bottom:.3rem; color:#334155; font-size:.72rem; font-weight:600; }
+        #menuLateral [data-nav].nav-ativo { background:#f0fdfa; color:#0f766e; box-shadow:inset 3px 0 0 #0d9488; }
+        @media (min-width:1024px) { #menuLateral { align-self:stretch; } }
 
     </style>
 </head>
@@ -61,6 +63,7 @@
     <header class="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white shadow-lg sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
             <div class="flex items-center gap-3">
+                <button type="button" onclick="alternarMenuLateral()" class="rounded-lg border border-teal-500/40 bg-teal-800/60 px-3 py-2 text-white hover:bg-teal-700 lg:hidden" aria-label="Abrir menu de navegação"><i class="fa-solid fa-bars"></i></button>
                 <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-300 text-xl font-bold">
                     <i class="fa-solid fa-hospital"></i>
                 </div>
@@ -78,7 +81,20 @@
     </header>
 
     <!-- Conteúdo Principal -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+    <div class="flex min-h-[calc(100vh-4.5rem)]">
+        <div id="sidebarBackdrop" onclick="fecharMenuLateral()" class="fixed inset-0 z-40 hidden bg-slate-950/50 backdrop-blur-[1px] lg:hidden"></div>
+        <aside id="menuLateral" class="fixed inset-y-[4.5rem] left-0 z-50 w-64 -translate-x-full border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 lg:sticky lg:top-[4.5rem] lg:z-20 lg:h-[calc(100vh-4.5rem)] lg:w-64 lg:translate-x-0 lg:flex-shrink-0 lg:shadow-none">
+            <div class="flex h-full flex-col px-3 py-5">
+                <div class="px-3 pb-4"><p class="text-[10px] font-bold uppercase tracking-[.18em] text-slate-400">Menu principal</p><p class="mt-1 text-xs text-slate-500">Navegação do sistema</p></div>
+                <nav class="space-y-1" aria-label="Navegação principal">
+                    <button id="navRegistro" data-nav="registro" onclick="navegarSistema('registro')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-file-circle-plus w-5 text-center text-base"></i><span>Novo registro</span></button>
+                    <button id="navMedicos" data-nav="medicos" onclick="navegarSistema('medicos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-user-doctor w-5 text-center text-base"></i><span>Incluir médico</span></button>
+                    <button id="navPesquisa" data-nav="pesquisa" onclick="navegarSistema('pesquisa')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-magnifying-glass w-5 text-center text-base"></i><span>Tela de pesquisa</span></button>
+                </nav>
+                <div class="mt-auto border-t border-slate-100 px-3 pt-4"><div class="flex items-center gap-2 text-[10px] font-medium text-slate-400"><i class="fa-solid fa-shield-halved text-teal-600"></i><span>Acesso protegido por perfil</span></div></div>
+            </div>
+        </aside>
+        <main class="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 space-y-6">
 
         <!-- RESUMO DE PACIENTES -->
         <section class="mb-2"><div class="inline-flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
@@ -344,7 +360,8 @@
             </section>
         </div>
 
-    </main>
+        </main>
+    </div>
     </div>
 
 
@@ -601,6 +618,10 @@
                 document.getElementById('btnAuditoria').classList.toggle('hidden',perfil.role!=='administrador');
                 document.getElementById('btnToggleForm').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('btnProfissionais').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
+                document.getElementById('navRegistro').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
+                document.getElementById('navMedicos').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
+                document.getElementById('navPesquisa').classList.remove('hidden');
+                document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
                 document.getElementById('secFormulario').classList.add('hidden');
                 atualizarBadgeConexao(true,'Sessão autenticada');await carregarPacientes();
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
@@ -1209,6 +1230,39 @@
             t.className='pointer-events-auto flex items-center gap-3 rounded-xl border px-4 py-3 text-xs font-semibold shadow-lg '+(ok?'border-emerald-700 bg-emerald-900 text-emerald-100':'border-rose-700 bg-rose-900 text-rose-100');
             i.className=ok?'fa-solid fa-circle-check text-emerald-400':'fa-solid fa-triangle-exclamation text-rose-400';s.textContent=mensagem;t.appendChild(i);t.appendChild(s);
             document.getElementById('toastContainer').appendChild(t);window.setTimeout(function(){t.remove();},4500);
+        }
+        function alternarMenuLateral(){
+            const menu=document.getElementById('menuLateral'),backdrop=document.getElementById('sidebarBackdrop');
+            const abrir=menu.classList.contains('-translate-x-full');
+            menu.classList.toggle('-translate-x-full',!abrir);menu.classList.toggle('translate-x-0',abrir);
+            backdrop.classList.toggle('hidden',!abrir);
+        }
+        function fecharMenuLateral(){
+            const menu=document.getElementById('menuLateral');
+            menu.classList.add('-translate-x-full');menu.classList.remove('translate-x-0');
+            document.getElementById('sidebarBackdrop').classList.add('hidden');
+        }
+        function navegarSistema(destino){
+            const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
+            if((destino==='registro'||destino==='medicos')&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
+            ['secFormulario','secProfissionais','secPacientes','secHistoricoCirurgias','secAdmin','secAuditoria'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+            if(destino==='registro'){
+                document.getElementById('secFormulario').classList.remove('hidden');
+            }else if(destino==='medicos'){
+                document.getElementById('secProfissionais').classList.remove('hidden');
+                carregarProfissionais();
+            }else if(destino==='pesquisa'){
+                document.getElementById('secPacientes').classList.remove('hidden');
+                pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];
+                carregarPacientes();
+            }
+            document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){
+                const ativo=btn.getAttribute('data-nav')===destino;
+                btn.classList.toggle('nav-ativo',ativo);
+                btn.setAttribute('aria-current',ativo?'page':'false');
+            });
+            fecharMenuLateral();
+            window.scrollTo({top:0,behavior:'smooth'});
         }
         function alternarPainelUsuarios(){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;const sec=document.getElementById('secAdmin'),abrir=sec.classList.contains('hidden');
