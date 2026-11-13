@@ -53,6 +53,8 @@
 
 
         /* Tela de autenticação */
+        #authScreen.login-screen.hidden{display:none!important}
+
         #authScreen.login-screen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:28px;background:linear-gradient(135deg,#e8f5ef 0%,#f1f5f5 48%,#e8eef0 100%);font-family:'Inter',sans-serif}
         .login-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);width:min(1160px,100%);min-height:min(700px,calc(100vh - 56px));overflow:hidden;border-radius:20px;background:#fff;box-shadow:0 28px 80px rgba(15,45,39,.16);border:1px solid rgba(255,255,255,.8)}
         .login-brand{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:space-between;min-height:650px;padding:54px 56px 30px;background:#123c32;color:#fff;overflow:hidden}
@@ -775,17 +777,13 @@
             finally{carregandoPerfil=false;}
         }
         (function restaurarEmailSalvo(){try{const salvo=localStorage.getItem('cpam_login_email');if(salvo){document.getElementById('loginEmail').value=salvo;document.getElementById('lembrarAcesso').checked=true;}}catch(e){console.warn('Não foi possível restaurar o e-mail salvo.');}})();
+        (function restaurarEmailSalvo(){try{const salvo=localStorage.getItem('cpam_login_email');if(salvo){document.getElementById('loginEmail').value=salvo;document.getElementById('lembrarAcesso').checked=true;}const check=document.getElementById('lembrarAcesso');check.addEventListener('change',()=>{try{if(check.checked)localStorage.setItem('cpam_login_email',document.getElementById('loginEmail').value.trim());else localStorage.removeItem('cpam_login_email');}catch(e){console.warn('Não foi possível salvar a preferência de acesso.');}});document.getElementById('loginEmail').addEventListener('change',()=>{try{if(check.checked)localStorage.setItem('cpam_login_email',document.getElementById('loginEmail').value.trim());}catch(e){}});}catch(e){console.warn('Não foi possível restaurar o e-mail salvo.');}})();
         async function entrar(evento){
-            evento.preventDefault();ocultarMensagemAuth();
-            const email=document.getElementById('loginEmail').value.trim();
-            try{if(document.getElementById('lembrarAcesso').checked)localStorage.setItem('cpam_login_email',email);else localStorage.removeItem('cpam_login_email');}catch(e){console.warn('Não foi possível salvar a preferência de acesso.');}
-            const botao=document.getElementById('btnEntrar'),textoOriginal=botao.innerHTML;botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i><span>VALIDANDO ACESSO...</span>';
-            try{
-                const {data,error}=await supabaseClient.auth.signInWithPassword({email:email,password:document.getElementById('loginSenha').value});
-                if(error){mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');return;}
-                if(data.user)await ativarSessao(data.user);
-            }catch(error){mostrarMensagemAuth('Ocorreu um erro ao tentar entrar. Tente novamente.');console.error(error);}
-            finally{botao.disabled=false;botao.innerHTML=textoOriginal;}
+            evento.preventDefault();ocultarMensagemAuth();const botao=document.getElementById('btnEntrar');botao.disabled=true;botao.textContent='Autenticando...';
+            const {data,error}=await supabaseClient.auth.signInWithPassword({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginSenha').value});
+            botao.disabled=false;botao.textContent='Entrar';
+            if(error){mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');return;}
+            if(data.user)await ativarSessao(data.user);
         }
         async function solicitarRecuperacao(){
             ocultarMensagemAuth();const email=document.getElementById('loginEmail').value.trim();
