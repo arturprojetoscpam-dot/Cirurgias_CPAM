@@ -363,6 +363,71 @@
         }
 
         /* Fim do CPAM POSITIVUS DESIGN SYSTEM */
+
+        /* Ajustes finais solicitados — login e header */
+        #authScreen .login-input-wrap{
+          box-sizing:border-box;
+          width:100%;
+          min-width:0;
+          overflow:hidden;
+          outline:none!important;
+          border:1px solid #C8D8CD;
+          border-radius:12px;
+          background:#fff;
+          clip-path:none!important;
+          transition:border-color .18s,box-shadow .18s;
+        }
+        #authScreen .login-input-wrap:focus,
+        #authScreen .login-input-wrap:focus-within{
+          outline:none!important;
+          border:2px solid #2E7D32!important;
+          border-radius:12px!important;
+          box-shadow:0 0 0 3px rgba(46,125,50,.15)!important;
+        }
+        #authScreen .login-input-wrap input{
+          border:0!important;
+          outline:none!important;
+          box-shadow:none!important;
+        }
+        #appShell>header{
+          background:#E2ECE4!important;
+          color:#173B2A!important;
+          border-bottom:4px solid #315F43!important;
+          box-shadow:0 3px 10px rgba(23,59,42,.08)!important;
+        }
+        #appShell>header h1,
+        #appShell>header p,
+        #appShell>header i,
+        #appShell>header button,
+        #appShell>header .header-profile-name,
+        #appShell>header .header-profile-email{
+          color:#173B2A!important;
+        }
+        #appShell>header button{
+          background:#F7FBF7!important;
+          border-color:#A9C9B2!important;
+        }
+        #appShell>header .header-profile-pill{
+          background:transparent!important;
+          border:0!important;
+        }
+        #appShell>header .header-profile-role,
+        #appShell>header .header-avatar,
+        #appShell>header button[onclick="sair()"]{
+          background:#D1E7D8!important;
+          color:#173B2A!important;
+          border:1px solid #A9C9B2!important;
+        }
+        #appShell>header .header-profile-role{font-weight:700!important}
+        #appShell>header .header-avatar{font-weight:800!important}
+        #appShell>header button[onclick="sair()"]:hover{
+          background:#BFDCC8!important;
+          color:#173B2A!important;
+        }
+        @media(max-width:850px){
+          #appShell>header{border-bottom-width:4px!important}
+        }
+
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -394,10 +459,6 @@
     <main class="login-panel">
       <div class="login-form-wrap">
         <div id="authLogin">
-          <div class="login-institutional-logo">
-            <img src="logo-cpam.png" alt="Logotipo do hospital" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
-            <span class="login-logo-fallback" hidden aria-label="Logotipo indisponível"><i class="fa-solid fa-hospital" aria-hidden="true"></i></span>
-          </div>
           <div class="login-restricted"><i class="fa-solid fa-lock"></i> ÁREA RESTRITA</div>
           <h2 class="login-title">Acesse sua conta</h2>
           <p class="login-subtitle">Informe suas credenciais para continuar.</p>
