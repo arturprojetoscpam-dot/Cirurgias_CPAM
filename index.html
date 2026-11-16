@@ -109,6 +109,123 @@
         .login-institutional-logo{width:100%;max-width:110px;margin:0 auto 15px;text-align:center}
         .login-institutional-logo img{display:block;width:100%;max-width:110px;height:auto;margin:0 auto;object-fit:contain;object-position:center}
         .login-logo-fallback{display:flex;width:54px;height:54px;align-items:center;justify-content:center;margin:0 auto;border-radius:14px;background:#e7f8ef;color:#17634a;font-size:25px}
+
+        /* CPAM POSITIVUS DESIGN SYSTEM — camada visual, sem alterar regras de negócio */
+        :root{
+          --cpam-bg:#FFFFFF;--cpam-surface:#F3F5F4;--cpam-green:#22A06B;
+          --cpam-green-hover:#1B8558;--cpam-mint:#D3F3E4;--cpam-ink:#191A23;
+          --cpam-muted:#4B5563;--cpam-border:#191A23;--cpam-radius:24px;
+          --cpam-shadow:0 5px 0 #191A23;
+        }
+        body{background:var(--cpam-bg)!important;color:var(--cpam-ink);font-family:'Plus Jakarta Sans','Inter',sans-serif}
+        #appShell{background:var(--cpam-bg);color:var(--cpam-ink)}
+        #appShell>header{background:var(--cpam-bg)!important;color:var(--cpam-ink)!important;border-bottom:1px solid var(--cpam-ink);box-shadow:0 3px 0 rgba(25,26,35,.08)!important}
+        #appShell>header h1{color:var(--cpam-ink)!important}
+        #appShell>header p{color:var(--cpam-muted)!important}
+        #appShell>header .bg-teal-500\/20{background:var(--cpam-mint)!important;border:1px solid var(--cpam-ink)!important;color:var(--cpam-ink)!important}
+        #appShell>header button{border-color:var(--cpam-ink)!important;color:var(--cpam-ink)!important;background:#fff!important;border-radius:14px!important}
+        #menuLateral{background:var(--cpam-surface)!important;border-color:var(--cpam-ink)!important;box-shadow:none!important}
+        #menuLateral [data-nav]{border:1px solid transparent;border-radius:14px!important;color:var(--cpam-ink)!important;transition:background .18s,border-color .18s}
+        #menuLateral [data-nav]:hover{background:var(--cpam-mint)!important;border-color:var(--cpam-ink)!important}
+        #menuLateral [data-nav].nav-ativo{background:var(--cpam-mint)!important;color:var(--cpam-ink)!important;border-color:var(--cpam-ink)!important;box-shadow:inset 4px 0 0 var(--cpam-green)!important}
+        #menuLateral .sidebar-brand p:first-child{color:var(--cpam-green-hover)!important}
+        #appShell main,#appShell .app-content{background:var(--cpam-bg)}
+        #appShell section.rounded-2xl.border,
+        #appShell section.rounded-xl.border,
+        #appShell .rounded-2xl.border.bg-white,
+        #appShell .rounded-xl.border.bg-white,
+        #appShell .rounded-2xl.border.bg-slate-50,
+        #appShell .rounded-xl.border.bg-slate-50{
+          border:1px solid var(--cpam-ink)!important;border-radius:var(--cpam-radius)!important;
+          box-shadow:var(--cpam-shadow)!important;
+        }
+        #appShell .bg-white.rounded-2xl,
+        #appShell .bg-white.rounded-xl{background:var(--cpam-bg)!important}
+        #appShell .bg-slate-50{background:var(--cpam-surface)!important}
+        #appShell .border-slate-100,#appShell .border-slate-200,#appShell .border-slate-200\/90,
+        #appShell .border-slate-300{border-color:var(--cpam-ink)!important}
+        #appShell .divide-slate-100> :not([hidden])~ :not([hidden]),
+        #appShell .divide-slate-200> :not([hidden])~ :not([hidden]){border-color:rgba(25,26,35,.18)!important}
+        #appShell h2,#appShell h3{letter-spacing:-.02em}
+        #appShell section>div:first-child h2,
+        #appShell section>div:first-child h3{font-weight:600}
+        #appShell section>div:first-child h2{display:inline-block;padding:5px 12px;border-radius:8px;background:var(--cpam-mint);color:var(--cpam-ink)!important}
+        #appShell p.text-slate-500,#appShell p.text-slate-600,
+        #appShell .text-slate-500,#appShell .text-slate-600{color:var(--cpam-muted)!important}
+        #appShell .text-teal-800,#appShell .text-teal-700,#appShell .text-teal-600,
+        #appShell .text-emerald-800,#appShell .text-emerald-700{color:var(--cpam-green-hover)!important}
+        #appShell .bg-teal-50,#appShell .bg-emerald-50{background:var(--cpam-mint)!important}
+        #appShell .bg-teal-100,#appShell .bg-emerald-100{background:var(--cpam-mint)!important}
+        #appShell .bg-teal-700,#appShell .bg-teal-800,#appShell .bg-emerald-700{background:var(--cpam-ink)!important;color:#fff!important}
+        #appShell button[class*="bg-teal-"]:not(:disabled):hover,
+        #appShell button[class*="bg-emerald-"]:not(:disabled):hover{background:var(--cpam-green)!important;color:#fff!important}
+        #appShell button[class*="bg-slate-"]:not(:disabled),
+        #appShell button[class*="bg-white"]:not(:disabled){border:1px solid var(--cpam-ink)!important;border-radius:14px!important}
+        #appShell button[class*="rounded"]:not(.login-eye){transition:background .18s,color .18s,transform .18s,box-shadow .18s}
+        #appShell button[class*="bg-teal-700"],
+        #appShell button[class*="bg-emerald-700"],
+        #appShell button[class*="bg-slate-900"],
+        #appShell button[class*="bg-gray-900"]{
+          background:var(--cpam-ink)!important;color:#fff!important;border:1px solid var(--cpam-ink)!important;
+          border-radius:14px!important;box-shadow:0 3px 0 rgba(25,26,35,.22)!important
+        }
+        #appShell button[class*="bg-teal-700"]:hover,
+        #appShell button[class*="bg-emerald-700"]:hover,
+        #appShell button[class*="bg-slate-900"]:hover,
+        #appShell button[class*="bg-gray-900"]:hover{background:var(--cpam-green)!important;color:#fff!important}
+        #appShell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+        #appShell select,#appShell textarea,
+        #appShell .campo-paciente-modal,#appShell .campo-cirurgia{
+          background:#fff!important;color:var(--cpam-ink)!important;border:1px solid var(--cpam-ink)!important;
+          border-radius:12px!important;box-shadow:none!important
+        }
+        #appShell input:focus,#appShell select:focus,#appShell textarea:focus,
+        #appShell .campo-paciente-modal:focus,#appShell .campo-cirurgia:focus{
+          outline:none!important;border-color:var(--cpam-green)!important;
+          box-shadow:0 0 0 3px rgba(34,160,107,.2)!important
+        }
+        #appShell input:disabled,#appShell input[readonly],#appShell select:disabled,
+        #appShell textarea:disabled,#appShell .campo-paciente-modal:disabled,
+        #appShell .campo-paciente-modal[readonly],#appShell .campo-cirurgia:disabled{
+          background:var(--cpam-surface)!important;color:var(--cpam-muted)!important
+        }
+        #appShell table thead{background:var(--cpam-surface)!important;color:var(--cpam-ink)!important}
+        #appShell table th{font-weight:700;letter-spacing:-.01em}
+        #appShell table tbody tr:hover{background:var(--cpam-mint)!important}
+        #appShell [role="dialog"]>div,#appShell .modal-content{border:1px solid var(--cpam-ink)!important;border-radius:24px!important;box-shadow:var(--cpam-shadow)!important}
+        #appShell .shadow-sm,#appShell .shadow-md,#appShell .shadow-lg{box-shadow:var(--cpam-shadow)!important}
+        #appShell .rounded-2xl{border-radius:24px!important}
+        #appShell .rounded-3xl{border-radius:28px!important}
+        #appShell .rounded-xl{border-radius:14px!important}
+        #appShell .rounded-lg{border-radius:12px!important}
+        #appShell .ring-teal-500,#appShell .focus\:ring-teal-500:focus{--tw-ring-color:var(--cpam-green)!important}
+        #appShell .text-teal-300,#appShell .text-teal-400{color:var(--cpam-green)!important}
+        #appShell .bg-gradient-to-r{background-image:none!important}
+        #appShell .bg-gradient-to-r.from-teal-900,
+        #appShell .bg-gradient-to-r.from-teal-900.via-slate-900,
+        #appShell .bg-gradient-to-r.from-teal-900.to-slate-900{background:var(--cpam-ink)!important;color:#fff!important}
+        #appShell .bg-gradient-to-r.from-teal-900 h3,
+        #appShell .bg-gradient-to-r.from-teal-900 p{color:#fff!important}
+        #appShell .label-cirurgia{color:var(--cpam-ink)!important;font-weight:700}
+        #appShell .custom-scrollbar::-webkit-scrollbar-thumb{background:var(--cpam-green);border-radius:99px}
+        #appShell .custom-scrollbar::-webkit-scrollbar-track{background:var(--cpam-surface)}
+        #authScreen .login-logo img,#authScreen .login-institutional-logo img{background:transparent!important;object-fit:contain!important}
+        #authScreen .login-card{border:1px solid var(--cpam-ink);border-radius:28px;box-shadow:0 5px 0 var(--cpam-ink)}
+        #authScreen .login-brand{background:var(--cpam-mint);color:var(--cpam-ink)}
+        #authScreen .login-brand:before{background:linear-gradient(145deg,rgba(211,243,228,.94),rgba(243,245,244,.9))!important}
+        #authScreen .login-brand h1,#authScreen .login-institution{color:var(--cpam-ink)}
+        #authScreen .login-brand h1 span,#authScreen .login-features i{color:var(--cpam-green)}
+        #authScreen .login-description,#authScreen .login-features li{color:var(--cpam-muted)}
+        #authScreen .login-restricted{background:var(--cpam-mint);color:var(--cpam-ink);border:1px solid var(--cpam-ink)}
+        #authScreen .login-title{color:var(--cpam-ink);font-weight:600;letter-spacing:-.02em}
+        #authScreen .login-input-wrap{border:1px solid var(--cpam-ink);border-radius:12px}
+        #authScreen .login-input-wrap:focus-within{border-color:var(--cpam-green);box-shadow:0 0 0 3px rgba(34,160,107,.2)}
+        #authScreen .login-submit{background:var(--cpam-ink);border:1px solid var(--cpam-ink);border-radius:14px;box-shadow:0 4px 0 var(--cpam-ink)}
+        #authScreen .login-submit:hover{background:var(--cpam-green);transform:translateY(-1px);box-shadow:0 5px 0 var(--cpam-ink)}
+        #authScreen .login-status{background:var(--cpam-surface);border:1px solid var(--cpam-ink);border-radius:12px;color:var(--cpam-muted)}
+        @media(max-width:850px){#appShell section>div:first-child h2{max-width:100%}#appShell section.rounded-2xl.border,#appShell section.rounded-xl.border{border-radius:20px!important}}
+        @media(prefers-reduced-motion:reduce){#appShell *{scroll-behavior:auto!important;transition:none!important}}
+        /* Fim do CPAM POSITIVUS DESIGN SYSTEM */
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
