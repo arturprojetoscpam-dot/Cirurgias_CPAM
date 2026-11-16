@@ -742,6 +742,51 @@
             </form>
         </section>
 
+    <!-- PÁGINA DEDICADA DE CADASTRO E EDIÇÃO DO PACIENTE -->
+    <section id="secCadastroPaciente" class="hidden w-full space-y-4" aria-labelledby="tituloModalPaciente">
+      <div class="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b-4 border-[#315F43] bg-[#E2ECE4] px-5 py-4 sm:px-7">
+          <div><p class="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-800">Bloco Cirúrgico</p><h2 id="tituloModalPaciente" class="mt-1 text-xl font-extrabold leading-tight tracking-tight text-slate-900 sm:text-2xl">Novo Cadastro</h2><p id="subtituloModalPaciente" class="mt-1 text-xs font-medium text-slate-600">Ficha cadastral do paciente</p></div>
+          <button type="button" onclick="fecharModalPaciente()" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"><i class="fa-solid fa-arrow-left mr-2"></i>Voltar à pesquisa</button>
+        </div>
+        <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" class="p-4 sm:p-7">
+          
+          <section class="space-y-4">
+            <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente</h3></div>
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
+              <div class="md:col-span-4"><label for="paciente_codigo" class="mb-1 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-700">Nº do Prontuário Interno <span class="rounded-full bg-teal-100 px-2 py-0.5 text-[9px] font-bold text-teal-900">Gerado automaticamente</span></label><input id="paciente_codigo" readonly disabled placeholder="Gerado ao salvar" class="campo-paciente-modal bg-slate-100 font-mono font-bold"></div>
+              
+              <div class="md:col-span-6"><label for="paciente_cpf" class="mb-1 block text-xs font-semibold text-slate-700">CPF</label><input id="paciente_cpf" inputmode="numeric" class="campo-paciente-modal" placeholder="000.000.000-00"></div>
+              <div class="md:col-span-6"><label for="paciente_cns" class="mb-1 block text-xs font-semibold text-slate-700">Cartão do SUS (CNS)</label><input id="paciente_cns" inputmode="numeric" class="campo-paciente-modal" placeholder="Número do CNS"></div>
+              <div class="md:col-span-8"><label for="paciente_nome" class="mb-1 block text-xs font-semibold text-slate-700">Nome Completo do Paciente <span class="text-rose-600">*</span></label><input id="paciente_nome" required oninput="verificarDuplicidadeNomePaciente()" class="campo-paciente-modal" placeholder="Nome completo, sem abreviações" autocomplete="off"><div id="alertaDuplicidadePaciente" class="mt-2 hidden rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-950" aria-live="polite"></div></div>
+              <div class="md:col-span-4"><label for="paciente_nascimento" class="mb-1 block text-xs font-semibold text-slate-700">Data de Nascimento</label><input id="paciente_nascimento" type="date" class="campo-paciente-modal"></div>
+              <div class="md:col-span-8"><label for="paciente_mae" class="mb-1 block text-xs font-semibold text-slate-700">Nome da Mãe</label><input id="paciente_mae" class="campo-paciente-modal" placeholder="Nome completo da mãe"></div>
+              <div class="md:col-span-4"><label for="paciente_telefone" class="mb-1 block text-xs font-semibold text-slate-700">Telefone / WhatsApp</label><input id="paciente_telefone" type="tel" class="campo-paciente-modal" placeholder="(00) 00000-0000"></div>
+              <div class="md:col-span-3"><label for="paciente_cep" class="mb-1 block text-xs font-semibold text-slate-700">CEP</label><input id="paciente_cep" class="campo-paciente-modal" placeholder="00000-000"></div>
+              <div class="md:col-span-6"><label for="paciente_endereco" class="mb-1 block text-xs font-semibold text-slate-700">Endereço / Rua</label><input id="paciente_endereco" class="campo-paciente-modal" placeholder="Logradouro"></div>
+              <div class="md:col-span-3"><label for="paciente_numero" class="mb-1 block text-xs font-semibold text-slate-700">Número</label><input id="paciente_numero" class="campo-paciente-modal" placeholder="Nº / S/N"></div>
+              <div class="md:col-span-6"><label for="paciente_bairro" class="mb-1 block text-xs font-semibold text-slate-700">Bairro</label><input id="paciente_bairro" class="campo-paciente-modal" placeholder="Bairro"></div>
+              <div class="md:col-span-6"><label for="paciente_municipio" class="mb-1 block text-xs font-semibold text-slate-700">Cidade</label><input id="paciente_municipio" class="campo-paciente-modal" placeholder="Município"></div>
+              <div class="md:col-span-12"><label for="paciente_prontuario" class="mb-1 block text-xs font-semibold text-slate-700">Nº do Cadastro Ambulatorial (referência legada, se houver)</label><input id="paciente_prontuario" class="campo-paciente-modal" placeholder="Cadastro ambulatorial existente"></div>
+            </div>
+          </section>
+
+          <section id="secHistoricoPacienteModal" class="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-3">
+              <div><h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-teal-700"></i>Histórico Cirúrgico do Paciente</h3><p class="mt-1 text-[10px] text-slate-500">Registros vinculados exclusivamente a este cadastro.</p></div>
+              <button id="btnNovaCirurgiaPacienteModal" type="button" onclick="abrirModalCirurgiaNovaDoPaciente()" class="hidden rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white hover:bg-emerald-800"><i class="fa-solid fa-plus mr-1"></i>Registrar Nova Cirurgia</button>
+            </div>
+            <div class="overflow-x-auto"><table class="w-full min-w-[760px] border-collapse text-left text-xs"><thead class="bg-slate-100 text-[10px] font-bold uppercase tracking-wide text-slate-600"><tr><th class="p-3">Data da Cirurgia</th><th class="p-3">Procedimento</th><th class="p-3">Médico Cirurgião</th><th class="p-3">Caráter</th><th class="p-3">Status</th><th class="p-3 text-center">Ações</th></tr></thead><tbody id="gridHistoricoPacienteModal" class="divide-y divide-slate-100"><tr><td colspan="6" class="p-6 text-center text-slate-500">Salve o cadastro do paciente para registrar cirurgias.</td></tr></tbody></table></div>
+          </section>
+
+          <div class="mt-7 flex flex-col-reverse gap-2 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+            <button type="button" onclick="fecharModalPaciente()" class="rounded-xl border border-slate-300 px-5 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancelar / Voltar à pesquisa</button>
+            <button id="btnSalvarPacienteModal" type="submit" class="rounded-xl bg-emerald-700 px-6 py-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cadastro</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
         <!-- LISTA INICIAL DE PACIENTES: apenas 50 por página -->
         <section id="secPacientes" class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
             <div class="space-y-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:p-5">
@@ -1024,7 +1069,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let pacienteModalAtual=null,cirurgiaModalAtual=null,cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
+        let pacienteModalAtual=null,cirurgiaModalAtual=null,cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -1075,7 +1120,7 @@
                 document.getElementById('navCancelamentos').classList.remove('hidden');document.getElementById('navDashboards').classList.remove('hidden');
                 document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
                 document.getElementById('secFormulario').classList.add('hidden');
-                atualizarBadgeConexao(true,'Sessão autenticada');await carregarPacientes();
+                atualizarBadgeConexao(true,'Sessão autenticada');await carregarPacientes();const rotaPaciente=obterRotaPaciente();if(rotaPaciente)await abrirCadastroPaciente(rotaPaciente.id,false);
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
             finally{carregandoPerfil=false;}
         }
@@ -1149,8 +1194,11 @@
                 }catch(error){if(seq!==sequenciaDuplicidadeNomePaciente)return;console.error('Falha ao verificar duplicidade:',error);box.innerHTML='<span class="font-semibold text-rose-800"><i class="fa-solid fa-circle-exclamation mr-1"></i>Não foi possível concluir a verificação. Tente novamente antes de salvar.</span>';}
             },450);
         }
-        async function abrirCadastroPaciente(id){
+        async function abrirCadastroPaciente(id,atualizarRota=true){
             if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar ou editar pacientes.','erro');return;}
+            telaAnteriorCadastroPaciente=document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'pesquisa':'historico';
+            document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');document.getElementById('secCadastroPaciente').classList.remove('hidden');
+            if(atualizarRota)atualizarRotaPaciente(id);
             limparAlertaDuplicidadePaciente();pacienteModalAtual=null;document.getElementById('formModalPaciente').reset();preencherCampo('paciente_codigo','');
             if(id){
                 try{const {data,error}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(error)throw error;pacienteModalAtual=data;pacienteHistoricoAtual=data;
@@ -1158,9 +1206,15 @@
                     document.getElementById('tituloModalPaciente').textContent=data.nome_paciente||'Paciente';document.getElementById('subtituloModalPaciente').textContent='Prontuário interno #'+formatarCodigoPaciente(data.codigo_paciente)+' · Edição';await carregarHistoricoPacienteModal(data.id);
                 }catch(error){exibirToast('Não foi possível carregar o paciente: '+error.message,'erro');return;}
             }else{pacienteHistoricoAtual=null;document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';document.getElementById('subtituloModalPaciente').textContent='Ficha cadastral do paciente';await carregarHistoricoPacienteModal(null);}
-            const modal=document.getElementById('modalPaciente');modal.classList.remove('hidden');modal.classList.add('flex');document.getElementById('paciente_nome').focus();
+            document.getElementById('paciente_nome').focus();window.scrollTo({top:0,behavior:'auto'});
         }
-        function fecharModalPaciente(){const modal=document.getElementById('modalPaciente');modal.classList.add('hidden');modal.classList.remove('flex');}
+        function fecharModalPaciente(limparRota=true){
+            document.getElementById('secCadastroPaciente').classList.add('hidden');
+            if(telaAnteriorCadastroPaciente==='historico'&&pacienteHistoricoAtual){document.getElementById('secHistoricoCirurgias').classList.remove('hidden');}
+            else{document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');carregarPacientes();}
+            if(limparRota&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
+            window.scrollTo({top:0,behavior:'auto'});
+        }
         async function salvarPacienteModal(evento){
             evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
             const eraEdicao=!!pacienteModalAtual;const cpfDigitado=lerCampo('paciente_cpf').replace(/\D/g,'');if(cpfDigitado&&cpfDigitado.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}const nome=lerCampo('paciente_nome');if(!nome){exibirToast('Informe o nome completo do paciente.','erro');return;}
@@ -1781,14 +1835,28 @@
         function alternarLarguraSidebar(){const menu=document.getElementById('menuLateral');menu.classList.toggle('sidebar-recolhida');const icone=document.getElementById('iconeLarguraSidebar');if(icone)icone.className=menu.classList.contains('sidebar-recolhida')?'fa-solid fa-angles-right':'fa-solid fa-angles-left';}
         function alternarVisibilidadeSidebar(){document.getElementById('menuLateral').classList.toggle('sidebar-oculta');}
         function alternarSidebarPeloLogo(){if(window.matchMedia('(min-width: 1024px)').matches){alternarVisibilidadeSidebar();}else{alternarMenuLateral();}}
+        function atualizarRotaPaciente(id){
+            const rota='#/pacientes/novo'+(id?'?id='+encodeURIComponent(id):'');
+            if(location.hash!==rota)history.pushState({tela:'paciente',id:id||null},'',location.pathname+location.search+rota);
+        }
+        function obterRotaPaciente(){
+            if(!location.hash.startsWith('#/pacientes/novo'))return null;
+            const parametros=new URLSearchParams(location.hash.split('?')[1]||'');return {id:parametros.get('id')||null};
+        }
+        window.addEventListener('popstate',function(){
+            const rota=obterRotaPaciente();
+            if(rota&&perfilAtual){abrirCadastroPaciente(rota.id,false);}
+            else if(!rota&&!document.getElementById('secCadastroPaciente').classList.contains('hidden'))fecharModalPaciente(false);
+        });
         function navegarSistema(destino){
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
+            if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
-            ['secFormulario','secProfissionais','secPacientes','secHistoricoCirurgias','secAdmin','secAuditoria','secCancelamentos','secDashboards'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+            ['secFormulario','secProfissionais','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
             if(destino==='registro'){document.getElementById('secFormulario').classList.remove('hidden');}
             else if(destino==='medicos'){document.getElementById('secProfissionais').classList.remove('hidden');carregarProfissionais();}
             else if(destino==='pesquisa'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];carregarPacientes();}
-            else if(destino==='novoPaciente'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;carregarPacientes();setTimeout(function(){abrirCadastroPaciente();},0);}
+            else if(destino==='novoPaciente'){pacienteHistoricoAtual=null;abrirCadastroPaciente();}
             else if(destino==='cancelamentos'){document.getElementById('secCancelamentos').classList.remove('hidden');carregarCancelamentos();}
             else if(destino==='dashboards'){document.getElementById('secDashboards').classList.remove('hidden');carregarDashboard();}
             document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){const ativo=btn.getAttribute('data-nav')===destino;btn.classList.toggle('nav-ativo',ativo);btn.setAttribute('aria-current',ativo?'page':'false');});
