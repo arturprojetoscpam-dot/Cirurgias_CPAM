@@ -225,6 +225,29 @@
         #authScreen .login-status{background:var(--cpam-surface);border:1px solid var(--cpam-ink);border-radius:12px;color:var(--cpam-muted)}
         @media(max-width:850px){#appShell section>div:first-child h2{max-width:100%}#appShell section.rounded-2xl.border,#appShell section.rounded-xl.border{border-radius:20px!important}}
         @media(prefers-reduced-motion:reduce){#appShell *{scroll-behavior:auto!important;transition:none!important}}
+
+/* CPAM follow-up: restore login green and soften the application navbar */
+#authScreen .login-brand{background:linear-gradient(145deg,#dce7df 0%,#d5e5da 55%,#cbded1 100%)!important;color:#183c30!important}
+#authScreen .login-brand:before{display:block!important;background:linear-gradient(145deg,rgba(226,236,228,.91) 0%,rgba(218,231,221,.86) 52%,rgba(226,236,228,.92) 100%)!important}
+#authScreen .login-brand-photo{display:block!important;opacity:.13!important;filter:saturate(.35)!important;background-size:cover!important;background-position:center!important}
+#authScreen .login-brand h1,#authScreen .login-institution,#authScreen .login-description,#authScreen .login-features li,#authScreen .login-brand-footer{color:#183c30!important}
+#authScreen .login-features i{color:#628d37!important}
+#authScreen .login-brand-footer{border-top-color:rgba(24,60,48,.18)!important}
+#appShell>header{background:#E8F5E9!important;color:#173B2A!important;border-bottom:1px solid #B7D7C0!important;box-shadow:0 3px 10px rgba(24,60,48,.10)!important}
+#appShell>header h1,#appShell>header p{color:#173B2A!important}
+#appShell>header button{background:#F7FBF7!important;color:#173B2A!important;border-color:#A9C9B2!important}
+#appShell>header .header-profile-pill{background:#D1E7DD!important;border-color:#A9C9B2!important}
+#appShell>header .header-profile-name{color:#173B2A!important}
+#appShell>header .header-profile-email{color:#435B4B!important}
+#appShell>header .header-profile-role{background:#1B5E36!important;color:#fff!important}
+#appShell>header .header-avatar{background:#1B8558!important;color:#fff!important}
+#appShell .header-logo-badge img{height:38px;width:auto;max-width:190px;object-fit:contain;aspect-ratio:auto;image-rendering:-webkit-optimize-contrast}
+#modalPaciente form#formModalPaciente{scroll-behavior:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-gutter:stable;contain:layout paint}
+#modalPaciente form#formModalPaciente>section{content-visibility:auto;contain-intrinsic-size:auto 900px}
+#modalPaciente .campo-paciente-modal{scroll-margin-block:12px}
+@media(max-width:850px){#appShell>header .header-profile-pill{background:#D1E7DD!important}#appShell>header .header-profile-email{color:#435B4B!important}}
+@media(prefers-reduced-motion:reduce){#modalPaciente form#formModalPaciente{scroll-behavior:auto!important}}
+
 /* CPAM hospital refinement */
 .header-logo-badge{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d1d5db;border-radius:12px;padding:6px 12px;flex:0 0 auto}
 .header-logo-badge img{display:block;height:38px;width:auto;max-width:190px;object-fit:contain;aspect-ratio:auto;image-rendering:-webkit-optimize-contrast}
