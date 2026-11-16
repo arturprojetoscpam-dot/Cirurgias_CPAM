@@ -225,6 +225,28 @@
         #authScreen .login-status{background:var(--cpam-surface);border:1px solid var(--cpam-ink);border-radius:12px;color:var(--cpam-muted)}
         @media(max-width:850px){#appShell section>div:first-child h2{max-width:100%}#appShell section.rounded-2xl.border,#appShell section.rounded-xl.border{border-radius:20px!important}}
         @media(prefers-reduced-motion:reduce){#appShell *{scroll-behavior:auto!important;transition:none!important}}
+/* CPAM hospital refinement */
+.header-logo-badge{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d1d5db;border-radius:12px;padding:6px 12px;flex:0 0 auto}
+.header-logo-badge img{display:block;height:38px;width:auto;max-width:190px;object-fit:contain;aspect-ratio:auto;image-rendering:-webkit-optimize-contrast}
+#appShell>header{background:#191A23!important;border-bottom:4px solid #16A34A!important;box-shadow:0 4px 14px rgba(17,24,39,.16)!important}
+.header-user-group{display:flex;align-items:center;gap:10px}.header-profile-pill{display:flex;align-items:center;gap:12px;background:#1F2937;border:1px solid #374151;border-radius:12px;padding:8px 14px;min-width:0}
+.header-avatar{width:36px;height:36px;flex:0 0 36px;border-radius:999px;background:#16A34A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.header-profile-copy{min-width:0;text-align:left}.header-profile-name{color:#fff!important;font-size:14px!important;font-weight:600!important;line-height:1.25!important;white-space:nowrap}
+.header-profile-meta{display:flex;align-items:center;gap:7px;min-width:0;margin-top:3px}.header-profile-role{display:inline-flex;align-items:center;background:#166534;color:#dcfce7!important;border-radius:5px;padding:2px 6px;font-size:10px!important;font-weight:700!important;white-space:nowrap}
+.header-profile-email{color:#9CA3AF!important;font-size:11px!important;line-height:1.3!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px}
+#btnAuditoria,#btnUsuarios,#appShell header button[onclick="sair()"]{height:40px;display:inline-flex;align-items:center;justify-content:center}
+#authScreen .login-brand{background:linear-gradient(145deg,#15803D 0%,#1B8558 48%,#115E3B 100%)!important;color:#fff!important}
+#authScreen .login-brand:before,#authScreen .login-brand-photo{display:none!important}
+#authScreen .login-brand h1,#authScreen .login-institution,#authScreen .login-description,#authScreen .login-features li,#authScreen .login-brand-footer{color:#fff!important}
+#authScreen .login-brand h1 span{color:#A7F3D0!important}#authScreen .login-features i{color:#A7F3D0!important}
+#authScreen .login-brand-footer{border-top-color:rgba(255,255,255,.25)!important}
+#authScreen .login-institutional-logo img{height:72px!important;width:auto!important;max-width:190px!important;object-fit:contain!important;aspect-ratio:auto!important;image-rendering:-webkit-optimize-contrast;filter:none!important;opacity:1!important}
+#authScreen .login-institutional-logo{display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
+#menuLateral nav button[aria-current="page"],#menuLateral nav button.active{background:#16A34A!important;color:#fff!important;border:1px solid #191A23!important;box-shadow:3px 3px 0 #191A23!important}
+#menuLateral nav button[aria-current="page"] i,#menuLateral nav button.active i{color:#fff!important}
+.cpam-positivus-card,.kpi-card{border:1.5px solid #191A23!important;box-shadow:0 4px 0 #191A23!important}
+@media(max-width:850px){.header-profile-email{max-width:130px}.header-logo-badge img{height:32px;max-width:125px}.header-profile-pill{gap:8px;padding:6px 8px}.header-profile-meta{gap:4px}}
+@media(max-width:560px){.header-profile-email{display:none}.header-profile-pill{padding:5px}.header-profile-role{font-size:9px!important}.header-profile-name{font-size:12px!important}.header-logo-badge img{height:28px;max-width:100px}}
         /* Fim do CPAM POSITIVUS DESIGN SYSTEM */
 </style>
 </head>
@@ -238,7 +260,7 @@
     <aside class="login-brand">
       <div class="login-brand-photo" aria-hidden="true"></div>
       <div class="login-brand-content">
-        <div class="login-logo"><img src="assets/logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques"></div>
+        
         <p class="login-institution">CPAM · GESTÃO HOSPITALAR</p>
         <h1>Sistema de Registro de Cirurgias</h1>
         <p class="login-description">Uma plataforma integrada para apoiar a organização, o acompanhamento e a gestão das atividades do bloco cirúrgico.</p>
@@ -300,9 +322,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <button type="button" onclick="alternarMenuLateral()" class="rounded-lg border border-teal-500/40 bg-teal-800/60 px-3 py-2 text-white hover:bg-teal-700 lg:hidden" aria-label="Abrir menu de navegação"><i class="fa-solid fa-bars"></i></button>
-                <div class="w-10 h-10 rounded-xl bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-300 text-xl font-bold">
-                    <i class="fa-solid fa-hospital"></i>
-                </div>
+                <div class="header-logo-badge"><img src="./logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques"></div>
                 <div>
                     <h1 class="text-lg font-bold tracking-tight leading-none text-white">Bloco Cirúrgico</h1>
                     <p class="text-xs text-teal-300 font-medium">Gestão & Registro Hospitalar</p>
@@ -311,7 +331,7 @@
 
             <div class="flex items-center gap-3">
                 <!-- Status da Conexão / Botão Config -->
-                <div class="flex items-center gap-2"><button type="button" onclick="alternarVisibilidadeSidebar()" class="hidden lg:inline-flex rounded-lg border border-teal-500/40 bg-teal-800/60 px-3 py-2 text-white" aria-label="Ocultar ou reexibir menu lateral"><i class="fa-solid fa-bars-staggered"></i></button><div class="hidden sm:block text-right"><p id="usuarioEmail" class="text-xs font-extrabold"></p><p id="usuarioEmailSecundario" class="text-[9px] text-slate-300"></p><p id="usuarioPerfil" class="text-[10px] text-teal-300"></p></div></div><div class="flex items-center gap-2"><button id="btnAuditoria" onclick="alternarAuditoria()" class="hidden rounded-lg border border-slate-500 bg-slate-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-clipboard-list mr-1"></i>Auditoria</button><button id="btnUsuarios" onclick="alternarPainelUsuarios()" class="hidden rounded-lg border border-teal-500/40 bg-teal-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-users mr-1"></i>Usuários</button><button onclick="sair()" class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Sair</button></div>
+                <div class="header-user-group"><button type="button" onclick="alternarVisibilidadeSidebar()" class="hidden lg:inline-flex rounded-lg border border-teal-500/40 bg-teal-800/60 px-3 py-2 text-white h-10" aria-label="Ocultar ou reexibir menu lateral"><i class="fa-solid fa-bars-staggered"></i></button><div class="header-profile-pill"><div class="header-avatar">AA</div><div class="header-profile-copy"><p id="usuarioEmail" class="header-profile-name"></p><div class="header-profile-meta"><span id="usuarioPerfil" class="header-profile-role"></span><p id="usuarioEmailSecundario" class="header-profile-email"></p></div></div></div></div><div class="flex items-center gap-2"><button id="btnAuditoria" onclick="alternarAuditoria()" class="hidden rounded-lg border border-slate-500 bg-slate-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-clipboard-list mr-1"></i>Auditoria</button><button id="btnUsuarios" onclick="alternarPainelUsuarios()" class="hidden rounded-lg border border-teal-500/40 bg-teal-700 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-users mr-1"></i>Usuários</button><button onclick="sair()" class="rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-xs font-semibold"><i class="fa-solid fa-right-from-bracket mr-1"></i>Sair</button></div>
             </div>
         </div>
     </header>
