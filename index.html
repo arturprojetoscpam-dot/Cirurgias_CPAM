@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="./logo-cpam-vertical.jpg?v=1">
+    <link rel="apple-touch-icon" href="./logo-cpam-vertical.jpg?v=1">
     <title>Sistema de Gestão de Bloco Cirúrgico</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -397,6 +399,10 @@
         @media(max-width:700px){#appShell .header-inner{padding-left:12px;padding-right:12px;gap:8px}#appShell .header-brand-group{gap:8px}#appShell .header-logo-button img{height:34px;max-width:92px}#appShell .header-system-title h1{font-size:13px}#appShell .header-system-title p{font-size:9px}#appShell .header-actions{gap:8px}#appShell .header-user-group{gap:6px}#appShell .header-avatar{width:30px;height:30px;flex-basis:30px;font-size:10px}#appShell .header-profile-name{font-size:11px!important}#appShell .header-profile-role{font-size:9px!important}#appShell .header-profile-email{max-width:145px;font-size:9px!important}#appShell .header-users-button,#appShell .header-logout-button{padding:7px 8px!important;font-size:10px!important}}
         @media(max-width:480px){#appShell .header-logo-button img{height:30px;max-width:70px}#appShell .header-system-title p{max-width:105px}#appShell .header-profile-email{max-width:110px}#appShell .header-actions{gap:6px}#appShell .header-action-buttons{gap:5px}}
 
+        /* Logo vertical CPAM no cabeçalho e favicon do navegador */
+        #appShell .header-logo-button{width:52px;height:52px;min-width:52px;overflow:hidden}
+        #appShell .header-logo-button img{width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center}
+        @media(max-width:700px){#appShell .header-logo-button{width:42px;height:42px;min-width:42px}#appShell .header-logo-button img{width:100%;height:100%;max-width:100%}}
         /* Fim do CPAM POSITIVUS DESIGN SYSTEM */
 
         /* Ajustes finos solicitados: foco dos campos e cabeçalho */
@@ -514,7 +520,7 @@
         <div class="header-inner w-full px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
             <div class="header-brand-group flex items-center gap-3">
                 <button type="button" class="header-logo-button" onclick="alternarSidebarPeloLogo()" title="Abrir Barra Lateral" aria-label="Abrir Barra Lateral">
-                    <img src="./logo-cpam.png" alt="Logo CPAM" title="Abrir Barra Lateral">
+                    <img src="./logo-cpam-vertical.jpg" alt="Logo CPAM" title="Abrir Barra Lateral">
                 </button>
                 <div class="header-system-title">
                     <h1 class="text-lg font-bold tracking-tight leading-none">Bloco Cirúrgico</h1>
