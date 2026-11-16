@@ -49,7 +49,7 @@
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<section id="authScreen" class="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 p-4"><div class="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"><div class="bg-gradient-to-r from-teal-900 to-slate-900 px-8 py-7 text-center text-white"><div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-400/15 text-2xl text-teal-300"><i class="fa-solid fa-hospital"></i></div><h1 class="text-xl font-bold">Cirurgias_CPAM</h1><p class="mt-1 text-xs text-teal-200">Acesso restrito ao sistema</p></div><div class="p-8"><div id="authLogin"><h2 class="text-lg font-bold">Entrar no sistema</h2><p class="mb-5 mt-1 text-xs text-slate-500">Use seu e-mail institucional e senha.</p><form id="formLogin" onsubmit="entrar(event)" class="space-y-4"><div><label class="mb-1 block text-xs font-semibold">E-mail</label><input id="loginEmail" type="email" required autocomplete="username" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="nome@instituicao.gov.br"></div><div><label class="mb-1 block text-xs font-semibold">Senha</label><input id="loginSenha" type="password" required autocomplete="current-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="Sua senha"></div><button id="btnEntrar" type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-bold text-white">Entrar</button></form><button onclick="solicitarRecuperacao()" class="mt-4 w-full text-center text-xs font-semibold text-teal-700">Esqueci minha senha</button></div><div id="authNovaSenha" class="hidden"><h2 class="text-lg font-bold">Criar nova senha</h2><form onsubmit="salvarNovaSenha(event)" class="mt-4 space-y-4"><input id="novaSenha" type="password" minlength="10" required autocomplete="new-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="Nova senha (mínimo 10 caracteres)"><input id="confirmaNovaSenha" type="password" minlength="10" required autocomplete="new-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="Confirme a nova senha"><button type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-bold text-white">Salvar nova senha</button></form></div><p id="authMensagem" role="status" class="mt-4 hidden rounded-xl p-3 text-xs"></p><p class="mt-6 text-center text-[10px] text-slate-400">Acesso individual protegido por autenticação e permissões.</p></div></div></section>
+<section id="authScreen" class="fixed inset-0 z-[100] flex items-center justify-center bg-gradient-to-br from-slate-950 via-teal-950 to-slate-900 p-4"><div class="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl"><div class="bg-gradient-to-r from-teal-900 to-slate-900 px-8 py-7 text-center text-white"><div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-400/15 text-2xl text-teal-300"><i class="fa-solid fa-hospital"></i></div><h1 class="text-xl font-bold">Cirurgias_CPAM</h1><p class="mt-1 text-xs text-teal-200">Acesso restrito ao sistema</p></div><div class="p-8"><div id="authLogin"><h2 class="text-lg font-bold">Entrar no sistema</h2><p class="mb-5 mt-1 text-xs text-slate-500">Use seu e-mail institucional e senha.</p><form id="formLogin" onsubmit="entrar(event)" class="space-y-4"><div><label class="mb-1 block text-xs font-semibold">E-mail</label><input id="loginEmail" type="email" required autocomplete="username" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm" placeholder="nome@instituicao.gov.br"></div><div><label class="mb-1 block text-xs font-semibold">Senha</label><div class="relative"><input id="loginSenha" type="password" required autocomplete="current-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 pr-11 text-sm" placeholder="Sua senha"><button type="button" onclick="alternarVisibilidadeSenha('loginSenha',this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div></div><button id="btnEntrar" type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-bold text-white">Entrar</button></form><button onclick="solicitarRecuperacao()" class="mt-4 w-full text-center text-xs font-semibold text-teal-700">Esqueci minha senha</button></div><div id="authNovaSenha" class="hidden"><h2 class="text-lg font-bold">Criar nova senha</h2><form onsubmit="salvarNovaSenha(event)" class="mt-4 space-y-4"><div class="relative"><input id="novaSenha" type="password" minlength="10" required autocomplete="new-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 pr-11 text-sm" placeholder="Nova senha (mínimo 10 caracteres)"><button type="button" onclick="alternarVisibilidadeSenha('novaSenha',this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div><div class="relative"><input id="confirmaNovaSenha" type="password" minlength="10" required autocomplete="new-password" class="w-full rounded-xl border border-slate-300 px-3 py-3 pr-11 text-sm" placeholder="Confirme a nova senha"><button type="button" onclick="alternarVisibilidadeSenha('confirmaNovaSenha',this)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div><button type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-bold text-white">Salvar nova senha</button></form></div><p id="authMensagem" role="status" class="mt-4 hidden rounded-xl p-3 text-xs"></p><p class="mt-6 text-center text-[10px] text-slate-400">Acesso individual protegido por autenticação e permissões.</p></div></div></section>
     <!-- Cabeçalho Principal -->
     <div id="appShell" class="hidden">
     <header class="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white shadow-lg sticky top-0 z-30">
@@ -74,56 +74,11 @@
     <!-- Conteúdo Principal -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
 
-        <!-- DASHBOARD DE MÉTRICAS -->
-        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Card 1: Total -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Registrado</p>
-                    <h3 id="dashTotal" class="text-2xl font-bold text-slate-800 mt-1">0</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Cirurgias no sistema</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-notes-medical"></i>
-                </div>
-            </div>
-
-            <!-- Card 2: Realizadas -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Realizadas</p>
-                    <h3 id="dashRealizadas" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
-                    <p class="text-[11px] text-emerald-700/70 font-medium mt-0.5" id="pctRealizadas">0% do total</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-            </div>
-
-            <!-- Card 3: Canceladas -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Canceladas</p>
-                    <h3 id="dashCanceladas" class="text-2xl font-bold text-rose-600 mt-1">0</h3>
-                    <p class="text-[11px] text-rose-700/70 font-medium mt-0.5" id="pctCanceladas">0% do total</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-circle-xmark"></i>
-                </div>
-            </div>
-
-            <!-- Card 4: Taxa de Sucesso -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Eficiência de Agendamento</p>
-                    <h3 id="dashTaxa" class="text-2xl font-bold text-blue-600 mt-1">0%</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">Taxa de realização</p>
-                </div>
-                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-chart-line"></i>
-                </div>
-            </div>
-        </section>
+        <!-- RESUMO DE PACIENTES -->
+        <section class="mb-2"><div class="inline-flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
+            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-teal-50 text-xl text-teal-700"><i class="fa-solid fa-users"></i></div>
+            <div><p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Pacientes cadastrados</p><h3 id="dashTotal" class="mt-1 text-2xl font-bold text-slate-800">0</h3></div>
+        </div></section>
 
 <section id="secAuditoria" class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="border-b border-slate-100 pb-4"><h2 class="font-bold text-slate-800"><i class="fa-solid fa-clipboard-list mr-2 text-teal-700"></i>Auditoria de alterações</h2><p class="mt-1 text-xs text-slate-500">Histórico de operações no cadastro cirúrgico. O log não exibe valores pessoais do paciente.</p></div><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">Data/hora</th><th class="p-3">Usuário</th><th class="p-3">Operação</th><th class="p-3">Identificação</th><th class="p-3">Campos alterados</th></tr></thead><tbody id="gridAuditoria" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr></tbody></table></div></section>
         <section id="secAdmin" class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-user-shield mr-2 text-teal-700"></i>Gestão de usuários</h2><p class="mt-1 text-xs text-slate-500">Altere perfis e suspenda acessos. Convide novas contas pelo Supabase Auth.</p></div><a href="https://supabase.com/dashboard/project/uazilxyspnycvntxcxzu/auth/users" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-teal-200 px-3 py-2 text-xs font-semibold text-teal-800">Convidar usuário <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a></div><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">E-mail</th><th class="p-3">Nome</th><th class="p-3">Perfil</th><th class="p-3">Acesso</th><th class="p-3">Ação</th></tr></thead><tbody id="gridUsuarios" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr></tbody></table></div><p class="mt-3 text-[10px] text-slate-400">Novas contas recebem inicialmente o perfil Consulta.</p></section>
@@ -163,11 +118,17 @@
                     <div class="mb-4 rounded-xl border border-teal-100 bg-teal-50/60 p-4">
                         <label for="buscaPaciente" class="mb-1 block text-xs font-semibold text-slate-700">Localizar paciente já cadastrado</label>
                         <div class="flex flex-col gap-2 sm:flex-row">
-                            <input type="search" id="buscaPaciente" oninput="buscarPacientes()" placeholder="Digite pelo menos 3 letras do nome do paciente" autocomplete="off" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500">
+                            <input type="search" id="buscaPaciente" oninput="buscarPacientes()" placeholder="Nº do cadastro ambulatorial, nome ou Cartão SUS (CNS)" autocomplete="off" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500">
                             <button type="button" onclick="iniciarNovoPaciente()" class="shrink-0 rounded-xl border border-teal-700 px-4 py-2 text-xs font-semibold text-teal-800 hover:bg-teal-100">Cadastrar novo paciente</button>
                         </div>
+                        <div class="mt-2 max-w-xs"><label for="buscaDataNascimentoPaciente" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input type="date" id="buscaDataNascimentoPaciente" onchange="buscarPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div>
                         <div id="resultadosPacientes" class="mt-2 hidden max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white"></div>
                         <p id="pacienteSelecionadoInfo" class="mt-2 hidden text-xs font-semibold text-emerald-800" aria-live="polite"></p>
+                        <div id="acoesEdicaoPaciente" class="mt-2 hidden flex flex-wrap gap-2">
+                            <button type="button" id="btnEditarPaciente" onclick="editarPacienteSelecionado()" class="rounded-lg border border-teal-300 bg-white px-3 py-2 text-[11px] font-semibold text-teal-800 hover:bg-teal-50"><i class="fa-solid fa-pen-to-square mr-1"></i>Editar dados do paciente</button>
+                            <button type="button" id="btnSalvarEdicaoPaciente" onclick="salvarEdicaoPaciente()" class="hidden rounded-lg bg-teal-700 px-3 py-2 text-[11px] font-semibold text-white"><i class="fa-solid fa-floppy-disk mr-1"></i>Salvar dados</button>
+                            <button type="button" id="btnCancelarEdicaoPaciente" onclick="cancelarEdicaoPaciente()" class="hidden rounded-lg border border-slate-300 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700">Cancelar edição</button>
+                        </div>
                         <p class="mt-2 text-[10px] text-slate-500">Pesquise antes de cadastrar. A seleção vincula esta cirurgia ao cadastro existente; um novo paciente só será criado quando não houver seleção.</p>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -325,83 +286,39 @@
             </form>
         </section>
 
-        <!-- TABELA DE REGISTROS COM FILTROS AVANÇADOS -->
-        <section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden">
-            
-            <!-- Barra Superior de Pesquisa e Filtros -->
-            <div class="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/50 space-y-3">
-                <div class="flex flex-col md:flex-row gap-3 justify-between">
-                    
-                    <!-- Campo de Busca Global -->
-                    <div class="relative flex-1">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
-                        <input type="text" id="txtBusca" oninput="aplicarFiltros()" placeholder="Buscar por Paciente, Cadastro ambulatorial, Médico, NBE..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white">
-                    </div>
-
-                    <!-- Filtros Rápidos Dropdown -->
-                    <div class="flex flex-wrap sm:flex-nowrap gap-2">
-                        <select id="filtroEspecialidade" onchange="aplicarFiltros()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white text-slate-700 font-medium outline-none focus:ring-2 focus:ring-teal-500">
-                            <option value="">Todas Especialidades</option>
-                            <option value="CIRURGIA GERAL">CIRURGIA GERAL</option>
-                            <option value="PEQUENAS CIRURGIAS">PEQUENAS CIRURGIAS</option>
-                            <option value="ORTOPEDIA">ORTOPEDIA</option>
-                            <option value="OTORRINOLARINGOLOGIA">OTORRINO</option>
-                            <option value="NEUROCIRURGIA">NEUROCIRURGIA</option>
-                        </select>
-
-                        <select id="filtroCarater" onchange="aplicarFiltros()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white text-slate-700 font-medium outline-none focus:ring-2 focus:ring-teal-500">
-                            <option value="">Todo Caráter</option>
-                            <option value="URGENCIA">URGÊNCIA</option>
-                            <option value="ELETIVA">ELETIVA</option>
-                        </select>
-
-                        <select id="filtroSituacao" onchange="aplicarFiltros()" class="border border-slate-300 rounded-xl px-3 py-2 text-xs bg-white text-slate-700 font-medium outline-none focus:ring-2 focus:ring-teal-500">
-                            <option value="">Todas Situações</option>
-                            <option value="REALIZADA">REALIZADAS</option>
-                            <option value="CANCELADA">CANCELADAS</option>
-                        </select>
-                    </div>
-                </div>
+        <!-- LISTA INICIAL DE PACIENTES: apenas 50 por página -->
+        <section id="secPacientes" class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
+            <div class="space-y-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:p-5">
+                <div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-users mr-2 text-teal-700"></i>Pacientes cadastrados</h2><p class="mt-1 text-xs text-slate-500">Pesquise por número do cadastro ambulatorial, nome ou Cartão SUS (CNS). Nos registros antigos, o cadastro ambulatorial aparece no campo chamado “prontuário”. O histórico é carregado somente quando você abre um paciente.</p></div>
+                <div class="space-y-2"><div class="relative"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-slate-400"></i><input id="buscaListaPacientes" type="search" oninput="pesquisarListaPacientes()" placeholder="Nº do cadastro ambulatorial, nome ou Cartão SUS (CNS)" class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><div class="max-w-xs"><label for="buscaDataNascimentoLista" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input id="buscaDataNascimentoLista" type="date" onchange="pesquisarListaPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><p class="text-[10px] text-slate-500">A data pode ser usada sozinha ou junto com a pesquisa acima. A busca consulta o banco sem baixar todos os cadastros no navegador.</p></div>
             </div>
-
-            <!-- Tabela Grid -->
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead class="bg-slate-100/80 text-slate-600 font-semibold uppercase tracking-wider border-b border-slate-200">
-                        <tr>
-                            <th class="p-3.5">Data</th>
-                            <th class="p-3.5">Cadastro ambulatorial / NBE</th>
-                            <th class="p-3.5">Paciente</th>
-                            <th class="p-3.5">Especialidade</th>
-                            <th class="p-3.5">Cirurgião</th>
-                            <th class="p-3.5">Caráter</th>
-                            <th class="p-3.5">Situação</th>
-                            <th class="p-3.5 text-center">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="gridCirurgias" class="divide-y divide-slate-100">
-                        <tr>
-                            <td colspan="8" class="p-8 text-center text-slate-400">
-                                <i class="fa-solid fa-spinner fa-spin text-xl text-teal-600 mb-2"></i>
-                                <p>Carregando registros do banco de dados...</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Rodapé / Paginação -->
-            <div class="p-3.5 border-t border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500">
-                <div>
-                    Exibindo <span id="lblExibindoCount" class="font-bold text-slate-800">0</span> de <span id="lblTotalCount" class="font-bold text-slate-800">0</span> registros encontrados
-                </div>
-                <div class="flex items-center gap-2">
-                    <button id="btnPagAnterior" onclick="paginaAnterior()" disabled class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">Anterior</button>
-                    <span id="lblPaginaAtual" class="font-bold text-slate-700 px-2">Pág. 1</span>
-                    <button id="btnPagProxima" onclick="proximaPagina()" disabled class="px-3 py-1.5 rounded-lg border border-slate-300 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition">Próxima</button>
-                </div>
+            <div class="overflow-x-auto custom-scrollbar"><table class="w-full border-collapse text-left text-xs">
+                <thead class="border-b border-slate-200 bg-slate-100/80 font-semibold uppercase tracking-wider text-slate-600"><tr><th class="p-3.5">Nº</th><th class="p-3.5">Paciente</th><th class="p-3.5">Nascimento</th><th class="p-3.5">CNS</th><th class="p-3.5">Cadastro ambulatorial</th><th class="p-3.5 text-center">Ações</th></tr></thead>
+                <tbody id="gridPacientes" class="divide-y divide-slate-100"><tr><td colspan="6" class="p-8 text-center text-slate-400">Carregando pacientes...</td></tr></tbody>
+            </table></div>
+            <div class="flex flex-col items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 p-3.5 text-xs text-slate-500 sm:flex-row">
+                <div>Exibindo <span id="lblPacientesExibidos" class="font-bold text-slate-800">0</span> de <span id="lblPacientesTotal" class="font-bold text-slate-800">0</span> pacientes</div>
+                <div class="flex items-center gap-2"><button id="btnPacientesAnterior" onclick="paginaPacientesAnterior()" disabled class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium disabled:opacity-50">Anterior</button><span id="lblPaginaPacientes" class="px-2 font-bold text-slate-700">Pág. 1</span><button id="btnPacientesProxima" onclick="proximaPaginaPacientes()" disabled class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium disabled:opacity-50">Próxima</button></div>
             </div>
         </section>
+        <div id="secHistoricoCirurgias" class="hidden space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-teal-700"></i>Histórico de cirurgias</h2><p id="tituloPacienteHistorico" class="mt-1 text-xs text-slate-500"></p></div><button type="button" onclick="voltarListaPacientes()" class="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar aos pacientes</button></div>
+            <section class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
+                <div class="space-y-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:p-5"><div class="flex flex-col justify-between gap-3 md:flex-row">
+                    <div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-xs text-slate-400"></i><input type="text" id="txtBusca" oninput="aplicarFiltros()" placeholder="Buscar neste histórico..." class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-9 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div>
+                    <div class="flex flex-wrap gap-2">
+                        <select id="filtroEspecialidade" onchange="aplicarFiltros()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todas Especialidades</option><option value="CIRURGIA GERAL">CIRURGIA GERAL</option><option value="PEQUENAS CIRURGIAS">PEQUENAS CIRURGIAS</option><option value="ORTOPEDIA">ORTOPEDIA</option><option value="OTORRINOLARINGOLOGIA">OTORRINO</option><option value="NEUROCIRURGIA">NEUROCIRURGIA</option></select>
+                        <select id="filtroCarater" onchange="aplicarFiltros()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todo Caráter</option><option value="URGENCIA">URGÊNCIA</option><option value="ELETIVA">ELETIVA</option></select>
+                        <select id="filtroSituacao" onchange="aplicarFiltros()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs"><option value="">Todas Situações</option><option value="REALIZADA">REALIZADAS</option><option value="CANCELADA">CANCELADAS</option></select>
+                    </div>
+                </div></div>
+                <div class="overflow-x-auto custom-scrollbar"><table class="w-full border-collapse text-left text-xs">
+                    <thead class="border-b border-slate-200 bg-slate-100/80 font-semibold uppercase tracking-wider text-slate-600"><tr><th class="p-3.5">Data</th><th class="p-3.5">Cadastro ambulatorial / NBE</th><th class="p-3.5">Paciente</th><th class="p-3.5">Especialidade</th><th class="p-3.5">Cirurgião</th><th class="p-3.5">Caráter</th><th class="p-3.5">Situação</th><th class="p-3.5 text-center">Ações</th></tr></thead>
+                    <tbody id="gridCirurgias" class="divide-y divide-slate-100"><tr><td colspan="8" class="p-8 text-center text-slate-400">Selecione um paciente para consultar o histórico.</td></tr></tbody>
+                </table></div>
+                <div class="flex flex-col items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/50 p-3.5 text-xs text-slate-500 sm:flex-row"><div>Exibindo <span id="lblExibindoCount" class="font-bold text-slate-800">0</span> de <span id="lblTotalCount" class="font-bold text-slate-800">0</span> cirurgias</div><div class="flex items-center gap-2"><button id="btnPagAnterior" onclick="paginaAnterior()" disabled class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium disabled:opacity-50">Anterior</button><span id="lblPaginaAtual" class="px-2 font-bold text-slate-700">Pág. 1</span><button id="btnPagProxima" onclick="proximaPagina()" disabled class="rounded-lg border border-slate-300 bg-white px-3 py-1.5 font-medium disabled:opacity-50">Próxima</button></div></div>
+            </section>
+        </div>
 
     </main>
     </div>
@@ -504,7 +421,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null;
+        let usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
@@ -545,7 +462,7 @@
                 document.getElementById('btnAuditoria').classList.toggle('hidden',perfil.role!=='administrador');
                 document.getElementById('btnToggleForm').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('secFormulario').classList.add('hidden');
-                atualizarBadgeConexao(true,'Sessão autenticada');await carregarDados();
+                atualizarBadgeConexao(true,'Sessão autenticada');await carregarPacientes();
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
             finally{carregandoPerfil=false;}
         }
@@ -563,6 +480,7 @@
             if(error)mostrarMensagemAuth('Não foi possível solicitar a recuperação: '+error.message);
             else mostrarMensagemAuth('Se o e-mail estiver cadastrado, você receberá as instruções.',true);
         }
+        function alternarVisibilidadeSenha(id,botao){const campo=document.getElementById(id);if(!campo)return;const mostrar=campo.type==='password';campo.type=mostrar?'text':'password';botao.innerHTML=mostrar?'<i class="fa-solid fa-eye-slash"></i>':'<i class="fa-solid fa-eye"></i>';}
         function mostrarNovaSenha(){
             document.getElementById('appShell').classList.add('hidden');document.getElementById('authScreen').classList.remove('hidden');
             document.getElementById('authLogin').classList.add('hidden');document.getElementById('authNovaSenha').classList.remove('hidden');ocultarMensagemAuth();
@@ -581,22 +499,53 @@
             const ind=document.getElementById('indicatorConexao'),txt=document.getElementById('textConexao');if(!ind||!txt)return;
             txt.textContent=texto;ind.className=ok?'w-2.5 h-2.5 rounded-full bg-emerald-400':'w-2.5 h-2.5 rounded-full bg-rose-500';
         }
-        async function carregarDados(){
-            if(!usuarioAtual||!perfilAtual)return;exibirLoadingGrid();
+        function formatarCodigoPaciente(codigo){return String(codigo||'');}
+        function dataInputParaBanco(valor){if(!valor)return '';const p=valor.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
+        async function carregarPacientes(){
+            if(!usuarioAtual||!perfilAtual)return;
+            const tbody=document.getElementById('gridPacientes');
+            tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2 text-teal-600"></i>Carregando pacientes...</td></tr>';
             try{
-                let todos=[];const lote=1000;
-                for(let inicio=0;;inicio+=lote){
-                    const {data,error}=await supabaseClient.from('cirurgias').select('id,paciente_id,Identificação,Data_da_Cirurgia,prontuario,NBE,Nome_Paciente,TELEFONE,Telefone2,CNS,Data_Nascimento,NOME_MAE,MUNICIPIO,ENDERECO,BAIRRO,CEP,NUMERO,Especialidade,Especialidade_Medico,Sistema,Procedimento1,Procedimento2,Procedimento3,Carater_Atendimento,Situaçao,Medico,CRM_CIR,Anestesista,CRM_ANEST,Anestesia1,Anestesia2,Mot_Cancelam,Obs_Cancelam_ANT,DIGITADO_POR,DIGITADO_EM,NEC_BIOPSIA,ESP_PEÇA_BIOP,sexo,crm_ass,medico_ass,especialidade_ass,Obs_Cancelam')
-                        .order('Data_da_Cirurgia',{ascending:false}).order('Identificação',{ascending:true}).range(inicio,inicio+lote-1);
-                    if(error)throw error;todos=todos.concat(data||[]);if(!data||data.length<lote)break;
+                let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
+                if(termoListaPacientes){
+                    if(/^\d+$/.test(termoListaPacientes)){
+                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
+                    }else{
+                        consulta=consulta.ilike('nome_paciente','%'+termoListaPacientes.replace(/[%_]/g,'')+'%');
+                    }
                 }
-                todosRegistros=todos;atualizarDashboard();aplicarFiltros();
-            }catch(error){
-                console.error(error);const tbody=document.getElementById('gridCirurgias');
-                tbody.innerHTML='<tr><td colspan="8" class="p-8 text-center text-rose-600"><strong>Falha ao buscar registros.</strong><p class="mt-1 text-xs"></p></td></tr>';
-                tbody.querySelector('p').textContent=error.message;exibirToast('Erro ao carregar registros: '+error.message,'erro');
-            }
+                const dataNascimentoLista=dataInputParaBanco(document.getElementById('buscaDataNascimentoLista').value);
+                if(dataNascimentoLista)consulta=consulta.eq('data_nascimento',dataNascimentoLista);
+                const {data,error,count}=await consulta;if(error)throw error;
+                pacientesPagina=data||[];totalPacientes=count||0;
+                document.getElementById('dashTotal').textContent=totalPacientes.toLocaleString('pt-BR');
+                document.getElementById('lblPacientesExibidos').textContent=pacientesPagina.length.toLocaleString('pt-BR');
+                document.getElementById('lblPacientesTotal').textContent=totalPacientes.toLocaleString('pt-BR');
+                document.getElementById('lblPaginaPacientes').textContent='Pág. '+paginaPacientes+' de '+Math.max(1,Math.ceil(totalPacientes/50));
+                document.getElementById('btnPacientesAnterior').disabled=paginaPacientes<=1;
+                document.getElementById('btnPacientesProxima').disabled=paginaPacientes>=Math.ceil(totalPacientes/50);
+                if(!pacientesPagina.length){tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-slate-400">Nenhum paciente encontrado.</td></tr>';return;}
+                tbody.innerHTML=pacientesPagina.map(function(p){return '<tr class="transition hover:bg-slate-50"><td class="whitespace-nowrap p-3.5 font-mono font-bold text-teal-800">'+formatarCodigoPaciente(p.codigo_paciente)+'</td><td class="p-3.5 font-semibold text-slate-800">'+escaparHtml(p.nome_paciente||'-')+'</td><td class="whitespace-nowrap p-3.5">'+escaparHtml(formatarData(p.data_nascimento))+'</td><td class="p-3.5 font-mono">'+escaparHtml(p.cns||'-')+'</td><td class="p-3.5 font-mono">'+escaparHtml(p.numero_cadastro_ambulatorio||'-')+'</td><td class="p-3.5 text-center"><div class="flex flex-wrap justify-center gap-1"><button onclick="editarPacienteDaLista(\''+p.id+'\')" class="rounded-lg border border-teal-300 bg-white px-3 py-2 text-[10px] font-bold text-teal-800 hover:bg-teal-50"><i class="fa-solid fa-pen-to-square mr-1"></i>Editar</button><button onclick="abrirHistoricoPaciente(\''+p.id+'\')" class="rounded-lg bg-teal-700 px-3 py-2 text-[10px] font-bold text-white hover:bg-teal-800"><i class="fa-solid fa-clock-rotate-left mr-1"></i>Cirurgias</button></div></td></tr>';}).join('');
+            }catch(error){console.error(error);tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-rose-600">Falha ao carregar pacientes: '+escaparHtml(error.message)+'</td></tr>';exibirToast('Erro ao carregar pacientes: '+error.message,'erro');}
         }
+        function pesquisarListaPacientes(){if(timerListaPacientes)window.clearTimeout(timerListaPacientes);timerListaPacientes=window.setTimeout(function(){termoListaPacientes=document.getElementById('buscaListaPacientes').value.trim();paginaPacientes=1;carregarPacientes();},300);}
+        function editarPacienteDaLista(id){const p=pacientesPagina.find(function(item){return item.id===id;});if(!p||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;pacientesEncontrados=[p];edicaoPacienteSemCirurgia=true;if(document.getElementById('secFormulario').classList.contains('hidden'))toggleFormulario();selecionarPaciente(id);editarPacienteSelecionado();document.getElementById('secFormulario').scrollIntoView({behavior:'smooth'});}
+        function paginaPacientesAnterior(){if(paginaPacientes>1){paginaPacientes--;carregarPacientes();}}
+        function proximaPaginaPacientes(){if(paginaPacientes<Math.ceil(totalPacientes/50)){paginaPacientes++;carregarPacientes();}}
+        async function abrirHistoricoPaciente(id){
+            let paciente=pacientesPagina.find(function(p){return p.id===id;});
+            if(!paciente){const {data,error}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,nome_mae,sexo,data_nascimento,cns,numero_cadastro_ambulatorio').eq('id',id).single();if(error)throw error;paciente=data;}
+            pacienteHistoricoAtual=paciente;document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.remove('hidden');
+            document.getElementById('tituloPacienteHistorico').textContent=formatarCodigoPaciente(paciente.codigo_paciente)+' · '+paciente.nome_paciente;
+            document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="8" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2 text-teal-600"></i>Carregando histórico...</td></tr>';
+            document.getElementById('txtBusca').value='';document.getElementById('filtroEspecialidade').value='';document.getElementById('filtroCarater').value='';document.getElementById('filtroSituacao').value='';
+            try{let todos=[];const lote=500;for(let inicio=0;;inicio+=lote){
+                const {data,error}=await supabaseClient.from('cirurgias').select('id,paciente_id,Identificação,Data_da_Cirurgia,prontuario,NBE,Nome_Paciente,TELEFONE,Telefone2,CNS,Data_Nascimento,NOME_MAE,MUNICIPIO,ENDERECO,BAIRRO,CEP,NUMERO,Especialidade,Especialidade_Medico,Sistema,Procedimento1,Procedimento2,Procedimento3,Carater_Atendimento,Situaçao,Medico,CRM_CIR,Anestesista,CRM_ANEST,Anestesia1,Anestesia2,Mot_Cancelam,Obs_Cancelam_ANT,DIGITADO_POR,DIGITADO_EM,NEC_BIOPSIA,ESP_PEÇA_BIOP,sexo,crm_ass,medico_ass,especialidade_ass,Obs_Cancelam').eq('paciente_id',id).order('Data_da_Cirurgia',{ascending:false}).order('Identificação',{ascending:true}).range(inicio,inicio+lote-1);
+                if(error)throw error;todos=todos.concat(data||[]);if(!data||data.length<lote)break;
+            }todosRegistros=todos;aplicarFiltros();}
+            catch(error){console.error(error);document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="8" class="p-8 text-center text-rose-600">Falha ao buscar histórico: '+escaparHtml(error.message)+'</td></tr>';exibirToast('Erro ao carregar histórico: '+error.message,'erro');}
+        }
+        function voltarListaPacientes(){document.getElementById('secHistoricoCirurgias').classList.add('hidden');document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];}
         function atualizarDashboard(){
             const total=todosRegistros.length;
             const realizadas=todosRegistros.filter(r=>(r.Situaçao||'').toUpperCase()==='REALIZADA').length;
@@ -625,8 +574,8 @@
             const paginas=Math.ceil(total/itensPorPagina),inicio=(paginaAtual-1)*itensPorPagina,itens=registrosFiltrados.slice(inicio,inicio+itensPorPagina);
             tbody.innerHTML=itens.map(function(reg,idx){
                 const realizada=(reg.Situaçao||'').toUpperCase()==='REALIZADA',urgencia=(reg.Carater_Atendimento||'').toUpperCase()==='URGENCIA',i=inicio+idx;
-                const sit=realizada?'<span class="rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">REALIZADA</span>':'<span class="rounded-full border border-rose-200 bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800">CANCELADA</span>';
-                const car=urgencia?'<span class="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-700">URGÊNCIA</span>':'<span class="rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-700">ELETIVA</span>';
+                const sit=realizada?'<span class="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800"><i class="fa-solid fa-circle-check"></i> REALIZADA</span>':'<span class="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800"><i class="fa-solid fa-circle-xmark"></i> CANCELADA</span>';
+                const car=urgencia?'<span class="inline-flex items-center gap-1 rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800"><i class="fa-solid fa-triangle-exclamation"></i> URGÊNCIA</span>':'<span class="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-800"><i class="fa-solid fa-calendar-check"></i> ELETIVA</span>';
                 return '<tr class="group cursor-pointer transition hover:bg-slate-50" onclick="abrirDetalhesIndex('+i+')"><td class="p-3.5 font-mono">'+escaparHtml(formatarData(reg.Data_da_Cirurgia))+'</td>'+
                     '<td class="p-3.5 font-mono"><div>'+escaparHtml(reg.prontuario||'-')+'</div><div class="text-[10px] text-slate-400">'+escaparHtml(reg.NBE?'NBE: '+reg.NBE:'')+'</div></td>'+
                     '<td class="p-3.5 font-bold">'+escaparHtml(reg.Nome_Paciente||'NÃO INFORMADO')+'</td><td class="p-3.5">'+escaparHtml(reg.Especialidade||'-')+'</td>'+
@@ -654,9 +603,30 @@
             });
             const sexo=document.getElementById('sexo');if(sexo)sexo.disabled=!!bloquear;
         }
+        function editarPacienteSelecionado(){
+            if(!pacienteSelecionado||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
+            modoEdicaoPaciente=true;bloquearCamposPaciente(false);
+            document.getElementById('btnEditarPaciente').classList.add('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.remove('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.remove('hidden');
+            exibirToast('Edite os dados e clique em Salvar dados.','sucesso');
+        }
+        function restaurarCamposPaciente(p){
+            document.getElementById('Nome_Paciente').value=p.nome_paciente||'';document.getElementById('prontuario').value=p.numero_cadastro_ambulatorio||'';document.getElementById('CNS').value=p.cns||'';document.getElementById('Data_Nascimento').value=normalizarDataParaInput(p.data_nascimento);document.getElementById('sexo').value=p.sexo||'';document.getElementById('NOME_MAE').value=p.nome_mae||'';
+        }
+        function cancelarEdicaoPaciente(){if(!pacienteSelecionado)return;restaurarCamposPaciente(pacienteSelecionado);modoEdicaoPaciente=false;bloquearCamposPaciente(true);document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');}
+        async function salvarEdicaoPaciente(){
+            if(!pacienteSelecionado||!modoEdicaoPaciente||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
+            const nome=document.getElementById('Nome_Paciente').value.toUpperCase().trim();if(!nome){exibirToast('O nome do paciente é obrigatório.','erro');return;}
+            const atualizacao={nome_paciente:nome,numero_cadastro_ambulatorio:document.getElementById('prontuario').value.trim()||null,cns:document.getElementById('CNS').value.trim()||null,data_nascimento:dataInputParaBanco(document.getElementById('Data_Nascimento').value)||null,sexo:document.getElementById('sexo').value||null,nome_mae:document.getElementById('NOME_MAE').value.toUpperCase().trim()||null};
+            const {data,error}=await supabaseClient.from('pacientes').update(atualizacao).eq('id',pacienteSelecionado.id).select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
+            if(error){exibirToast('Não foi possível atualizar o cadastro: '+error.message,'erro');return;}
+            pacienteSelecionado=data;if(pacienteHistoricoAtual&&pacienteHistoricoAtual.id===data.id)pacienteHistoricoAtual=data;pacientesEncontrados=pacientesEncontrados.map(p=>p.id===data.id?data:p);pacientesPagina=pacientesPagina.map(p=>p.id===data.id?data:p);
+            modoEdicaoPaciente=false;bloquearCamposPaciente(true);document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
+            document.getElementById('pacienteSelecionadoInfo').textContent=formatarCodigoPaciente(data.codigo_paciente)+' · '+data.nome_paciente+'. Cadastro atualizado.';exibirToast('Dados do paciente atualizados.','sucesso');if(edicaoPacienteSemCirurgia){edicaoPacienteSemCirurgia=false;await carregarPacientes();toggleFormulario();}
+        }
         function limparPacienteSelecionado(){
-            pacienteSelecionado=null;
+            pacienteSelecionado=null;modoEdicaoPaciente=false;document.getElementById('acoesEdicaoPaciente').classList.add('hidden');document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
             document.getElementById('buscaPaciente').value='';
+            document.getElementById('buscaDataNascimentoPaciente').value='';
             document.getElementById('resultadosPacientes').innerHTML='';
             document.getElementById('resultadosPacientes').classList.add('hidden');
             const info=document.getElementById('pacienteSelecionadoInfo');info.textContent='';info.classList.add('hidden');
@@ -672,7 +642,7 @@
         }
         function selecionarPaciente(id){
             const p=pacientesEncontrados.find(function(item){return item.id===id;});if(!p)return;
-            pacienteSelecionado=p;
+            pacienteSelecionado=p;modoEdicaoPaciente=false;document.getElementById('acoesEdicaoPaciente').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarPaciente').classList.remove('hidden');document.getElementById('btnSalvarEdicaoPaciente').classList.add('hidden');document.getElementById('btnCancelarEdicaoPaciente').classList.add('hidden');
             document.getElementById('Nome_Paciente').value=p.nome_paciente||'';
             document.getElementById('prontuario').value=p.numero_cadastro_ambulatorio||'';
             document.getElementById('CNS').value=p.cns||'';
@@ -681,7 +651,7 @@
             document.getElementById('NOME_MAE').value=p.nome_mae||'';
             bloquearCamposPaciente(true);
             const info=document.getElementById('pacienteSelecionadoInfo');
-            info.textContent='Paciente selecionado: '+(p.nome_paciente||'')+'. A cirurgia será vinculada a este cadastro.';
+            info.textContent=formatarCodigoPaciente(p.codigo_paciente)+' · '+(p.nome_paciente||'')+'. A cirurgia será vinculada a este cadastro.';
             info.classList.remove('hidden');
             document.getElementById('resultadosPacientes').classList.add('hidden');
         }
@@ -690,22 +660,23 @@
             timerBuscaPaciente=window.setTimeout(async function(){
                 const termo=document.getElementById('buscaPaciente').value.trim();
                 const lista=document.getElementById('resultadosPacientes');
-                if(termo.length<3){lista.innerHTML='';lista.classList.add('hidden');return;}
+                const dataNascimentoBusca=dataInputParaBanco(document.getElementById('buscaDataNascimentoPaciente').value);if(termo.length<3&&!/^\d+$/.test(termo)&&!dataNascimentoBusca){lista.innerHTML='';lista.classList.add('hidden');return;}
                 if(!usuarioAtual)return;
                 lista.innerHTML='<p class="p-3 text-xs text-slate-500">Buscando pacientes...</p>';lista.classList.remove('hidden');
                 try{
-                    const campos='id,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio';
+                    const campos='id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio';
                     let consulta=supabaseClient.from('pacientes').select(campos).order('nome_paciente',{ascending:true}).limit(15);
-                    if(/^\d{4,}$/.test(termo)){
-                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo);
-                    }else{
-                        consulta=consulta.ilike('nome_paciente','%'+termo+'%');
+                    if(/^\d+$/.test(termo)){
+                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termo+',cns.eq.'+termo+',codigo_paciente.eq.'+Number(termo));
+                    }else if(termo){
+                        consulta=consulta.ilike('nome_paciente','%'+termo.replace(/[%_]/g,'')+'%');
                     }
+                    if(dataNascimentoBusca)consulta=consulta.eq('data_nascimento',dataNascimentoBusca);
                     const {data,error}=await consulta;if(error)throw error;
                     pacientesEncontrados=data||[];
                     if(!pacientesEncontrados.length){lista.innerHTML='<p class="p-3 text-xs text-slate-500">Nenhum paciente encontrado. Use “Cadastrar novo paciente” somente após conferir a busca.</p>';return;}
                     lista.innerHTML=pacientesEncontrados.map(function(p){
-                        const detalhe=[p.data_nascimento||'Nascimento não informado',p.nome_mae?'Mãe: '+p.nome_mae:'',p.numero_cadastro_ambulatorio?'Cadastro: '+p.numero_cadastro_ambulatorio:''].filter(Boolean).join(' · ');
+                        const detalhe=[formatarCodigoPaciente(p.codigo_paciente),p.data_nascimento||'Nascimento não informado',p.nome_mae?'Mãe: '+p.nome_mae:'',p.numero_cadastro_ambulatorio?'Cadastro: '+p.numero_cadastro_ambulatorio:''].filter(Boolean).join(' · ');
                         return '<button type="button" onclick="selecionarPaciente(\''+p.id+'\')" class="block w-full border-b border-slate-100 p-3 text-left last:border-0 hover:bg-teal-50"><span class="block text-xs font-bold text-slate-800">'+escaparHtml(p.nome_paciente)+'</span><span class="mt-1 block text-[10px] text-slate-500">'+escaparHtml(detalhe||'Dados complementares não informados')+'</span></button>';
                     }).join('');
                 }catch(error){
@@ -719,24 +690,24 @@
             const botao=document.getElementById('btnSalvar');
             const situacao=document.getElementById('Situaçao').value,motivo=document.getElementById('Mot_Cancelam').value;
             if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast('Informe o motivo do cancelamento.','erro');return;}
-            if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
+            if(modoEdicaoPaciente){exibirToast('Salve ou cancele a edição dos dados do paciente antes de gravar a cirurgia.','erro');return;}if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
             botao.disabled=true;botao.textContent='Gravando...';
             try{
                 if(!pacienteSelecionado){
                     const novoPaciente={
                         nome_paciente:document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
-                        data_nascimento:document.getElementById('Data_Nascimento').value||null,
+                        data_nascimento:dataInputParaBanco(document.getElementById('Data_Nascimento').value)||null,
                         cns:document.getElementById('CNS').value.trim()||null,
                         nome_mae:document.getElementById('NOME_MAE').value.toUpperCase().trim()||null,
                         sexo:document.getElementById('sexo').value||null,
                         numero_cadastro_ambulatorio:document.getElementById('prontuario').value.trim()||null
                     };
-                    const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').insert([novoPaciente]).select('id,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
+                    const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').insert([novoPaciente]).select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
                     if(erroPaciente)throw new Error('Falha ao cadastrar paciente: '+erroPaciente.message);
-                    pacienteSelecionado=paciente;
+                    pacienteSelecionado=paciente;document.getElementById('acoesEdicaoPaciente').classList.remove('hidden');document.getElementById('btnEditarPaciente').classList.remove('hidden');
                     bloquearCamposPaciente(true);
                     const info=document.getElementById('pacienteSelecionadoInfo');
-                    info.textContent='Novo paciente cadastrado e selecionado: '+paciente.nome_paciente;
+                    info.textContent='Novo paciente '+formatarCodigoPaciente(paciente.codigo_paciente)+' cadastrado e selecionado: '+paciente.nome_paciente;
                     info.classList.remove('hidden');
                 }
                 const novo={
@@ -762,11 +733,12 @@
                     'Anestesia1':document.getElementById('Anestesia1').value,
                     'DIGITADO_POR':usuarioAtual.email||perfilAtual.email,'DIGITADO_EM':new Date().toLocaleString('pt-BR')
                 };
+                const pacienteIdSalvo=pacienteSelecionado.id;
                 const {error}=await supabaseClient.from('cirurgias').insert([novo]);if(error)throw error;
                 exibirToast('Cirurgia gravada e vinculada ao paciente.','sucesso');
                 document.getElementById('formCirurgia').reset();
                 limparPacienteSelecionado();
-                document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();aoMudarSituacao();toggleFormulario();await carregarDados();
+                document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();aoMudarSituacao();toggleFormulario();await carregarPacientes();await abrirHistoricoPaciente(pacienteIdSalvo);
             }catch(error){
                 console.error(error);exibirToast('Erro ao gravar: '+error.message,'erro');
             }finally{
@@ -783,16 +755,17 @@
         }
         function abrirDetalhesIndex(i){
             const r=registrosFiltrados[i];if(!r)return;
-            const v={detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
-                detalheNbe:r.NBE||'-',detalheCns:r.CNS||'-',detalheNascimento:formatarData(r.Data_Nascimento),detalheSexo:r.sexo||'-',detalheMae:r.NOME_MAE||'-',
+            const v={detalheSubtitulo:'Cadastro ambulatorial: '+(r.prontuario||'N/A'),detalheNome:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_paciente)||r.Nome_Paciente||'-',detalheProntuario:r.prontuario||'-',
+                detalheNbe:r.NBE||'-',detalheCns:(pacienteHistoricoAtual&&pacienteHistoricoAtual.cns)||r.CNS||'-',detalheNascimento:formatarData((pacienteHistoricoAtual&&pacienteHistoricoAtual.data_nascimento)||r.Data_Nascimento),detalheSexo:(pacienteHistoricoAtual&&pacienteHistoricoAtual.sexo)||r.sexo||'-',detalheMae:(pacienteHistoricoAtual&&pacienteHistoricoAtual.nome_mae)||r.NOME_MAE||'-',
                 detalheEspecialidade:r.Especialidade||'-',detalheDataCirurgia:formatarData(r.Data_da_Cirurgia),detalheProc1:r.Procedimento1||'-',detalheProc2:r.Procedimento2||'-',
                 detalheProc3:r.Procedimento3||'-',detalheMedico:r.Medico||'-',detalheCrmCir:r.CRM_CIR||'-',detalheAnestesista:r.Anestesista||'-',
                 detalheCrmAnest:r.CRM_ANEST||'-',detalheAnestesia:r.Anestesia1||'-',detalheDigitadoInfo:(r.DIGITADO_POR||'SISTEMA')+' em '+(r.DIGITADO_EM||'-'),detalheCaraterBadge:r.Carater_Atendimento||'-'};
             Object.keys(v).forEach(function(id){document.getElementById(id).textContent=v[id];});
             const realizada=(r.Situaçao||'').toUpperCase()==='REALIZADA',badge=document.getElementById('detalheSituacaoBadge');
-            badge.textContent=r.Situaçao||'REALIZADA';badge.className=realizada?'font-bold text-emerald-700':'font-bold text-rose-700';
+            badge.innerHTML=realizada?'<i class="fa-solid fa-circle-check mr-1"></i>REALIZADA':'<i class="fa-solid fa-circle-xmark mr-1"></i>CANCELADA';badge.className=realizada?'font-bold text-emerald-700':'font-bold text-rose-700';
             document.getElementById('detalheBoxCancelamento').classList.toggle('hidden',realizada);
             if(!realizada)document.getElementById('detalheMotivoCancelamento').textContent=r.Mot_Cancelam||'Não informado';
+            const carater=(r.Carater_Atendimento||'').toUpperCase()==='URGENCIA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>URGÊNCIA':'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className=carater?'font-bold text-amber-700':'font-bold text-blue-700';
             document.getElementById('modalDetalhes').classList.remove('hidden');
         }
         function fecharModalDetalhes(){document.getElementById('modalDetalhes').classList.add('hidden');}
@@ -809,7 +782,8 @@
             sec.classList.toggle('hidden',!abrir);if(abrir){carregarUsuarios();sec.scrollIntoView({behavior:'smooth'});}
         }
         async function carregarUsuarios(){
-            if(!perfilAtual||perfilAtual.role!=='administrador')return;const corpo=document.getElementById('gridUsuarios');
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;
+            const corpo=document.getElementById('gridUsuarios');
             corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr>';
             const {data,error}=await supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active,created_at').order('created_at',{ascending:true});
             if(error){corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent=error.message;return;}
@@ -843,6 +817,7 @@
                     '<td class="p-3">'+escaparHtml(campos)+'</td></tr>';
             }).join('')||'<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhuma operação registrada ainda.</td></tr>';
         }
+        async function enviarLinkRedefinicao(emailCodificado){if(!perfilAtual||perfilAtual.role!=='administrador')return;const email=decodeURIComponent(emailCodificado||'');if(!email)return;const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});if(error){exibirToast('Não foi possível enviar o link: '+error.message,'erro');return;}exibirToast('Link de redefinição enviado para '+email+'.','sucesso');}
         async function salvarPerfilUsuario(id){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
             const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true';
