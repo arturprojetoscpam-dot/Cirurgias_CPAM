@@ -1153,6 +1153,7 @@
             if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar ou editar pacientes.','erro');return;}
             telaAnteriorCadastroPaciente=document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'pesquisa':'historico';
             document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');document.getElementById('secCadastroPaciente').classList.remove('hidden');
+            document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){const ativo=btn.getAttribute('data-nav')==='novoPaciente';btn.classList.toggle('nav-ativo',ativo);btn.setAttribute('aria-current',ativo?'page':'false');});
             if(atualizarRota)atualizarRotaPaciente(id);
             limparAlertaDuplicidadePaciente();pacienteModalAtual=null;document.getElementById('formModalPaciente').reset();preencherCampo('paciente_codigo','');
             if(id){
@@ -1167,6 +1168,7 @@
             document.getElementById('secCadastroPaciente').classList.add('hidden');
             if(telaAnteriorCadastroPaciente==='historico'&&pacienteHistoricoAtual){document.getElementById('secHistoricoCirurgias').classList.remove('hidden');}
             else{document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');carregarPacientes();}
+            document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){const ativo=btn.getAttribute('data-nav')==='pesquisa';btn.classList.toggle('nav-ativo',ativo);btn.setAttribute('aria-current',ativo?'page':'false');});
             if(limparRota&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             window.scrollTo({top:0,behavior:'auto'});
         }
