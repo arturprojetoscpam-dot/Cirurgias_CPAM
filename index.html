@@ -427,10 +427,27 @@
           border-radius:0!important;
         }
         #appShell>header.cpam-main-header{
-          background:#D3F3E4!important;
+          background:#E2ECE4!important;
+          background-image:none!important;
           color:#173B2A!important;
+          border:0!important;
           border-bottom:4px solid #315F43!important;
-          box-shadow:0 3px 10px rgba(24,60,48,.10)!important;
+          box-shadow:0 2px 8px rgba(23,59,42,.08)!important;
+        }
+        /* Restaura a logo horizontal no cabeçalho; a logo vertical fica só no favicon */
+        #appShell .header-logo-button{
+          width:auto!important;height:auto!important;min-width:0!important;
+          overflow:visible!important;flex:0 0 auto!important;
+        }
+        #appShell .header-logo-button img{
+          display:block!important;width:auto!important;height:42px!important;
+          max-width:190px!important;object-fit:contain!important;object-position:center!important;
+        }
+        @media(max-width:700px){
+          #appShell .header-logo-button img{height:34px!important;max-width:130px!important}
+        }
+        @media(max-width:480px){
+          #appShell .header-logo-button img{height:30px!important;max-width:100px!important}
         }
         #appShell>header.cpam-main-header h1,
         #appShell>header.cpam-main-header p,
