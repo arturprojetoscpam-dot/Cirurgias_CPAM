@@ -1393,7 +1393,7 @@
                 else{payload['Identificação']='REG_'+Date.now();resposta=await supabaseClient.from('cirurgias').insert([payload]).select('id').single();}
                 if(resposta.error)throw resposta.error;
                 fecharModalCirurgia();if(telaAnteriorCirurgia==='detalhes')fecharModalDetalhes();exibirToast(cirurgiaModalAtual?'Cirurgia atualizada com sucesso.':'Cirurgia registrada e vinculada ao paciente.','sucesso');
-                if(telaAnteriorCirurgia==='cadastroPaciente'){await carregarHistoricoPacienteModal(p.id);document.getElementById('secCadastroPaciente').classList.remove('hidden');}else{await abrirHistoricoPaciente(p.id);}
+                if(telaAnteriorCirurgia==='cadastroPaciente'||(telaAnteriorCirurgia==='detalhes'&&telaAnteriorDetalhes==='cadastroPaciente')){await carregarHistoricoPacienteModal(p.id);document.getElementById('secCadastroPaciente').classList.remove('hidden');}else{await abrirHistoricoPaciente(p.id);}
             }catch(error){console.error(error);exibirToast('Não foi possível salvar a cirurgia: '+error.message,'erro');}
             finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cirurgia';}
         }
