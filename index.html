@@ -251,7 +251,7 @@
 /* CPAM hospital refinement */
 .header-logo-badge{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid #d1d5db;border-radius:12px;padding:6px 12px;flex:0 0 auto}
 .header-logo-badge img{display:block;height:38px;width:auto;max-width:190px;object-fit:contain;aspect-ratio:auto;image-rendering:-webkit-optimize-contrast}
-#appShell>header{background:#191A23!important;border-bottom:4px solid #16A34A!important;box-shadow:0 4px 14px rgba(17,24,39,.16)!important}
+#appShell>header,#appShell>header.cpam-main-header{background:#E2ECE4!important;background-image:none!important;color:#173B2A!important;border-bottom:4px solid #315F43!important;border-top:0!important;border-left:0!important;border-right:0!important;box-shadow:0 2px 8px rgba(23,59,42,.08)!important}
 .header-user-group{display:flex;align-items:center;gap:10px}.header-profile-pill{display:flex;align-items:center;gap:12px;background:#1F2937;border:1px solid #374151;border-radius:12px;padding:8px 14px;min-width:0}
 .header-avatar{width:36px;height:36px;flex:0 0 36px;border-radius:999px;background:#16A34A;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
 .header-profile-copy{min-width:0;text-align:left}.header-profile-name{color:#fff!important;font-size:14px!important;font-weight:600!important;line-height:1.25!important;white-space:nowrap}
@@ -515,7 +515,7 @@
 </section>
     <!-- Cabeçalho Principal -->
     <div id="appShell" class="hidden">
-    <header class="bg-gradient-to-r from-teal-900 via-slate-900 to-teal-950 text-white shadow-lg sticky top-0 z-30">
+    <header class="cpam-main-header sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
             <div class="flex items-center gap-3">
                 <button type="button" onclick="alternarMenuLateral()" class="rounded-lg border border-teal-500/40 bg-teal-800/60 px-3 py-2 text-white hover:bg-teal-700 lg:hidden" aria-label="Abrir menu de navegação"><i class="fa-solid fa-bars"></i></button>
