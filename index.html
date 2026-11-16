@@ -270,6 +270,98 @@
 .cpam-positivus-card,.kpi-card{border:1.5px solid #191A23!important;box-shadow:0 4px 0 #191A23!important}
 @media(max-width:850px){.header-profile-email{max-width:130px}.header-logo-badge img{height:32px;max-width:125px}.header-profile-pill{gap:8px;padding:6px 8px}.header-profile-meta{gap:4px}}
 @media(max-width:560px){.header-profile-email{display:none}.header-profile-pill{padding:5px}.header-profile-role{font-size:9px!important}.header-profile-name{font-size:12px!important}.header-logo-badge img{height:28px;max-width:100px}}
+
+        /* Ajustes de identidade visual CPAM — login e cabeçalho */
+        #authScreen .login-brand{
+          background:#E2ECE4!important;color:#173B2A!important;
+          padding-top:46px;
+        }
+        #authScreen .login-brand:before{
+          display:block!important;
+          background:linear-gradient(145deg,rgba(232,241,234,.96),rgba(218,232,221,.94))!important;
+        }
+        #authScreen .login-brand-photo{display:none!important}
+        #authScreen .login-logo{
+          width:min(100%,310px);min-height:112px;margin:0 0 25px;
+          justify-content:flex-start;background:transparent;border:0;box-shadow:none;
+        }
+        #authScreen .login-logo img{
+          display:block;width:auto;max-width:100%;max-height:112px;height:auto;
+          object-fit:contain;object-position:left center;
+        }
+        #authScreen .login-brand h1{margin-top:0!important;color:#173B2A!important}
+        #authScreen .login-institution{
+          display:block;margin-top:12px!important;color:#315F43!important;
+          font-size:11px;font-weight:800;letter-spacing:2px;
+        }
+        #authScreen .login-description{color:#344F3D!important}
+        #authScreen .login-features li{color:#294735!important}
+        #authScreen .login-features i{color:#39845A!important}
+        #authScreen .login-brand-footer{
+          color:#526B59!important;border-top-color:rgba(23,59,42,.2)!important;
+        }
+        #authScreen .login-input-wrap{
+          box-sizing:border-box;width:100%;min-width:0;overflow:hidden;
+          border:1px solid #C8D8CD;border-radius:12px;background:#fff;
+          clip-path:inset(0 round 12px);
+        }
+        #authScreen .login-input-wrap:focus-within{
+          border-color:#28734C;box-shadow:inset 0 0 0 1px #28734C,0 0 0 3px rgba(40,115,76,.12);
+        }
+        #authScreen .login-input-wrap input{flex:1 1 auto;min-width:0;box-sizing:border-box}
+        #appShell>header{
+          background:#E2ECE4!important;color:#173B2A!important;
+          border-bottom:1px solid #315F43!important;
+          box-shadow:0 3px 10px rgba(23,59,42,.08)!important;
+        }
+        #appShell>header h1,#appShell>header p{color:#173B2A!important}
+        #appShell .header-logo-badge{
+          background:transparent!important;border:0!important;border-radius:0!important;
+          padding:0!important;box-shadow:none!important;
+        }
+        #appShell .header-logo-badge img{
+          height:42px;width:auto;max-width:190px;object-fit:contain;
+        }
+        #appShell>header .header-profile-pill{
+          background:transparent!important;border:0!important;border-radius:0!important;
+          padding:0 8px!important;box-shadow:none!important;
+        }
+        #appShell>header .header-profile-name{color:#173B2A!important;font-weight:700!important}
+        #appShell>header .header-profile-email{color:#435B4B!important}
+        #appShell>header .header-profile-role{
+          background:#D1E7D8!important;color:#244C33!important;border:1px solid #A9C9B2;
+        }
+        #appShell>header .header-avatar{
+          background:#C9DFCF!important;color:#244C33!important;
+          border:1px solid #A9C9B2;
+        }
+        #btnAuditoria,#btnUsuarios{
+          background:transparent!important;border:1px solid transparent!important;
+          color:#173B2A!important;border-radius:9px!important;
+          font-size:12px!important;font-weight:700!important;padding:8px 11px!important;
+        }
+        #btnAuditoria:hover,#btnUsuarios:hover{
+          background:#D1E7D8!important;border-color:#A9C9B2!important;
+        }
+        #appShell>header button[onclick="sair()"]{
+          background:#245B3B!important;border:1px solid #245B3B!important;
+          color:#fff!important;border-radius:9px!important;
+          font-size:12px!important;font-weight:700!important;padding:8px 13px!important;
+        }
+        #appShell>header button[onclick="sair()"]:hover{background:#17452C!important}
+        #appShell>header button[onclick="alternarMenuLateral()"],
+        #appShell>header button[onclick="alternarVisibilidadeSidebar()"]{
+          background:transparent!important;border:1px solid #A9C9B2!important;
+          color:#173B2A!important;
+        }
+        @media(max-width:850px){
+          #authScreen .login-brand{padding-top:30px}
+          #authScreen .login-logo{min-height:82px;width:min(100%,260px);margin-bottom:18px}
+          #authScreen .login-logo img{max-height:82px}
+          #appShell .header-logo-badge img{height:34px;max-width:130px}
+          #appShell>header .header-profile-pill{background:transparent!important}
+        }
+
         /* Fim do CPAM POSITIVUS DESIGN SYSTEM */
 </style>
 </head>
@@ -283,9 +375,11 @@
     <aside class="login-brand">
       <div class="login-brand-photo" aria-hidden="true"></div>
       <div class="login-brand-content">
-        
-        <p class="login-institution">CPAM · GESTÃO HOSPITALAR</p>
+        <div class="login-logo" aria-label="Complexo Pediátrico Arlinda Marques">
+          <img src="./logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
+        </div>
         <h1>Sistema de Registro de Cirurgias</h1>
+        <p class="login-institution">CPAM · GESTÃO HOSPITALAR</p>
         <p class="login-description">Uma plataforma integrada para apoiar a organização, o acompanhamento e a gestão das atividades do bloco cirúrgico.</p>
         <ul class="login-features">
           <li><i class="fa-solid fa-circle-check"></i><span>Cadastro e histórico de pacientes</span></li>
@@ -348,7 +442,7 @@
                 <div class="header-logo-badge"><img src="./logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques"></div>
                 <div>
                     <h1 class="text-lg font-bold tracking-tight leading-none text-white">Bloco Cirúrgico</h1>
-                    <p class="text-xs text-teal-300 font-medium">Gestão & Registro Hospitalar</p>
+                    <p class="text-xs font-medium">Registro de Cirurgias CPAM</p>
                 </div>
             </div>
 
