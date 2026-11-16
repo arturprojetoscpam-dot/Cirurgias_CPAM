@@ -398,6 +398,47 @@
         @media(max-width:480px){#appShell .header-logo-button img{height:30px;max-width:70px}#appShell .header-system-title p{max-width:105px}#appShell .header-profile-email{max-width:110px}#appShell .header-actions{gap:6px}#appShell .header-action-buttons{gap:5px}}
 
         /* Fim do CPAM POSITIVUS DESIGN SYSTEM */
+
+        /* Ajustes finos solicitados: foco dos campos e cabeçalho */
+        #authScreen .login-input-wrap{
+          box-sizing:border-box;
+          border:1px solid #A9C9B2!important;
+          border-radius:12px!important;
+          overflow:hidden;
+          outline:none!important;
+        }
+        #authScreen .login-input-wrap:focus-within{
+          border:2px solid #2E7D32!important;
+          border-radius:12px!important;
+          outline:none!important;
+          box-shadow:0 0 0 3px rgba(46,125,50,.15)!important;
+        }
+        #authScreen .login-input-wrap input,
+        #authScreen .login-input-wrap input:focus{
+          outline:none!important;
+          box-shadow:none!important;
+          border:0!important;
+          border-radius:0!important;
+        }
+        #appShell>header.cpam-main-header{
+          background:#D3F3E4!important;
+          color:#173B2A!important;
+          border-bottom:4px solid #315F43!important;
+          box-shadow:0 3px 10px rgba(24,60,48,.10)!important;
+        }
+        #appShell>header.cpam-main-header h1,
+        #appShell>header.cpam-main-header p,
+        #appShell>header.cpam-main-header i,
+        #appShell>header.cpam-main-header .header-profile-name,
+        #appShell>header.cpam-main-header .header-profile-email,
+        #appShell>header.cpam-main-header .header-profile-role{
+          color:#173B2A!important;
+        }
+        #appShell>header.cpam-main-header .header-logout-button,
+        #appShell>header.cpam-main-header .header-logout-button i{
+          color:#fff!important;
+        }
+
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -429,10 +470,6 @@
     <main class="login-panel">
       <div class="login-form-wrap">
         <div id="authLogin">
-          <div class="login-institutional-logo">
-            <img src="logo-cpam.png" alt="Logotipo do hospital" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
-            <span class="login-logo-fallback" hidden aria-label="Logotipo indisponível"><i class="fa-solid fa-hospital" aria-hidden="true"></i></span>
-          </div>
           <div class="login-restricted"><i class="fa-solid fa-lock"></i> ÁREA RESTRITA</div>
           <h2 class="login-title">Acesse sua conta</h2>
           <p class="login-subtitle">Informe suas credenciais para continuar.</p>
