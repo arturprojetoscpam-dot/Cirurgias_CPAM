@@ -1444,6 +1444,14 @@
                 return data&&data.procedimento?String(data.procedimento).trim():(descricao||'');
             }catch(error){console.warn('Não foi possível resolver a descrição do procedimento no catálogo:',error);return descricao||'';}
         }
+        async function timedFetchLocal(url,options){
+            if(navigator.permissions?.query){
+                try{const permission=await navigator.permissions.query({name:'loopback-network'});if(permission.state==='denied')throw new Error('O Chrome está bloqueando o acesso ao computador local. Abra as permissões do site cirurgiascpam.vercel.app e permita “Loopback network” (acesso à rede local).');}
+                catch(error){if(error&&/está bloqueando/.test(error.message))throw error;}
+            }
+            const request=new Request(url,{...options,mode:'cors',targetAddressSpace:'loopback'});
+            return fetch(request);
+        }
         function timedTexto(v){return String(v??'').trim();}
         function timedHtml(v){return escaparHtml(timedTexto(v)||'—');}
         function timedSetStatus(texto,erro=false){const el=document.getElementById('timedLocalStatus');if(el){el.textContent=texto;el.className='text-[10px] font-semibold '+(erro?'text-rose-700':'text-teal-800');}}
@@ -1453,7 +1461,7 @@
             if(!usuario||!senha){exibirToast('Informe usuário e senha do TIMED.','erro');return;}
             const botao=document.getElementById('btnTimedConectar');botao.disabled=true;botao.textContent='Conectando...';timedSetStatus('Conectando ao serviço local...');
             try{
-                const resp=await fetch('http://127.0.0.1:4173/api/sessao/iniciar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario,senha}),cache:'no-store'});
+                const resp=await timedFetchLocal('http://127.0.0.1:4173/api/sessao/iniciar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario,senha}),cache:'no-store'});
                 const dados=await resp.json();if(!resp.ok||!dados.sucesso)throw new Error(dados.erro||'Não foi possível iniciar a sessão TIMED.');
                 timedLocalToken=dados.token;document.getElementById('timedLocalSenha').value='';document.getElementById('btnTimedConsultar').disabled=false;document.getElementById('btnTimedEncerrar').disabled=false;timedSetStatus('Conectado · sessão temporária');exibirToast('TIMED conectado. Você já pode consultar a BE.','sucesso');
             }catch(error){timedLocalToken=null;timedSetStatus('Falha na conexão',true);exibirToast(error.message+' Verifique se o serviço local está iniciado e se o navegador autorizou o acesso local.','erro');}
@@ -1465,7 +1473,7 @@
             if(!timedLocalToken){exibirToast('Conecte-se ao TIMED antes de consultar.','erro');return;}
             const botao=document.getElementById('btnTimedConsultar');botao.disabled=true;botao.textContent='Consultando...';box.classList.remove('hidden');box.innerHTML='<p class="text-xs text-slate-600"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Consultando a BE no TIMED. Aguarde...</p>';
             try{
-                const resp=await fetch('http://127.0.0.1:4173/api/consultar',{method:'POST',headers:timedApiHeaders(),body:JSON.stringify({be}),cache:'no-store'});
+                const resp=await timedFetchLocal('http://127.0.0.1:4173/api/consultar',{method:'POST',headers:timedApiHeaders(),body:JSON.stringify({be}),cache:'no-store'});
                 const dados=await resp.json();if(!resp.ok||!dados.sucesso)throw new Error(dados.erro||'Falha ao consultar a BE.');
                 timedLocalResultado=dados.paciente;renderizarResultadoTimedLocal(dados.paciente);timedSetStatus('Consulta concluída · dados aguardando conferência');
             }catch(error){if(/Sessão local não autorizada|Inicie novamente/.test(error.message)){timedLocalToken=null;document.getElementById('btnTimedConsultar').disabled=true;document.getElementById('btnTimedEncerrar').disabled=true;}box.innerHTML='<p class="text-xs font-semibold text-rose-700">'+timedHtml(error.message)+'</p>';timedSetStatus('Erro na consulta',true);}
@@ -1507,7 +1515,7 @@
         }
         async function encerrarTimedLocal(){
             if(!timedLocalToken)return;
-            try{const resp=await fetch('http://127.0.0.1:4173/api/sessao/encerrar',{method:'POST',headers:timedApiHeaders(),body:'{}',cache:'no-store'});const dados=await resp.json();if(!resp.ok)throw new Error(dados.erro||'Falha ao encerrar sessão.');}
+            try{const resp=await timedFetchLocal('http://127.0.0.1:4173/api/sessao/encerrar',{method:'POST',headers:timedApiHeaders(),body:'{}',cache:'no-store'});const dados=await resp.json();if(!resp.ok)throw new Error(dados.erro||'Falha ao encerrar sessão.');}
             catch(error){exibirToast(error.message,'erro');}
             finally{timedLocalToken=null;timedLocalResultado=null;document.getElementById('btnTimedConsultar').disabled=true;document.getElementById('btnTimedEncerrar').disabled=true;document.getElementById('timedLocalSenha').value='';timedSetStatus('Sessão encerrada');}
         }
