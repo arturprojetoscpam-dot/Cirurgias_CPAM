@@ -24,13 +24,13 @@ As dependências existentes do projeto local (Express e Playwright) são reutili
 
 ## Origem autorizada
 
-Por segurança, a API aceita somente:
+Por segurança, a API aceita:
 
 - Produção: `https://cirurgiascpam.vercel.app`
-- Preview de teste autorizado: `https://cirurgiascpam-22vzdh2d1-arturprojetoscpam-dot.vercel.app`
+- Previews HTTPS cujo host siga o padrão `cirurgiascpam-<identificador>-arturprojetoscpam-dot.vercel.app`
 - Host local: `127.0.0.1:4173`
 
-Não foi liberado `*.vercel.app`. O preview informado acima foi incluído individualmente na lista de origens autorizadas. Outros previews não estarão autorizados automaticamente.
+A validação não libera `*.vercel.app`: exige o prefixo do projeto, o sufixo do escopo Vercel desta conta e HTTPS. Endereços de outros projetos ou de outros escopos continuam bloqueados. O serviço local permanece vinculado exclusivamente a `127.0.0.1`.
 
 ## Segurança
 
