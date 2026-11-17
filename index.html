@@ -944,7 +944,13 @@
           <section class="space-y-4">
             <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-file-medical text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">1. Dados do Procedimento</h3></div>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
-              <div class="md:col-span-4"><label for="cir_be_vitai" class="label-cirurgia">Nº da BE VITAI (deste procedimento)</label><input id="cir_be_vitai" class="campo-cirurgia" placeholder="Identificação BE VITAI do procedimento"></div><div class="md:col-span-4"><label for="cir_data" class="label-cirurgia">Data da Cirurgia *</label><input id="cir_data" type="date" required class="campo-cirurgia"></div>
+              <div class="md:col-span-4"><label for="cir_be_vitai" class="label-cirurgia">Nº da BE VITAI (deste procedimento)</label><input id="cir_be_vitai" class="campo-cirurgia" placeholder="Identificação BE VITAI do procedimento"></div>
+              <div class="md:col-span-12 rounded-xl border border-teal-200 bg-teal-50/60 p-4">
+                <div class="flex flex-wrap items-center justify-between gap-2"><div><h4 class="text-xs font-bold text-teal-950"><i class="fa-solid fa-link mr-2"></i>Consulta de paciente no TIMED</h4><p class="mt-1 text-[10px] text-slate-600">Conexão local e somente leitura. A pesquisa usa a BE deste procedimento.</p></div><span id="timedLocalStatus" class="text-[10px] font-semibold text-slate-600">Não conectado</span></div>
+                <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2"><div><label for="timedLocalUsuario" class="mb-1 block text-[10px] font-semibold text-slate-600">Usuário TIMED</label><input id="timedLocalUsuario" autocomplete="username" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs" placeholder="Usuário"></div><div><label for="timedLocalSenha" class="mb-1 block text-[10px] font-semibold text-slate-600">Senha TIMED</label><input id="timedLocalSenha" type="password" autocomplete="current-password" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs" placeholder="Senha"></div></div>
+                <div class="mt-3 flex flex-wrap gap-2"><button type="button" id="btnTimedConectar" onclick="conectarTimedLocal()" class="rounded-lg bg-teal-800 px-3 py-2 text-[11px] font-bold text-white hover:bg-teal-900">Conectar ao TIMED</button><button type="button" id="btnTimedConsultar" onclick="consultarTimedLocal()" disabled class="rounded-lg border border-teal-300 bg-white px-3 py-2 text-[11px] font-bold text-teal-900 disabled:cursor-not-allowed disabled:opacity-40">Consultar BE</button><button type="button" id="btnTimedEncerrar" onclick="encerrarTimedLocal()" disabled class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-[11px] font-semibold text-slate-600 disabled:opacity-40">Encerrar sessão</button></div>
+                <div id="timedLocalResultado" class="mt-3 hidden rounded-lg border border-slate-200 bg-white p-3" aria-live="polite"></div>
+              </div><div class="md:col-span-4"><label for="cir_data" class="label-cirurgia">Data da Cirurgia *</label><input id="cir_data" type="date" required class="campo-cirurgia"></div>
               <div class="md:col-span-2"><label for="cir_inicio" class="label-cirurgia">Horário Início</label><input id="cir_inicio" type="time" class="campo-cirurgia"></div>
               <div class="md:col-span-2"><label for="cir_fim" class="label-cirurgia">Horário Fim</label><input id="cir_fim" type="time" class="campo-cirurgia"></div>
               <div class="md:col-span-4"><label for="cir_sala" class="label-cirurgia">Sala Cirúrgica / Bloco</label><input id="cir_sala" class="campo-cirurgia" placeholder="Sala / bloco"></div>
@@ -1089,6 +1095,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+        let timedLocalToken=null,timedLocalResultado=null,rascunhoCirurgiaTimed=null,retornoCirurgiaAposSalvarPaciente=false;
         let pacienteModalAtual=null,cirurgiaModalAtual=null,telaAnteriorCirurgia='historico',telaAnteriorDetalhes='historico',cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
@@ -1262,6 +1269,7 @@
                 if(pacienteHistoricoAtual&&pacienteHistoricoAtual.id===resposta.data.id){pacienteHistoricoAtual=resposta.data;atualizarResumoPacienteHistorico(resposta.data);}
                 await carregarHistoricoPacienteModal(resposta.data.id);await carregarPacientes();
                 exibirToast(eraEdicao?'Cadastro do paciente atualizado com sucesso.':'Paciente cadastrado com sucesso.','sucesso');
+                if(retornoCirurgiaAposSalvarPaciente)await retornarAoFormularioCirurgiaTimed();
             }catch(error){console.error(error);exibirToast('Não foi possível salvar o cadastro: '+error.message,'erro');}
             finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cadastro';}
         }
@@ -1436,6 +1444,74 @@
                 return data&&data.procedimento?String(data.procedimento).trim():(descricao||'');
             }catch(error){console.warn('Não foi possível resolver a descrição do procedimento no catálogo:',error);return descricao||'';}
         }
+        function timedTexto(v){return String(v??'').trim();}
+        function timedHtml(v){return escaparHtml(timedTexto(v)||'—');}
+        function timedSetStatus(texto,erro=false){const el=document.getElementById('timedLocalStatus');if(el){el.textContent=texto;el.className='text-[10px] font-semibold '+(erro?'text-rose-700':'text-teal-800');}}
+        function timedApiHeaders(){return {'Content-Type':'application/json','X-CPAM-Session':timedLocalToken||''};}
+        async function conectarTimedLocal(){
+            const usuario=timedTexto(document.getElementById('timedLocalUsuario').value),senha=document.getElementById('timedLocalSenha').value;
+            if(!usuario||!senha){exibirToast('Informe usuário e senha do TIMED.','erro');return;}
+            const botao=document.getElementById('btnTimedConectar');botao.disabled=true;botao.textContent='Conectando...';timedSetStatus('Conectando ao serviço local...');
+            try{
+                const resp=await fetch('http://127.0.0.1:4173/api/sessao/iniciar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario,senha}),cache:'no-store'});
+                const dados=await resp.json();if(!resp.ok||!dados.sucesso)throw new Error(dados.erro||'Não foi possível iniciar a sessão TIMED.');
+                timedLocalToken=dados.token;document.getElementById('timedLocalSenha').value='';document.getElementById('btnTimedConsultar').disabled=false;document.getElementById('btnTimedEncerrar').disabled=false;timedSetStatus('Conectado · sessão temporária');exibirToast('TIMED conectado. Você já pode consultar a BE.','sucesso');
+            }catch(error){timedLocalToken=null;timedSetStatus('Falha na conexão',true);exibirToast(error.message+' Verifique se o serviço local está iniciado e se o navegador autorizou o acesso local.','erro');}
+            finally{botao.disabled=false;botao.textContent='Conectar ao TIMED';}
+        }
+        async function consultarTimedLocal(){
+            const be=timedTexto(document.getElementById('cir_be_vitai').value),box=document.getElementById('timedLocalResultado');
+            if(!be){exibirToast('Informe primeiro o número da BE VITAI deste procedimento.','erro');document.getElementById('cir_be_vitai').focus();return;}
+            if(!timedLocalToken){exibirToast('Conecte-se ao TIMED antes de consultar.','erro');return;}
+            const botao=document.getElementById('btnTimedConsultar');botao.disabled=true;botao.textContent='Consultando...';box.classList.remove('hidden');box.innerHTML='<p class="text-xs text-slate-600"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Consultando a BE no TIMED. Aguarde...</p>';
+            try{
+                const resp=await fetch('http://127.0.0.1:4173/api/consultar',{method:'POST',headers:timedApiHeaders(),body:JSON.stringify({be}),cache:'no-store'});
+                const dados=await resp.json();if(!resp.ok||!dados.sucesso)throw new Error(dados.erro||'Falha ao consultar a BE.');
+                timedLocalResultado=dados.paciente;renderizarResultadoTimedLocal(dados.paciente);timedSetStatus('Consulta concluída · dados aguardando conferência');
+            }catch(error){if(/Sessão local não autorizada|Inicie novamente/.test(error.message)){timedLocalToken=null;document.getElementById('btnTimedConsultar').disabled=true;document.getElementById('btnTimedEncerrar').disabled=true;}box.innerHTML='<p class="text-xs font-semibold text-rose-700">'+timedHtml(error.message)+'</p>';timedSetStatus('Erro na consulta',true);}
+            finally{botao.disabled=!timedLocalToken;botao.textContent='Consultar BE';}
+        }
+        function renderizarResultadoTimedLocal(p){
+            const box=document.getElementById('timedLocalResultado');if(!box||!p)return;
+            const e=p.endereco||{},tel=(p.telefones||[]).map(t=>((t.ddd?'('+t.ddd+') ':'')+t.numero)).join(' / ');
+            const linhas=[['Nome',p.nome],['Nascimento',p.nascimento],['Nome da mãe',p.mae],['CPF',p.cpf],['CNS',p.cns],['Sexo',p.sexo],['Telefone(s)',tel],['CEP',e.cep],['Endereço',[e.tipoLogradouro,e.logradouro].filter(Boolean).join(' ')],['Número',e.numero],['Complemento',e.complemento],['Bairro',e.bairro],['Município',e.municipio]];
+            box.innerHTML='<div class="mb-2 flex items-center justify-between gap-2"><strong class="text-xs text-slate-800">Resultado encontrado no TIMED</strong><span class="rounded-full bg-amber-100 px-2 py-1 text-[9px] font-bold text-amber-900">Revisar antes de aplicar</span></div><dl class="grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">'+linhas.map(([k,v])=>'<div><dt class="text-[9px] font-semibold uppercase text-slate-400">'+timedHtml(k)+'</dt><dd class="break-words text-xs font-semibold text-slate-800">'+timedHtml(v)+'</dd></div>').join('')+'</dl><p class="mt-3 text-[10px] text-slate-500">O número de prontuário próprio do TIMED não será copiado para o cadastro ambulatorial nem para o prontuário interno do Bloco.</p><button type="button" onclick="confirmarAplicacaoTimedLocal()" class="mt-3 rounded-lg bg-emerald-700 px-4 py-2.5 text-[11px] font-bold text-white hover:bg-emerald-800">Confirmar dados e revisar cadastro do paciente</button>';
+        }
+        function capturarRascunhoCirurgiaTimed(){
+            const form=document.getElementById('formModalCirurgia'),draft={};
+            form.querySelectorAll('input,select,textarea').forEach(el=>{if(el.id)draft[el.id]=el.value;});
+            return draft;
+        }
+        async function confirmarAplicacaoTimedLocal(){
+            const p=timedLocalResultado;if(!p||!pacienteHistoricoAtual){exibirToast('Não há dados consultados ou paciente selecionado para atualizar.','erro');return;}
+            if(!confirm('Os dados do TIMED serão transferidos para os campos do cadastro CPAM para sua revisão. Nada será salvo até você clicar em “Salvar Cadastro”. Deseja continuar?'))return;
+            rascunhoCirurgiaTimed=capturarRascunhoCirurgiaTimed();retornoCirurgiaAposSalvarPaciente=true;
+            const endereco=[p.endereco?.tipoLogradouro,p.endereco?.logradouro].filter(Boolean).join(' ').trim();
+            const telefone=(p.telefones||[]).map(t=>(t.ddd?'('+t.ddd+') ':'')+t.numero).filter(Boolean).join(' / ');
+            try{
+                await abrirCadastroPaciente(pacienteHistoricoAtual.id);
+                preencherCampo('paciente_nome',p.nome);preencherCampo('paciente_cpf',p.cpf);preencherCampo('paciente_cns',p.cns);preencherCampo('paciente_nascimento',normalizarDataParaInput(p.nascimento));preencherCampo('paciente_mae',p.mae);preencherCampo('paciente_telefone',telefone);preencherCampo('paciente_cep',p.endereco?.cep);preencherCampo('paciente_endereco',endereco);preencherCampo('paciente_numero',p.endereco?.numero);preencherCampo('paciente_bairro',p.endereco?.bairro);preencherCampo('paciente_municipio',p.endereco?.municipio);
+                exibirToast('Dados preenchidos para conferência. Revise e clique em “Salvar Cadastro” para gravar no CPAM.','sucesso');
+                const subt=document.getElementById('subtituloModalPaciente');if(subt)subt.textContent='Dados importados do TIMED · revise todos os campos e clique em Salvar Cadastro';
+                document.getElementById('paciente_nome').focus();window.scrollTo({top:0,behavior:'smooth'});
+            }catch(error){retornoCirurgiaAposSalvarPaciente=false;rascunhoCirurgiaTimed=null;exibirToast('Não foi possível abrir o cadastro do paciente: '+error.message,'erro');}
+        }
+        async function retornarAoFormularioCirurgiaTimed(){
+            if(!retornoCirurgiaAposSalvarPaciente||!rascunhoCirurgiaTimed)return;
+            const draft=rascunhoCirurgiaTimed;retornoCirurgiaAposSalvarPaciente=false;rascunhoCirurgiaTimed=null;
+            fecharModalPaciente(false);
+            await abrirModalCirurgia(null);
+            Object.entries(draft).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.value=value;});
+            aoMudarStatusCirurgiaModal();
+            timedSetStatus('Dados do paciente salvos no CPAM');timedLocalResultado=null;document.getElementById('timedLocalResultado')?.classList.add('hidden');
+        }
+        async function encerrarTimedLocal(){
+            if(!timedLocalToken)return;
+            try{const resp=await fetch('http://127.0.0.1:4173/api/sessao/encerrar',{method:'POST',headers:timedApiHeaders(),body:'{}',cache:'no-store'});const dados=await resp.json();if(!resp.ok)throw new Error(dados.erro||'Falha ao encerrar sessão.');}
+            catch(error){exibirToast(error.message,'erro');}
+            finally{timedLocalToken=null;timedLocalResultado=null;document.getElementById('btnTimedConsultar').disabled=true;document.getElementById('btnTimedEncerrar').disabled=true;document.getElementById('timedLocalSenha').value='';timedSetStatus('Sessão encerrada');}
+        }
+
         async function abrirModalCirurgia(registro){
             if(!pacienteHistoricoAtual)return;
             telaAnteriorCirurgia=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secDetalhesCirurgia').classList.contains('hidden')?'detalhes':'historico');
