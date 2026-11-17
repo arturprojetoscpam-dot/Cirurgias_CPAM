@@ -13,7 +13,7 @@ const CPAM_ORIGINS = new Set([
 ]);
 // Aceita previews gerados para este projeto e este escopo Vercel específico.
 // Não libera qualquer domínio *.vercel.app nem nomes parecidos de outros projetos.
-const CPAM_PREVIEW_HOST = /^cirurgiascpam-[a-z0-9-]+-arturprojetoscpam-dot\\.vercel\\.app$/i;
+const CPAM_PREVIEW_HOST = /^cirurgiascpam-[a-z0-9-]+-arturprojetoscpam-dot\.vercel\.app$/i;
 function isAuthorizedOrigin(origin) {
   if (CPAM_ORIGINS.has(origin)) return true;
   try {
@@ -126,7 +126,7 @@ async function doLogin() {
           const bodyText = await frame.locator('body').innerText().catch(() => '');
           if (bodyText) messages.push(bodyText);
         }
-        const pageText = messages.join(' ').replace(/\\s+/g, ' ').trim();
+        const pageText = messages.join(' ').replace(/\s+/g, ' ').trim();
         const invalidCredentialHint =
           /usuário ou senha|usuario ou senha|senha inválida|senha invalida|login inválido|login invalido|credenciais inválidas|credenciais invalidas|não foi possível autenticar|nao foi possivel autenticar/i.test(pageText);
 
