@@ -1598,7 +1598,7 @@
                 document.getElementById('vitaiSenha').value='';
                 const job=await aguardarJobVITAI(resposta.job_id,90000);
                 if(!job){
-                    vitaiConfigurado=false;atualizarBadgeVITAI('aguardando');
+                    atualizarBadgeVITAI('aguardando');
                     exibirToast('A solicitação foi recebida. O computador de integração ainda não respondeu; aguarde e use Verificar conexão.','erro');
                     fecharModalVITAI();return;
                 }
