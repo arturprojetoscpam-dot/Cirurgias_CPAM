@@ -10,7 +10,8 @@ app.use(express.json({ limit: '20kb' }));
 // O serviço permanece vinculado exclusivamente a 127.0.0.1.
 const CPAM_ORIGINS = new Set([
   'https://cirurgiascpam.vercel.app',
-  'https://cirurgiascpam-a9xt0vs7p-arturprojetoscpam-dot.vercel.app'
+  'https://cirurgiascpam-a9xt0vs7p-arturprojetoscpam-dot.vercel.app',
+  'https://cirurgiascpam-z3eunkztu-arturprojetoscpam-dot.vercel.app'
 ]);
 const LOCAL_HOST = '127.0.0.1:4173';
 app.use('/api', (req, res, next) => {
