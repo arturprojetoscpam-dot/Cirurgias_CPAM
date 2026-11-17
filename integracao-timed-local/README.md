@@ -2,10 +2,11 @@
 
 ## Estado desta etapa
 
-- A interface de consulta está na tela de registro de cirurgia, usando o campo existente **Nº da BE VITAI**.
+- Na opção **Novo Paciente**, o usuário informa o número da BE VITAI, conecta-se ao TIMED e solicita a busca.
+- Os dados encontrados preenchem os campos do formulário de cadastro do paciente, para revisão e correção antes de salvar.
 - O serviço local é somente leitura no TIMED.
 - Os dados retornados são apresentados para conferência.
-- Ao confirmar, os campos são preenchidos no formulário existente do paciente. A gravação no CPAM só acontece quando o usuário clica em **Salvar Cadastro**.
+- Ao confirmar, os campos são preenchidos no formulário existente do paciente. A gravação no CPAM só acontece quando o usuário clica em **Salvar Cadastro**. O campo BE usado na busca não é gravado como prontuário do paciente.
 - A cirurgia continua dependendo do clique separado em **Salvar Cirurgia**.
 - Não há escrita no TIMED nem gravação automática no Supabase.
 
