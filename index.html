@@ -544,7 +544,14 @@
                     <p class="text-xs font-medium">Registro de Cirurgias CPAM</p>
                 </div>
             </div>
-            <div class="header-actions ml-auto flex items-center justify-end gap-4">
+            <div class="header-actions ml-auto flex items-center justify-end gap-3">
+                <div id="vitaiHeaderStatus" class="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-3 py-2 text-[10px] font-bold text-slate-600" role="status" aria-live="polite">
+                    <span id="vitaiStatusDot" class="h-2.5 w-2.5 rounded-full bg-amber-400"></span>
+                    <span id="vitaiStatusText">VITAI: verificando</span>
+                </div>
+                <button type="button" onclick="abrirModalVITAI()" class="inline-flex items-center gap-1.5 rounded-lg border border-[#A9C9B2] bg-white/70 px-3 py-2 text-[10px] font-bold text-[#244C33] hover:bg-[#D1E7D8]">
+                    <i class="fa-solid fa-key"></i><span>Configurar VITAI</span>
+                </button>
                 <div class="header-user-group">
                     <div class="header-avatar" aria-label="Iniciais do usuário">AA</div>
                     <div class="header-profile-copy">
@@ -562,6 +569,39 @@
             </div>
         </div>
     </header>
+
+    <!-- Configuração segura do acesso VITAI: credenciais criptografadas no Supabase por usuário -->
+    <div id="modalConfigVITAI" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/55 p-4" role="dialog" aria-modal="true" aria-labelledby="tituloModalVITAI">
+        <div class="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+            <div class="flex items-start justify-between gap-3 border-b border-slate-200 bg-[#E2ECE4] px-5 py-4">
+                <div>
+                    <p class="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#315F43]">Integração segura</p>
+                    <h2 id="tituloModalVITAI" class="mt-1 text-lg font-extrabold text-slate-900">Acesso VITAI / TIMED</h2>
+                    <p class="mt-1 text-xs text-slate-600">Configure uma vez. O CPAM reutilizará o acesso salvo na sua conta.</p>
+                </div>
+                <button type="button" onclick="fecharModalVITAI()" class="rounded-lg p-2 text-slate-500 hover:bg-white" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="formConfigVITAI" onsubmit="salvarCredenciaisVITAI(event)" class="space-y-4 p-5">
+                <div class="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-[11px] leading-relaxed text-emerald-900">
+                    <i class="fa-solid fa-lock mr-1"></i>
+                    As credenciais são enviadas ao Supabase por conexão segura e armazenadas criptografadas, vinculadas ao seu usuário CPAM. Elas não ficam gravadas neste navegador.
+                </div>
+                <div>
+                    <label for="vitaiUsuario" class="mb-1.5 block text-xs font-bold text-slate-700">Usuário TIMED</label>
+                    <input id="vitaiUsuario" autocomplete="username" required maxlength="200" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm outline-none focus:border-emerald-600" placeholder="Digite seu usuário TIMED">
+                </div>
+                <div>
+                    <label for="vitaiSenha" class="mb-1.5 block text-xs font-bold text-slate-700">Senha TIMED</label>
+                    <input id="vitaiSenha" type="password" autocomplete="current-password" required maxlength="500" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm outline-none focus:border-emerald-600" placeholder="Digite sua senha TIMED">
+                </div>
+                <p id="vitaiConfigAjuda" class="text-[11px] leading-relaxed text-slate-500">Se o acesso já estiver salvo, só preencha novamente quando precisar trocar usuário ou senha.</p>
+                <div class="flex flex-col-reverse gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end">
+                    <button type="button" onclick="fecharModalVITAI()" class="rounded-xl border border-slate-300 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button>
+                    <button id="btnSalvarCredenciaisVITAI" type="submit" class="rounded-xl bg-[#245B3B] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#17452C]"><i class="fa-solid fa-shield-halved mr-2"></i>Salvar e validar acesso</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Conteúdo Principal -->
     <div class="flex min-h-[calc(100vh-4.5rem)]">
@@ -824,9 +864,18 @@
           <section class="space-y-4">
             <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente</h3></div>
             <div id="painelConsultaTimedPaciente" class="mb-4 rounded-xl border border-teal-200 bg-teal-50/60 p-4">
-              <div class="flex flex-wrap items-center justify-between gap-2"><div><h4 class="text-xs font-bold text-teal-950"><i class="fa-solid fa-link mr-2"></i>Buscar cadastro pelo número da BE VITAI</h4><p class="mt-1 text-[10px] text-slate-600">Informe a BE do paciente. O sistema consultará o TIMED e preencherá os campos abaixo para conferência.</p></div><span id="timedLocalStatus" class="text-[10px] font-semibold text-slate-600">Não conectado</span></div>
-              <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2"><div><label for="timedLocalUsuario" class="mb-1 block text-[10px] font-semibold text-slate-600">Usuário TIMED</label><input id="timedLocalUsuario" autocomplete="username" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs" placeholder="Usuário"></div><div><label for="timedLocalSenha" class="mb-1 block text-[10px] font-semibold text-slate-600">Senha TIMED</label><input id="timedLocalSenha" type="password" autocomplete="current-password" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs" placeholder="Senha"></div></div>
-              <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-end"><div class="flex-1"><label for="timedPacienteBe" class="mb-1 block text-[10px] font-semibold text-slate-600">Número da BE VITAI do paciente</label><input id="timedPacienteBe" inputmode="numeric" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs" placeholder="Digite o número da BE"></div><div class="flex flex-wrap gap-2"><button type="button" id="btnTimedConectar" onclick="conectarTimedLocal()" class="rounded-lg bg-teal-800 px-3 py-2.5 text-[11px] font-bold text-white hover:bg-teal-900">Conectar ao TIMED</button><button type="button" id="btnTimedConsultar" onclick="consultarTimedLocal()" disabled class="rounded-lg border border-teal-300 bg-white px-3 py-2.5 text-[11px] font-bold text-teal-900 disabled:cursor-not-allowed disabled:opacity-40">Buscar e preencher</button><button type="button" id="btnTimedEncerrar" onclick="encerrarTimedLocal()" disabled class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-[11px] font-semibold text-slate-600 disabled:opacity-40">Encerrar sessão</button></div></div>
+              <div class="flex flex-wrap items-start justify-between gap-2">
+                <div><h4 class="text-xs font-bold text-teal-950"><i class="fa-solid fa-link mr-2"></i>Buscar cadastro pelo número da BE VITAI</h4><p class="mt-1 max-w-2xl text-[10px] text-slate-600">O acesso TIMED é salvo uma única vez na sua conta CPAM. Depois, basta informar a BE do paciente para consultar e preencher os dados.</p></div>
+                <span id="timedLocalStatus" class="text-[10px] font-bold text-slate-600">Verificando acesso...</span>
+              </div>
+              <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-end">
+                <div class="flex-1"><label for="timedPacienteBe" class="mb-1 block text-[10px] font-semibold text-slate-600">Número da BE VITAI do paciente</label><input id="timedPacienteBe" inputmode="numeric" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs" placeholder="Digite o número da BE"></div>
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" id="btnTimedConectar" onclick="abrirModalVITAI()" class="rounded-lg border border-teal-300 bg-white px-3 py-2.5 text-[11px] font-bold text-teal-900">Configurar / trocar acesso</button>
+                  <button type="button" id="btnTimedConsultar" onclick="consultarTimedLocal()" disabled class="rounded-lg bg-teal-800 px-3 py-2.5 text-[11px] font-bold text-white disabled:cursor-not-allowed disabled:opacity-40">Buscar e preencher</button>
+                  <button type="button" id="btnTimedStatus" onclick="verificarStatusVITAI(false)" class="rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-[11px] font-semibold text-slate-600">Verificar conexão</button>
+                </div>
+              </div>
               <div id="timedLocalResultado" class="mt-3 hidden rounded-lg border border-slate-200 bg-white p-3" aria-live="polite"></div>
             </div>
             <div class="grid grid-cols-1 gap-4 md:grid-cols-12">
@@ -1096,7 +1145,7 @@
         const SUPABASE_URL='https://uazilxyspnycvntxcxzu.supabase.co';
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-        let timedLocalToken=null,timedLocalResultado=null;
+        let timedLocalResultado=null,vitaiConfigurado=false,vitaiEstado='desconhecido',vitaiVerificacaoEmAndamento=false;
         let pacienteModalAtual=null,cirurgiaModalAtual=null,telaAnteriorCirurgia='historico',telaAnteriorDetalhes='historico',cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
@@ -1148,7 +1197,7 @@
                 document.getElementById('navCancelamentos').classList.remove('hidden');document.getElementById('navDashboards').classList.remove('hidden');
                 document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
                 document.getElementById('secFormulario').classList.add('hidden');
-                atualizarBadgeConexao(true,'Sessão autenticada');await carregarPacientes();const rotaPaciente=obterRotaPaciente();if(rotaPaciente)await abrirCadastroPaciente(rotaPaciente.id,false);
+                atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);await carregarPacientes();const rotaPaciente=obterRotaPaciente();if(rotaPaciente)await abrirCadastroPaciente(rotaPaciente.id,false);
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
             finally{carregandoPerfil=false;}
         }
@@ -1445,41 +1494,147 @@
                 return data&&data.procedimento?String(data.procedimento).trim():(descricao||'');
             }catch(error){console.warn('Não foi possível resolver a descrição do procedimento no catálogo:',error);return descricao||'';}
         }
-        async function timedFetchLocal(url,options){
-            if(navigator.permissions?.query){
-                try{const permission=await navigator.permissions.query({name:'loopback-network'});if(permission.state==='denied')throw new Error('O Chrome está bloqueando o acesso ao computador local. Abra as permissões do site cirurgiascpam.vercel.app e permita “Loopback network” (acesso à rede local).');}
-                catch(error){if(error&&/está bloqueando/.test(error.message))throw error;}
-            }
-            const request=new Request(url,{...options,mode:'cors',targetAddressSpace:'loopback'});
-            return fetch(request);
-        }
         function timedTexto(v){return String(v??'').trim();}
         function timedHtml(v){return escaparHtml(timedTexto(v)||'—');}
-        function timedSetStatus(texto,erro=false){const el=document.getElementById('timedLocalStatus');if(el){el.textContent=texto;el.className='text-[10px] font-semibold '+(erro?'text-rose-700':'text-teal-800');}}
-        function timedApiHeaders(){return {'Content-Type':'application/json','X-CPAM-Session':timedLocalToken||''};}
-        async function conectarTimedLocal(){
-            const usuario=timedTexto(document.getElementById('timedLocalUsuario').value),senha=document.getElementById('timedLocalSenha').value;
-            if(!usuario||!senha){exibirToast('Informe usuário e senha do TIMED.','erro');return;}
-            const botao=document.getElementById('btnTimedConectar');botao.disabled=true;botao.textContent='Conectando...';timedSetStatus('Conectando ao serviço local...');
+        function atualizarBadgeVITAI(estado,texto){
+            vitaiEstado=estado;
+            const configuracoes={
+                verificando:{rotulo:'VITAI: verificando',ponto:'bg-amber-400',texto:'Verificando acesso...',cor:'text-amber-700'},
+                conectado:{rotulo:'VITAI: conectado',ponto:'bg-emerald-500',texto:'Conectado · acesso salvo',cor:'text-emerald-700'},
+                desconectado:{rotulo:'VITAI: desconectado',ponto:'bg-rose-500',texto:'Desconectado',cor:'text-rose-700'},
+                nao_configurado:{rotulo:'VITAI: não configurado',ponto:'bg-slate-400',texto:'Acesso não configurado',cor:'text-slate-600'},
+                aguardando:{rotulo:'VITAI: aguardando agente',ponto:'bg-amber-500',texto:'Aguardando computador de integração',cor:'text-amber-700'}
+            };
+            const cfg=configuracoes[estado]||configuracoes.desconectado;
+            const dot=document.getElementById('vitaiStatusDot'),label=document.getElementById('vitaiStatusText'),card=document.getElementById('vitaiHeaderStatus');
+            if(dot)dot.className='h-2.5 w-2.5 rounded-full '+cfg.ponto;
+            if(label)label.textContent=texto||cfg.rotulo;
+            if(card)card.className='inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/70 px-3 py-2 text-[10px] font-bold '+cfg.cor;
+            const status=document.getElementById('timedLocalStatus');
+            if(status){status.textContent=cfg.texto;status.className='text-[10px] font-bold '+cfg.cor;}
+            const consultar=document.getElementById('btnTimedConsultar');
+            if(consultar)consultar.disabled=!(estado==='conectado'||vitaiConfigurado);
+        }
+        async function chamarRelayVITAI(rota,metodo='POST',corpo=null){
+            const {data,error}=await supabaseClient.auth.getSession();
+            if(error)throw error;
+            const accessToken=data.session&&data.session.access_token;
+            if(!accessToken)throw new Error('Sua sessão CPAM expirou. Entre novamente no sistema.');
+            const headers={'Authorization':'Bearer '+accessToken,'apikey':SUPABASE_PUBLISHABLE_KEY};
+            const opcoes={method:metodo,headers:headers,cache:'no-store'};
+            if(metodo!=='GET'){headers['Content-Type']='application/json';opcoes.body=JSON.stringify(corpo||{});}
+            const resposta=await fetch(SUPABASE_URL+'/functions/v1/vitai-relay/'+rota,opcoes);
+            let dados={};try{dados=await resposta.json();}catch(e){}
+            if(!resposta.ok)throw new Error(dados.error||'Falha ao comunicar com a integração VITAI ('+resposta.status+').');
+            return dados;
+        }
+        async function aguardarJobVITAI(jobId,tempoMaximo=45000){
+            const limite=Date.now()+tempoMaximo;
+            while(Date.now()<limite){
+                await new Promise(resolve=>setTimeout(resolve,2000));
+                const resposta=await chamarRelayVITAI('job/'+encodeURIComponent(jobId),'GET');
+                const job=resposta.job;
+                if(job&&['completed','failed'].includes(job.status))return job;
+            }
+            return null;
+        }
+        function abrirModalVITAI(){
+            const modal=document.getElementById('modalConfigVITAI');
+            if(!modal)return;
+            document.getElementById('vitaiUsuario').value='';
+            document.getElementById('vitaiSenha').value='';
+            const ajuda=document.getElementById('vitaiConfigAjuda');
+            if(ajuda)ajuda.textContent=vitaiConfigurado?'Seu acesso já está salvo. Informe usuário e senha somente se quiser substituir as credenciais atuais.':'Informe seu usuário e senha TIMED. Depois da validação, o sistema guardará o acesso criptografado.';
+            modal.classList.remove('hidden');
+            document.getElementById('vitaiUsuario').focus();
+        }
+        function fecharModalVITAI(){
+            const modal=document.getElementById('modalConfigVITAI');
+            if(modal)modal.classList.add('hidden');
+            const form=document.getElementById('formConfigVITAI');
+            if(form)form.reset();
+        }
+        async function verificarStatusVITAI(silencioso=false){
+            if(!usuarioAtual||vitaiVerificacaoEmAndamento)return;
+            vitaiVerificacaoEmAndamento=true;
+            atualizarBadgeVITAI('verificando');
             try{
-                const resp=await timedFetchLocal('http://127.0.0.1:4173/api/sessao/iniciar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({usuario,senha}),cache:'no-store'});
-                const dados=await resp.json();if(!resp.ok||!dados.sucesso)throw new Error(dados.erro||'Não foi possível iniciar a sessão TIMED.');
-                timedLocalToken=dados.token;document.getElementById('timedLocalSenha').value='';document.getElementById('btnTimedConsultar').disabled=false;document.getElementById('btnTimedEncerrar').disabled=false;timedSetStatus('Conectado · sessão temporária');exibirToast('TIMED conectado. Você já pode consultar a BE.','sucesso');
-            }catch(error){timedLocalToken=null;timedSetStatus('Falha na conexão',true);exibirToast(error.message+' Verifique se o serviço local está iniciado e se o navegador autorizou o acesso local.','erro');}
-            finally{botao.disabled=false;botao.textContent='Conectar ao TIMED';}
+                const resposta=await chamarRelayVITAI('status','POST',{});
+                vitaiConfigurado=!!resposta.configured;
+                if(!vitaiConfigurado){
+                    atualizarBadgeVITAI('nao_configurado');
+                    if(!silencioso)exibirToast('Configure seu acesso TIMED uma única vez para habilitar as consultas.','erro');
+                    return;
+                }
+                atualizarBadgeVITAI('aguardando');
+                const job=await aguardarJobVITAI(resposta.job_id,30000);
+                if(!job){
+                    atualizarBadgeVITAI('aguardando');
+                    if(!silencioso)exibirToast('O acesso está salvo, mas o computador de integração não respondeu. Verifique se o agente TIMED está iniciado.','erro');
+                    return;
+                }
+                if(job.status==='completed'){
+                    vitaiConfigurado=true;atualizarBadgeVITAI('conectado');
+                    if(!silencioso)exibirToast('Acesso VITAI validado e pronto para uso.','sucesso');
+                }else{
+                    atualizarBadgeVITAI('desconectado');
+                    if(!silencioso)exibirToast(job.error_message||'Não foi possível validar o acesso TIMED. Confira as credenciais ou a conexão.','erro');
+                }
+            }catch(error){
+                atualizarBadgeVITAI(vitaiConfigurado?'desconectado':'nao_configurado');
+                if(!silencioso)exibirToast(error.message,'erro');
+                else console.warn('Não foi possível verificar o acesso VITAI:',error.message);
+            }finally{vitaiVerificacaoEmAndamento=false;}
+        }
+        async function salvarCredenciaisVITAI(evento){
+            evento.preventDefault();
+            const usuario=timedTexto(document.getElementById('vitaiUsuario').value),senha=document.getElementById('vitaiSenha').value;
+            if(!usuario||!senha){exibirToast('Informe o usuário e a senha TIMED.','erro');return;}
+            const botao=document.getElementById('btnSalvarCredenciaisVITAI'),textoOriginal=botao.innerHTML;
+            botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Enviando para validação...';
+            try{
+                atualizarBadgeVITAI('verificando');
+                const resposta=await chamarRelayVITAI('configure','POST',{usuario,senha});
+                document.getElementById('vitaiSenha').value='';
+                const job=await aguardarJobVITAI(resposta.job_id,90000);
+                if(!job){
+                    vitaiConfigurado=false;atualizarBadgeVITAI('aguardando');
+                    exibirToast('A solicitação foi recebida. O computador de integração ainda não respondeu; aguarde e use Verificar conexão.','erro');
+                    fecharModalVITAI();return;
+                }
+                if(job.status!=='completed')throw new Error(job.error_message||'O TIMED não validou as credenciais. Confira usuário e senha.');
+                vitaiConfigurado=true;atualizarBadgeVITAI('conectado');fecharModalVITAI();
+                exibirToast('Acesso validado e salvo com segurança no Supabase. Nas próximas consultas não será necessário informar a senha.','sucesso');
+            }catch(error){
+                atualizarBadgeVITAI(vitaiConfigurado?'desconectado':'nao_configurado');
+                exibirToast(error.message,'erro');
+            }finally{botao.disabled=false;botao.innerHTML=textoOriginal;}
         }
         async function consultarTimedLocal(){
             const be=timedTexto(document.getElementById('timedPacienteBe').value),box=document.getElementById('timedLocalResultado');
             if(!be){exibirToast('Informe primeiro o número da BE VITAI do paciente.','erro');document.getElementById('timedPacienteBe').focus();return;}
             if(pacienteModalAtual){exibirToast('A busca pela BE está disponível na criação de um novo paciente.','erro');return;}
-            if(!timedLocalToken){exibirToast('Conecte-se ao TIMED antes de consultar.','erro');return;}
-            const botao=document.getElementById('btnTimedConsultar');botao.disabled=true;botao.textContent='Consultando...';box.classList.remove('hidden');box.innerHTML='<p class="text-xs text-slate-600"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Consultando a BE no TIMED. Aguarde...</p>';
+            if(!vitaiConfigurado){
+                exibirToast('Configure seu acesso TIMED antes de consultar a BE.','erro');abrirModalVITAI();return;
+            }
+            const botao=document.getElementById('btnTimedConsultar');
+            botao.disabled=true;botao.textContent='Consultando...';box.classList.remove('hidden');
+            box.innerHTML='<p class="text-xs text-slate-600"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Enviando consulta segura ao computador de integração...</p>';
             try{
-                const resp=await timedFetchLocal('http://127.0.0.1:4173/api/consultar',{method:'POST',headers:timedApiHeaders(),body:JSON.stringify({be}),cache:'no-store'});
-                const dados=await resp.json();if(!resp.ok||!dados.sucesso)throw new Error(dados.erro||'Falha ao consultar a BE.');
-                timedLocalResultado=dados.paciente;renderizarResultadoTimedLocal(dados.paciente);timedSetStatus('Consulta concluída · dados aguardando conferência');
-            }catch(error){if(/Sessão local não autorizada|Inicie novamente/.test(error.message)){timedLocalToken=null;document.getElementById('btnTimedConsultar').disabled=true;document.getElementById('btnTimedEncerrar').disabled=true;}box.innerHTML='<p class="text-xs font-semibold text-rose-700">'+timedHtml(error.message)+'</p>';timedSetStatus('Erro na consulta',true);}
-            finally{botao.disabled=!timedLocalToken;botao.textContent='Consultar BE';}
+                const solicitacao=await chamarRelayVITAI('search','POST',{be});
+                const job=await aguardarJobVITAI(solicitacao.job_id,90000);
+                if(!job)throw new Error('O computador de integração não respondeu. Confira se o agente TIMED está em execução.');
+                if(job.status!=='completed')throw new Error(job.error_message||'Não foi possível consultar a BE no TIMED.');
+                const retorno=job.response_payload||{};
+                const paciente=retorno.paciente||retorno.data?.paciente||retorno.result?.paciente||retorno.result?.data?.paciente||retorno.data||retorno.result||retorno;
+                if(!paciente||typeof paciente!=='object'||Array.isArray(paciente)||!paciente.nome)throw new Error('A consulta foi concluída, mas os dados do paciente vieram em formato inesperado. Avise o administrador para conferirmos o retorno do agente.');
+                timedLocalResultado=paciente;renderizarResultadoTimedLocal(paciente);
+                atualizarBadgeVITAI('conectado');
+            }catch(error){
+                box.innerHTML='<p class="text-xs font-semibold text-rose-700">'+timedHtml(error.message)+'</p>';
+                if(/não respondeu|não foi possível|falha/i.test(error.message))atualizarBadgeVITAI('desconectado');
+                exibirToast(error.message,'erro');
+            }finally{botao.disabled=!vitaiConfigurado;botao.textContent='Buscar e preencher';}
         }
         function renderizarResultadoTimedLocal(p){
             if(!p)return;
@@ -1494,11 +1649,9 @@
             document.getElementById('paciente_nome').focus();
             exibirToast('Dados do TIMED preenchidos. Revise os campos e clique em Salvar Cadastro.','sucesso');
         }
-        async function encerrarTimedLocal(){
-            if(!timedLocalToken)return;
-            try{const resp=await timedFetchLocal('http://127.0.0.1:4173/api/sessao/encerrar',{method:'POST',headers:timedApiHeaders(),body:'{}',cache:'no-store'});const dados=await resp.json();if(!resp.ok)throw new Error(dados.erro||'Falha ao encerrar sessão.');}
-            catch(error){exibirToast(error.message,'erro');}
-            finally{timedLocalToken=null;timedLocalResultado=null;document.getElementById('btnTimedConsultar').disabled=true;document.getElementById('btnTimedEncerrar').disabled=true;document.getElementById('timedLocalSenha').value='';timedSetStatus('Sessão encerrada');}
+        function timedSetStatus(texto){
+            const el=document.getElementById('timedLocalStatus');
+            if(el){el.textContent=texto;el.className='text-[10px] font-bold text-emerald-700';}
         }
 
         async function abrirModalCirurgia(registro){
