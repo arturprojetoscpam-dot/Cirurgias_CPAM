@@ -20,7 +20,6 @@ app.use('/api', (req, res, next) => {
   res.setHeader('Vary', 'Origin');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-CPAM-Session');
-  res.setHeader('Access-Control-Allow-Private-Network', 'true');
   res.setHeader('Cache-Control', 'no-store');
   if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
