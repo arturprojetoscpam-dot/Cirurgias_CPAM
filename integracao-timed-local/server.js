@@ -9,16 +9,27 @@ app.use(express.json({ limit: '20kb' }));
 // A API só aceita chamadas originadas do domínio oficial do CPAM.
 // O serviço permanece vinculado exclusivamente a 127.0.0.1.
 const CPAM_ORIGINS = new Set([
-  'https://cirurgiascpam.vercel.app',
-  'https://cirurgiascpam-a9xt0vs7p-arturprojetoscpam-dot.vercel.app',
-  'https://cirurgiascpam-z3eunkztu-arturprojetoscpam-dot.vercel.app',
-  'https://cirurgiascpam-22vzdh2d1-arturprojetoscpam-dot.vercel.app'
+  'https://cirurgiascpam.vercel.app'
 ]);
+// Aceita previews gerados para este projeto e este escopo Vercel específico.
+// Não libera qualquer domínio *.vercel.app nem nomes parecidos de outros projetos.
+const CPAM_PREVIEW_HOST = /^cirurgiascpam-[a-z0-9-]+-arturprojetoscpam-dot\\.vercel\\.app$/i;
+function isAuthorizedOrigin(origin) {
+  if (CPAM_ORIGINS.has(origin)) return true;
+  try {
+    const url = new URL(origin);
+    return url.protocol === 'https:' &&
+      url.origin === origin &&
+      CPAM_PREVIEW_HOST.test(url.hostname);
+  } catch (_) {
+    return false;
+  }
+}
 const LOCAL_HOST = '127.0.0.1:4173';
 app.use('/api', (req, res, next) => {
   const origin = req.get('Origin');
   const host = req.get('Host');
-  if (host !== LOCAL_HOST || !CPAM_ORIGINS.has(origin)) {
+  if (host !== LOCAL_HOST || !isAuthorizedOrigin(origin)) {
     return res.status(403).json({ erro: 'Origem não autorizada para acessar a integração local.' });
   }
   res.setHeader('Access-Control-Allow-Origin', origin);
