@@ -27,7 +27,7 @@ As dependências existentes do projeto local (Express e Playwright) são reutili
 Por segurança, a API aceita somente:
 
 - Produção: `https://cirurgiascpam.vercel.app`
-- Preview de teste autorizado: `https://cirurgiascpam-a9xt0vs7p-arturprojetoscpam-dot.vercel.app`
+- Preview de teste autorizado: `https://cirurgiascpam-z3eunkztu-arturprojetoscpam-dot.vercel.app`
 - Host local: `127.0.0.1:4173`
 
 Não foi liberado `*.vercel.app`. O preview informado acima foi incluído individualmente na lista de origens autorizadas. Outros previews não estarão autorizados automaticamente.
