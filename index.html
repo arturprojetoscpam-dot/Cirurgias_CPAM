@@ -970,6 +970,161 @@
           #secCadastroCirurgia .cpam-sticky-context>button{flex:0 0 auto!important}
         }
 
+
+        
+        /* Redesenho da autenticação CPAM — camada exclusivamente visual. */
+        #authScreen.login-screen{
+          min-height:100vh;min-height:100dvh;
+          align-items:center;justify-content:center;
+          padding:clamp(12px,3vw,36px)!important;
+          background:radial-gradient(ellipse at 15% 10%,#e1eee5 0%,transparent 42%),
+                     linear-gradient(135deg,#edf3ef 0%,#f6f8f7 55%,#e8efeb 100%)!important;
+        }
+        #authScreen .login-card{
+          display:grid!important;
+          grid-template-columns:minmax(280px,.82fr) minmax(0,1.18fr)!important;
+          width:min(100%,1000px)!important;min-height:0!important;
+          overflow:hidden;border:1px solid #dce7df!important;
+          border-radius:24px!important;background:#fff!important;
+          box-shadow:0 24px 70px rgba(23,59,42,.13)!important;
+        }
+        #authScreen .login-brand{
+          min-height:0!important;justify-content:center!important;
+          padding:48px 38px!important;background:#e2ece4!important;
+        }
+        #authScreen .login-brand:before{display:block!important;background:linear-gradient(145deg,#e7f0e9,#dce9df)!important}
+        #authScreen .login-brand-photo{display:none!important}
+        #authScreen .login-brand .login-logo{display:none!important}
+        #authScreen .login-brand h1{
+          margin:0!important;color:#173b2a!important;
+          font-size:clamp(22px,2.2vw,28px)!important;line-height:1.25!important;
+        }
+        #authScreen .login-institution{margin-top:14px!important;color:#315f43!important}
+        #authScreen .login-description{margin-top:18px!important;color:#526b59!important;font-size:13px!important;line-height:1.7!important}
+        #authScreen .login-features{gap:13px!important;margin-top:28px!important}
+        #authScreen .login-features li{color:#345642!important;font-size:12px!important}
+        #authScreen .login-features i{color:#39845a!important}
+        #authScreen .login-brand-footer{
+          margin-top:32px!important;padding-top:15px!important;
+          border-top:1px solid rgba(23,59,42,.16)!important;
+          color:#64796a!important;font-size:9px!important;
+        }
+        #authScreen .login-panel{
+          min-width:0!important;justify-content:center!important;background:#fff!important;
+        }
+        #authScreen .login-form-wrap{
+          width:100%!important;max-width:480px!important;
+          margin:0 auto!important;padding:38px clamp(24px,5vw,58px) 30px!important;
+        }
+        #authScreen .login-card-logo{
+          display:flex;width:100%;justify-content:center;align-items:center;
+          margin:0 auto 22px;
+        }
+        #authScreen .login-card-logo img{
+          display:block;width:auto;height:auto;max-width:110px;max-height:100px;
+          margin:0 auto;object-fit:contain;object-position:center;
+        }
+        #authScreen .login-restricted{
+          padding:7px 11px!important;border:1px solid #d7e5da!important;
+          border-radius:999px!important;background:#edf5ef!important;
+          color:#315f43!important;font-size:10px!important;letter-spacing:1.1px!important;
+        }
+        #authScreen .login-title{
+          margin-top:17px!important;color:#173b2a!important;
+          font-size:clamp(25px,3vw,30px)!important;font-weight:750!important;
+          letter-spacing:-.8px!important;
+        }
+        #authScreen .login-subtitle{margin-top:7px!important;color:#718079!important;font-size:13px!important}
+        #authScreen .login-status{
+          margin-top:20px!important;padding:10px 12px!important;
+          border:1px solid #e3ebe5!important;border-radius:10px!important;
+          background:#f7f9f7!important;font-size:10px!important;
+        }
+        #authScreen .login-form{gap:17px!important;margin-top:23px!important}
+        #authScreen .login-field label{margin-bottom:7px!important;color:#34463e!important;font-size:12px!important}
+        #authScreen .login-input-wrap{
+          display:flex!important;width:100%!important;height:50px!important;min-width:0!important;
+          align-items:center!important;overflow:hidden!important;
+          border:1px solid #d4e0d7!important;border-radius:11px!important;
+          background:#fff!important;clip-path:none!important;
+        }
+        #authScreen .login-input-wrap>i:first-child{
+          display:flex!important;width:44px!important;flex:0 0 44px!important;
+          align-items:center!important;justify-content:center!important;
+          color:#718b79!important;text-align:center!important;
+        }
+        #authScreen .login-input-wrap input{
+          display:block!important;flex:1 1 0!important;width:100%!important;
+          min-width:0!important;height:100%!important;padding:0 10px 0 0!important;
+          border:0!important;outline:0!important;background:transparent!important;
+          box-shadow:none!important;font-size:15px!important;
+        }
+        #authScreen .login-input-wrap input::placeholder{font-size:12px!important;color:#a0ada4!important}
+        #authScreen .login-eye{
+          display:flex!important;width:44px!important;min-width:44px!important;
+          flex:0 0 44px!important;height:100%!important;align-items:center!important;
+          justify-content:center!important;border:0!important;background:transparent!important;
+        }
+        #authScreen .login-options{gap:10px!important;flex-wrap:wrap!important}
+        #authScreen .login-remember,#authScreen .login-forgot{font-size:11px!important}
+        #authScreen .login-submit{
+          display:flex!important;width:100%!important;min-height:50px!important;height:50px!important;
+          align-items:center!important;justify-content:center!important;
+          border:1px solid #245b3b!important;border-radius:11px!important;
+          background:#245b3b!important;color:#fff!important;
+          box-shadow:0 5px 12px rgba(36,91,59,.16)!important;
+          font-size:12px!important;letter-spacing:.7px!important;
+          transition:background .18s ease,transform .18s ease,box-shadow .18s ease!important;
+        }
+        #authScreen .login-submit:hover{background:#17452c!important;transform:translateY(-1px)!important;box-shadow:0 7px 16px rgba(36,91,59,.2)!important}
+        #authScreen .login-submit:active{transform:translateY(0)!important}
+        #authScreen .login-privacy{margin-top:15px!important;font-size:10px!important}
+        #authScreen .login-panel-footer{
+          display:flex!important;flex-direction:column!important;align-items:center!important;
+          justify-content:center!important;gap:6px!important;padding:15px 18px!important;
+          border-top:1px solid #edf1ee!important;color:#8a978e!important;
+          text-align:center!important;font-size:9px!important;
+        }
+        #authScreen .login-panel-footer span{justify-content:center!important}
+        @media(max-width:850px){
+          #authScreen.login-screen{align-items:center!important;padding:14px!important}
+          #authScreen .login-card{
+            display:block!important;width:100%!important;max-width:520px!important;
+            min-height:0!important;border-radius:20px!important;
+          }
+          #authScreen .login-brand{display:none!important}
+          #authScreen .login-panel{display:flex!important;min-height:0!important}
+          #authScreen .login-form-wrap{max-width:none!important;padding:30px clamp(20px,6vw,34px) 25px!important}
+          #authScreen .login-card-logo{margin-bottom:18px!important}
+          #authScreen .login-card-logo img{max-width:100px!important;max-height:88px!important}
+          #authScreen .login-panel-footer{padding:13px 16px!important}
+        }
+        @media(max-width:480px){
+          #authScreen.login-screen{
+            align-items:center!important;justify-content:center!important;
+            padding:10px!important;
+          }
+          #authScreen .login-card{width:100%!important;max-width:440px!important;border-radius:17px!important}
+          #authScreen .login-form-wrap{padding:23px 19px 20px!important}
+          #authScreen .login-card-logo{margin-bottom:15px!important}
+          #authScreen .login-card-logo img{max-width:88px!important;max-height:76px!important}
+          #authScreen .login-title{font-size:25px!important}
+          #authScreen .login-status{margin-top:16px!important}
+          #authScreen .login-form{gap:15px!important;margin-top:19px!important}
+          #authScreen .login-input-wrap{height:49px!important}
+          #authScreen .login-options{align-items:flex-start!important}
+          #authScreen .login-submit{width:100%!important;min-height:50px!important}
+        }
+        @media(max-height:650px) and (max-width:850px){
+          #authScreen.login-screen{align-items:flex-start!important}
+          #authScreen .login-form-wrap{padding-top:16px!important;padding-bottom:16px!important}
+          #authScreen .login-card-logo{margin-bottom:10px!important}
+          #authScreen .login-card-logo img{max-height:58px!important}
+          #authScreen .login-title{margin-top:12px!important}
+          #authScreen .login-status{margin-top:12px!important}
+          #authScreen .login-form{gap:12px!important;margin-top:14px!important}
+        }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -1000,6 +1155,9 @@
 
     <main class="login-panel">
       <div class="login-form-wrap">
+        <div class="login-card-logo" aria-label="Logo CPAM">
+          <img src="./logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
+        </div>
         <div id="authLogin">
           <div class="login-restricted"><i class="fa-solid fa-lock"></i> ÁREA RESTRITA</div>
           <h2 class="login-title">Acesse sua conta</h2>
