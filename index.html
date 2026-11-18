@@ -818,6 +818,74 @@
           line-height:1.2!important;
         }
         /* Fim dos ajustes finais de layout */
+    
+        /* Cabeçalho inteligente: compacto durante a rolagem e completo no topo */
+        #appShell>header.cpam-main-header,
+        #appShell>header.cpam-main-header .header-inner,
+        #appShell>header.cpam-main-header .header-logo-button img,
+        #appShell>header.cpam-main-header .header-system-title,
+        #appShell>header.cpam-main-header .header-user-group,
+        #appShell>header.cpam-main-header .header-action-buttons{
+          transition:padding .22s ease,gap .22s ease,height .22s ease,max-height .22s ease,
+                     opacity .18s ease,transform .22s ease,margin .22s ease!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact{
+          box-shadow:0 2px 10px rgba(23,59,42,.14)!important;
+          border-bottom-width:2px!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
+          min-height:0!important;
+          padding:5px 12px!important;
+          gap:6px!important;
+          flex-wrap:nowrap!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-brand-group{
+          flex:0 1 auto!important;width:auto!important;min-width:0!important;
+          gap:0!important;margin:0!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
+          min-height:0!important;height:38px!important;width:auto!important;
+          min-width:0!important;padding:0!important;border:0!important;
+          background:transparent!important;box-shadow:none!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
+          height:36px!important;width:auto!important;max-width:150px!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-system-title,
+        #appShell>header.cpam-main-header.cpam-header-compact .header-user-group{
+          display:none!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-actions{
+          display:flex!important;flex:0 0 auto!important;margin-left:auto!important;
+          gap:0!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-action-buttons{
+          display:flex!important;order:initial!important;margin:0!important;
+          gap:0!important;flex:0 0 auto!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-users-button{
+          display:none!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
+          display:inline-flex!important;visibility:visible!important;opacity:1!important;
+          min-height:36px!important;height:36px!important;padding:6px 11px!important;
+          font-size:11px!important;white-space:nowrap!important;
+        }
+        @media(max-width:767px){
+          #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
+            padding:4px 10px!important;gap:6px!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
+            height:38px!important;min-height:38px!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
+            height:34px!important;max-width:140px!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
+            min-height:36px!important;height:36px!important;padding:6px 10px!important;
+          }
+        }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -2608,5 +2676,38 @@
             }).join('');
         };
     </script>
+
+    <script>
+      /* Expande o cabeçalho no topo e o compacta após iniciar a rolagem. */
+      (function(){
+        const header = document.querySelector('#appShell>header.cpam-main-header');
+        if(!header) return;
+        let compact = false;
+        let scheduled = false;
+        const updateHeader = function(){
+          const y = Math.max(
+            window.scrollY || 0,
+            document.documentElement ? document.documentElement.scrollTop : 0,
+            document.body ? document.body.scrollTop : 0
+          );
+          const next = y > 70;
+          if(next !== compact){
+            compact = next;
+            header.classList.toggle('cpam-header-compact', compact);
+            header.setAttribute('data-header-state', compact ? 'compacto' : 'expandido');
+          }
+          scheduled = false;
+        };
+        const onScroll = function(){
+          if(scheduled) return;
+          scheduled = true;
+          window.requestAnimationFrame(updateHeader);
+        };
+        window.addEventListener('scroll', onScroll, {passive:true});
+        document.addEventListener('scroll', onScroll, {passive:true,capture:true});
+        updateHeader();
+      })();
+    </script>
+
 </body>
 </html>
