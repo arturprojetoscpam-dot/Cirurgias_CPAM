@@ -694,7 +694,31 @@
             opacity:.82!important;
           }
         }
-</style>
+
+        /* Hierarquia global de camadas: header acima do conteúdo; modais abaixo do header. */
+        #appShell>header.cpam-main-header{
+          position:sticky!important;
+          top:0!important;
+          z-index:100!important;
+          isolation:isolate;
+          background:#E2ECE4!important;
+        }
+        /* Cabeçalhos internos de cards permanecem abaixo da barra institucional. */
+        #appShell .cpam-sticky-context{
+          z-index:20!important;
+        }
+        /* Cria uma camada-base para o conteúdo e mantém dropdowns restritos a ela. */
+        #appShell main.min-w-0.flex-1{
+          position:relative;
+          z-index:0;
+          padding-top:clamp(1.25rem,3vh,2rem)!important;
+        }
+        /* Modal VITAI acima dos cards e menus, mas sem cobrir o header principal. */
+        #modalConfigVITAI{
+          z-index:90!important;
+        }
+        /* Fim da correção de camadas CPAM */
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
