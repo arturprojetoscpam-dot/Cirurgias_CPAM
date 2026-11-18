@@ -15,6 +15,8 @@ if (!AGENT_TOKEN) {
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 let stopping = false;
+let activeSession = null;
+let activeSessionTimer = null;
 process.on("SIGINT", () => { stopping = true; });
 process.on("SIGTERM", () => { stopping = true; });
 
@@ -45,17 +47,45 @@ async function complete(jobId, success, result = null, error = null) {
   });
 }
 
+async function closeActiveSession() {
+  if (activeSessionTimer) clearTimeout(activeSessionTimer);
+  activeSessionTimer = null;
+  if (!activeSession) return;
+  const token = activeSession.token;
+  activeSession = null;
+  try { await local("/api/sessao/encerrar", {}, token); }
+  catch (_) { /* Sessão local pode já ter expirado; não registrar segredo. */ }
+}
+
+function renewSessionIdleTimeout() {
+  if (activeSessionTimer) clearTimeout(activeSessionTimer);
+  activeSessionTimer = setTimeout(() => {
+    closeActiveSession().catch(() => {});
+  }, 15 * 60 * 1000);
+  activeSessionTimer.unref?.();
+}
+
+async function getSessionForJob(job) {
+  const usuario = String(job.credentials?.usuario || "");
+  const senha = String(job.credentials?.senha || "");
+  if (!usuario || !senha) throw new Error("A tarefa não trouxe credenciais TIMED válidas.");
+  if (activeSession && activeSession.usuario === usuario && activeSession.senha === senha) {
+    renewSessionIdleTimeout();
+    return activeSession.token;
+  }
+  await closeActiveSession();
+  const session = await local("/api/sessao/iniciar", { usuario, senha }, "");
+  activeSession = { token: session.token, usuario, senha, mode: session.modo || "unknown" };
+  renewSessionIdleTimeout();
+  return activeSession.token;
+}
+
 async function processJob(job) {
   let token = "";
   let result = null;
   let failure = null;
   try {
-    const session = await local("/api/sessao/iniciar", {
-      usuario: job.credentials.usuario,
-      senha: job.credentials.senha
-    }, "");
-    token = session.token;
-
+    token = await getSessionForJob(job);
     if (job.type === "search_be") {
       const data = await local("/api/consultar", { be: job.payload.be }, token);
       result = { paciente: data.paciente, quantidadeResultados: data.quantidadeResultados, tempos: data.tempos };
@@ -68,35 +98,36 @@ async function processJob(job) {
     }
   } catch (error) {
     failure = error instanceof Error ? error.message : "Falha na integração local.";
-  } finally {
-    if (token) {
-      try { await local("/api/sessao/encerrar", {}, token); }
-      catch (_) { /* token expira ao encerrar processo local; não registrar segredo */ }
+    if (/sessão local não autorizada|sessão sem credenciais|credenciais timed|sessão timed expirada/i.test(failure)) {
+      await closeActiveSession();
     }
   }
   await complete(job.id, !failure, result, failure);
 }
-
 async function main() {
   console.log("Agente CPAM ativo. Aguardando tarefas seguras do Supabase...");
-  while (!stopping) {
-    try {
-      const data = await request(SUPABASE_URL + "/functions/v1/vitai-relay/agent-poll", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-vitai-agent-token": AGENT_TOKEN },
-        body: "{}"
-      });
-      if (data.job) {
-        console.log("Tarefa VITAI recebida:", data.job.type);
-        await processJob(data.job);
-        console.log("Tarefa VITAI finalizada.");
-      } else {
-        await sleep(POLL_MS);
+  try {
+    while (!stopping) {
+      try {
+        const data = await request(SUPABASE_URL + "/functions/v1/vitai-relay/agent-poll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-vitai-agent-token": AGENT_TOKEN },
+          body: "{}"
+        });
+        if (data.job) {
+          console.log("Tarefa VITAI recebida:", data.job.type);
+          await processJob(data.job);
+          console.log("Tarefa VITAI finalizada.");
+        } else {
+          await sleep(POLL_MS);
+        }
+      } catch (error) {
+        console.error("Falha de comunicação com o relay ou serviço local:", error instanceof Error ? error.message : "erro");
+        await sleep(5000);
       }
-    } catch (error) {
-      console.error("Falha de comunicação com o relay ou serviço local:", error instanceof Error ? error.message : "erro");
-      await sleep(5000);
     }
+  } finally {
+    await closeActiveSession();
   }
   console.log("Agente CPAM encerrado.");
 }
