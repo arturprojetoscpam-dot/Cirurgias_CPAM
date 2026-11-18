@@ -2087,18 +2087,20 @@
           <section class="space-y-4">
             <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente</h3></div>
             <div id="painelConsultaTimedPaciente" class="mb-4 rounded-xl border border-blue-200 bg-blue-50/70 p-4 shadow-sm">
-              <div class="flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:gap-4">
-                <div class="flex min-w-0 flex-col items-stretch sm:min-w-[150px] sm:items-start">
-                  <span class="inline-flex items-center rounded-lg border border-blue-200 bg-blue-100 px-3 py-1.5 text-base font-black uppercase tracking-[.12em] text-blue-800 shadow-sm">VITAI</span>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex min-w-0 flex-col items-start">
+                  <span class="inline-flex items-center rounded-lg border border-blue-200 bg-blue-100 px-3 py-1.5 text-lg font-black uppercase tracking-[.12em] text-blue-800 shadow-sm">VITAI</span>
                   <div id="vitaiHeaderStatus" class="mt-1 flex items-center gap-2 text-sm font-extrabold text-rose-700" role="status" aria-live="polite">
                     <span id="vitaiStatusDot" class="h-2.5 w-2.5 rounded-full bg-rose-500"></span>
                     <span id="vitaiStatusText">DESCONECTADO</span>
                   </div>
-                  <button type="button" id="btnTimedStatus" onclick="verificarStatusVITAI(false)" class="mt-2 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 sm:w-auto">Verificar conexão</button>
                 </div>
-                <button type="button" id="btnTimedConectar" onclick="abrirModalVITAI()" class="mt-0 w-full rounded-lg border border-teal-300 bg-white px-3 py-3 text-[11px] font-bold text-teal-900 hover:bg-teal-50 sm:mt-4 sm:w-auto">
+                <button type="button" id="btnTimedConectar" onclick="abrirModalVITAI()" class="w-full rounded-lg border border-blue-300 bg-white px-4 py-3 text-[11px] font-bold text-blue-900 shadow-sm hover:bg-blue-100 sm:w-auto">
                   <i class="fa-solid fa-key mr-1"></i>Configurar / trocar sessão
                 </button>
+              </div>
+              <div class="mt-3 border-t border-blue-200/80 pt-3">
+                <button type="button" id="btnTimedStatus" onclick="verificarStatusVITAI(false)" class="w-full rounded-lg border border-blue-200 bg-white px-3 py-2.5 text-[10px] font-semibold text-blue-900 hover:bg-blue-100 sm:w-auto">Verificar conexão</button>
               </div>
               <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end">
                 <div class="min-w-0 flex-1"><label for="timedPacienteBe" class="mb-1 block text-[10px] font-semibold text-slate-600">Número da BE VITAI do paciente</label><input id="timedPacienteBe" inputmode="numeric" class="w-full min-h-[48px] rounded-lg border border-slate-300 bg-white px-3 py-3 text-base" placeholder="Digite o número da BE"></div>
