@@ -73,3 +73,16 @@ O agente consulta a fila a cada 2 segundos, recebe uma tarefa, autentica no TIME
 - O agente ainda é uma etapa de instalação local: o arquivo no GitHub não o instala automaticamente no computador.
 - A interface CPAM ainda precisa ser atualizada para chamar `vitai-relay`; até essa etapa ser concluída, a integração antiga continua ativa.
 - O endpoint de diagnóstico sem dados sensíveis é: `https://uazilxyspnycvntxcxzu.supabase.co/functions/v1/vitai-relay/health`.
+
+
+## Pesquisa BE direta por HTTP (etapa experimental)
+
+A versão experimental do serviço tenta autenticar no VITAI diretamente por HTTP e consultar a BE com chamadas simultâneas para `paciente.do`, `boletimEmergencia.do` e `evolucaoPacienteInterno.do`, seguindo a estratégia observada no projeto OrtoVitai.
+
+- A sessão HTTP e os cookies ficam somente na memória do serviço local.
+- A pesquisa é somente leitura e aceita exclusivamente número de BE.
+- Se a resposta direta não puder ser interpretada, o serviço recorre ao fluxo Playwright já existente.
+- O agente reutiliza a sessão enquanto as tarefas consecutivas forem do mesmo usuário e das mesmas credenciais; ao trocar de usuário, encerra a sessão anterior.
+- A alteração não grava dados no CPAM automaticamente. O usuário continua conferindo os dados e clicando em Salvar Cadastro.
+- Para testar, substitua os arquivos locais `server.js` e `agent.js` pelos desta branch e reinicie os dois processos. Mantenha uma cópia de segurança dos arquivos atuais.
+- Esta etapa precisa ser validada com uma BE real autorizada no ambiente TIMED antes de ser considerada pronta para produção.
