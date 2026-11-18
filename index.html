@@ -1163,6 +1163,39 @@
           }
         }
 
+
+        /* Identificação institucional no acesso mobile e verde desktop suavizado. */
+        @media(min-width:851px){
+          #authScreen .login-brand{
+            background:#edf3ee!important;color:#294b38!important;
+          }
+          #authScreen .login-brand:before{
+            display:block!important;
+            background:linear-gradient(145deg,#f2f6f2 0%,#e8f0e9 100%)!important;
+          }
+        }
+        #authScreen .login-mobile-institution{display:none}
+        @media(max-width:850px){
+          #authScreen .login-mobile-institution{
+            display:block!important;margin:0 auto 20px!important;
+            color:#315f43!important;text-align:center!important;
+            font-size:13px!important;font-weight:700!important;
+            line-height:1.45!important;letter-spacing:.1px!important;
+          }
+          #authScreen .login-mobile-institution span{
+            display:block!important;margin-top:3px!important;
+            color:#718079!important;font-size:11px!important;
+            font-weight:600!important;letter-spacing:.7px!important;
+            text-transform:uppercase!important;
+          }
+        }
+        @media(max-width:480px){
+          #authScreen .login-mobile-institution{
+            margin-bottom:17px!important;font-size:12px!important;
+          }
+          #authScreen .login-mobile-institution span{font-size:10px!important}
+        }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -1195,6 +1228,9 @@
       <div class="login-form-wrap">
         <div class="login-card-logo" aria-label="Logo CPAM">
           <img src="./logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
+        </div>
+        <div class="login-mobile-institution" aria-label="Identificação do sistema">
+          Sistema de Registro de Cirurgias <span>CPAM · Gestão Hospitalar</span>
         </div>
         <div id="authLogin">
           <div class="login-restricted"><i class="fa-solid fa-lock"></i> ÁREA RESTRITA</div>
