@@ -2007,7 +2007,36 @@
           #secCadastroPaciente .cpam-patient-summary-card .cpam-patient-record{font-size:13px!important}
         }
 
-        </style>
+        
+        /* Cadastro de paciente: título superior normal; barra Dados do Paciente fixa. */
+        #secCadastroPaciente .cpam-paciente-top-header{
+          position:static!important;top:auto!important;z-index:auto!important;
+          display:flex!important;min-height:0!important;height:auto!important;
+          margin:0!important;padding:10px 16px!important;
+          background:#fff!important;color:#191A23!important;
+          border:0!important;border-radius:0!important;box-shadow:none!important;
+        }
+        #secCadastroPaciente .cpam-paciente-top-header #tituloModalPaciente{color:#191A23!important}
+        #secCadastroPaciente .cpam-paciente-top-header #subtituloModalPaciente{color:#64748b!important}
+        #secCadastroPaciente .cpam-paciente-dados-sticky{
+          position:sticky!important;position:-webkit-sticky!important;top:86px!important;
+          z-index:45!important;background:#fff!important;padding:10px 12px!important;
+          border:1px solid #d1d5db!important;border-radius:12px!important;
+          box-shadow:0 3px 9px rgba(15,23,42,.10)!important;
+        }
+        #secCadastroPaciente .cpam-paciente-dados-sticky .cpam-header-back{
+          position:static!important;display:inline-flex!important;align-items:center!important;
+          justify-content:center!important;flex:0 0 auto!important;min-height:34px!important;
+          margin:0!important;padding:6px 12px!important;border:1px solid #cbd5e1!important;
+          border-radius:9px!important;background:#fff!important;color:#334155!important;
+          font-size:11px!important;font-weight:700!important;white-space:nowrap!important;
+          box-shadow:none!important;
+        }
+        @media(max-width:767px){
+          #secCadastroPaciente .cpam-paciente-dados-sticky{top:108px!important;padding:9px!important}
+        }
+
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
@@ -2396,27 +2425,16 @@
     <!-- PÁGINA DEDICADA DE CADASTRO E EDIÇÃO DO PACIENTE -->
     <section id="secCadastroPaciente" class="hidden w-full space-y-4" aria-labelledby="tituloModalPaciente">
       <div class="w-full rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="cpam-sticky-context cpam-compact-page-header">
+        <div class="cpam-compact-page-header cpam-paciente-top-header">
           <div class="cpam-page-heading">
-            <h2 id="tituloModalPaciente">Edição</h2>
-            <p id="subtituloModalPaciente">Cadastro de paciente</p>
+            <h2 id="tituloModalPaciente">Novo Cadastro</h2>
+            <p id="subtituloModalPaciente">(Cadastro de paciente)</p>
           </div>
-          <div id="pacienteCabecalhoIdentificacao" class="cpam-patient-summary-card">
-            <div class="cpam-patient-summary-name">
-              <span>Nome do paciente</span>
-              <strong id="pacienteCabecalhoNome" class="cpam-patient-name">-</strong>
-            </div>
-            <div class="cpam-patient-summary-record">
-              <span>Prontuário Bloco</span>
-              <strong id="pacienteCabecalhoCodigo" class="cpam-patient-record">-</strong>
-            </div>
-          </div>
-          <button type="button" onclick="fecharModalPaciente()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button>
         </div>
         <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" class="p-4 sm:p-7">
           
           <section class="space-y-4">
-            <div class="flex items-center gap-2 border-b border-slate-200 pb-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente <span id="pacienteDadosContexto" class="ml-1 text-xs font-semibold normal-case tracking-normal text-slate-500">(Novo paciente - Gerado ao salvar)</span></h3></div>
+            <div class="cpam-paciente-dados-sticky flex items-center justify-between gap-3 border-b border-slate-200 pb-2"><div class="flex min-w-0 items-center gap-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente</h3></div><button type="button" onclick="fecharModalPaciente()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button></div>
             <div id="painelConsultaTimedPaciente" class="mb-4 rounded-xl border border-blue-200 bg-blue-50/70 p-4 shadow-sm">
               <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-start sm:gap-6">
                 <div class="flex min-w-0 flex-col items-start">
@@ -2860,11 +2878,12 @@
             if(id){
                 try{const {data,error}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(error)throw error;pacienteModalAtual=data;pacienteHistoricoAtual=data;
                     preencherCampo('paciente_codigo',formatarCodigoPaciente(data.codigo_paciente));preencherCampo('paciente_prontuario',data.numero_cadastro_ambulatorio);preencherCampo('paciente_cpf',data.cpf);preencherCampo('paciente_cns',data.cns);preencherCampo('paciente_nome',data.nome_paciente);preencherCampo('paciente_nascimento',normalizarDataParaInput(data.data_nascimento));preencherCampo('paciente_mae',data.nome_mae);preencherCampo('paciente_telefone',data.telefone);preencherCampo('paciente_cep',data.cep);preencherCampo('paciente_endereco',data.endereco);preencherCampo('paciente_numero',data.numero);preencherCampo('paciente_bairro',data.bairro);preencherCampo('paciente_municipio',data.municipio);
-                    document.getElementById('tituloModalPaciente').textContent='Edição';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';document.getElementById('pacienteCabecalhoNome').textContent=data.nome_paciente||'Paciente';document.getElementById('pacienteCabecalhoCodigo').textContent=formatarCodigoPaciente(data.codigo_paciente);document.getElementById('pacienteDadosContexto').textContent=' ('+(data.nome_paciente||'Paciente')+' - Nº '+formatarCodigoPaciente(data.codigo_paciente)+')';await carregarHistoricoPacienteModal(data.id);
+                    document.getElementById('tituloModalPaciente').textContent='Edição';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';await carregarHistoricoPacienteModal(data.id);
                 }catch(error){exibirToast('Não foi possível carregar o paciente: '+error.message,'erro');return;}
-            }else{pacienteHistoricoAtual=null;document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';document.getElementById('pacienteCabecalhoNome').textContent='Novo paciente';document.getElementById('pacienteCabecalhoCodigo').textContent='Gerado ao salvar';document.getElementById('pacienteDadosContexto').textContent=' (Novo paciente - Gerado ao salvar)';await carregarHistoricoPacienteModal(null);}
-            if(id){document.getElementById('paciente_nome').focus();window.scrollTo({top:0,behavior:'auto'});}
-            else{const campoBe=document.getElementById('timedPacienteBe');if(campoBe){campoBe.focus({preventScroll:true});campoBe.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});}}
+            }else{pacienteHistoricoAtual=null;document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';await carregarHistoricoPacienteModal(null);}
+            window.scrollTo({top:0,behavior:'auto'});
+            if(!id){const campoBe=document.getElementById('timedPacienteBe');if(campoBe)campoBe.focus({preventScroll:true});}
+            else{const campoNome=document.getElementById('paciente_nome');if(campoNome)campoNome.focus({preventScroll:true});}
         }
         function fecharModalPaciente(limparRota=true){
             document.getElementById('secCadastroPaciente').classList.add('hidden');
@@ -2893,7 +2912,7 @@
                 let resposta;if(pacienteModalAtual)resposta=await supabaseClient.from('pacientes').update(payload).eq('id',pacienteModalAtual.id).select(CAMPOS_PACIENTE_MODAL).single();
                 else resposta=await supabaseClient.from('pacientes').insert([payload]).select(CAMPOS_PACIENTE_MODAL).single();
                 if(resposta.error)throw resposta.error;
-                pacienteModalAtual=resposta.data;pacienteHistoricoAtual=resposta.data;preencherCampo('paciente_codigo',formatarCodigoPaciente(resposta.data.codigo_paciente));document.getElementById('tituloModalPaciente').textContent='Edição';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';document.getElementById('pacienteCabecalhoNome').textContent=resposta.data.nome_paciente||'Paciente';document.getElementById('pacienteCabecalhoCodigo').textContent=formatarCodigoPaciente(resposta.data.codigo_paciente);document.getElementById('pacienteDadosContexto').textContent=' ('+(resposta.data.nome_paciente||'Paciente')+' - Nº '+formatarCodigoPaciente(resposta.data.codigo_paciente)+')';
+                pacienteModalAtual=resposta.data;pacienteHistoricoAtual=resposta.data;preencherCampo('paciente_codigo',formatarCodigoPaciente(resposta.data.codigo_paciente));document.getElementById('tituloModalPaciente').textContent='Edição';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';
                 pacientesPagina=pacientesPagina.map(p=>p.id===resposta.data.id?resposta.data:p);
                 pacientesEncontrados=pacientesEncontrados.map(p=>p.id===resposta.data.id?resposta.data:p);
                 if(pacienteHistoricoAtual&&pacienteHistoricoAtual.id===resposta.data.id){pacienteHistoricoAtual=resposta.data;atualizarResumoPacienteHistorico(resposta.data);}
