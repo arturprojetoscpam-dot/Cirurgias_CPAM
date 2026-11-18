@@ -2783,7 +2783,7 @@
             const headers={'Authorization':'Bearer '+accessToken,'apikey':SUPABASE_PUBLISHABLE_KEY};
             const opcoes={method:metodo,headers:headers,cache:'no-store',signal:signal||undefined};
             if(metodo!=='GET'){headers['Content-Type']='application/json';opcoes.body=JSON.stringify(corpo||{});}
-            const resposta=await fetch(SUPABASE_URL+'/functions/v1/vitai-relay/'+rota,opcoes);
+            const resposta=await fetch(SUPABASE_URL+'/functions/v1/vitai-direct/'+rota,opcoes);
             let dados={};try{dados=await resposta.json();}catch(e){}
             if(!resposta.ok)throw new Error(dados.error||'Falha ao comunicar com a integração VITAI ('+resposta.status+').');
             return dados;
@@ -2836,20 +2836,8 @@
                     if(!silencioso)exibirToast('Configure seu acesso TIMED uma única vez para habilitar as consultas.','erro');
                     return;
                 }
-                atualizarBadgeVITAI('aguardando');
-                const job=await aguardarJobVITAI(resposta.job_id,30000);
-                if(!job){
-                    atualizarBadgeVITAI('aguardando');
-                    if(!silencioso)exibirToast('O acesso está salvo, mas o computador de integração não respondeu. Verifique se o agente TIMED está iniciado.','erro');
-                    return;
-                }
-                if(job.status==='completed'){
-                    vitaiConfigurado=true;atualizarBadgeVITAI('conectado');
-                    if(!silencioso)exibirToast('Acesso VITAI validado e pronto para uso.','sucesso');
-                }else{
-                    atualizarBadgeVITAI('desconectado');
-                    if(!silencioso)exibirToast(job.error_message||'Não foi possível validar o acesso TIMED. Confira as credenciais ou a conexão.','erro');
-                }
+                atualizarBadgeVITAI(resposta.connected?'conectado':'aguardando');
+                if(!silencioso)exibirToast(resposta.connected?'Acesso VITAI validado e pronto para uso.':'Acesso VITAI salvo. A sessão será aberta automaticamente na próxima consulta.','sucesso');
             }catch(error){
                 atualizarBadgeVITAI(vitaiConfigurado?'desconectado':'nao_configurado');
                 if(!silencioso)exibirToast(error.message,'erro');
@@ -2866,13 +2854,7 @@
                 atualizarBadgeVITAI('verificando');
                 const resposta=await chamarRelayVITAI('configure','POST',{usuario,senha});
                 document.getElementById('vitaiSenha').value='';
-                const job=await aguardarJobVITAI(resposta.job_id,90000);
-                if(!job){
-                    atualizarBadgeVITAI('aguardando');
-                    exibirToast('A solicitação foi recebida. O computador de integração ainda não respondeu; aguarde e use Verificar conexão.','erro');
-                    fecharModalVITAI();return;
-                }
-                if(job.status!=='completed')throw new Error(job.error_message||'O TIMED não validou as credenciais. Confira usuário e senha.');
+                if(!resposta.ok||!resposta.configured)throw new Error(resposta.error||'O VITAI não confirmou as credenciais.');
                 vitaiConfigurado=true;atualizarBadgeVITAI('conectado');fecharModalVITAI();
                 exibirToast('Acesso validado e salvo com segurança no Supabase. Nas próximas consultas não será necessário informar a senha.','sucesso');
             }catch(error){
@@ -2910,18 +2892,15 @@
                 if(progressLabel)progressLabel.textContent='Aguardando retorno do VITAI · '+Math.floor(percentual)+'%';
             },200);
             try{
-                const solicitacao=await chamarRelayVITAI('search','POST',{be},controller.signal);
-                const job=await aguardarJobVITAI(solicitacao.job_id,90000,controller.signal);
-                if(!job)throw new Error('O computador de integração não respondeu. Confira se o agente TIMED está em execução.');
-                if(job.status!=='completed')throw new Error(job.error_message||'Não foi possível consultar a BE no TIMED.');
-                const retorno=job.response_payload||{},paciente=retorno.paciente||retorno.data?.paciente||retorno.result?.paciente||retorno.result?.data?.paciente||retorno.data||retorno.result||retorno;
-                if(!paciente||typeof paciente!=='object'||Array.isArray(paciente)||!paciente.nome)throw new Error('A consulta foi concluída, mas os dados do paciente vieram em formato inesperado. Avise o administrador para conferirmos o retorno do agente.');
+                const retorno=await chamarRelayVITAI('search','POST',{be},controller.signal);
+                const paciente=retorno.paciente||retorno.data?.paciente||retorno.result?.paciente||retorno.result?.data?.paciente||retorno.data||retorno.result||retorno;
+                if(!paciente||typeof paciente!=='object'||Array.isArray(paciente)||!paciente.nome)throw new Error('A consulta foi concluída, mas os dados do paciente vieram em formato inesperado.');
                 if(timedConsultaController!==controller)return;
                 if(timedConsultaProgressTimer){clearInterval(timedConsultaProgressTimer);timedConsultaProgressTimer=null;}
                 if(progress){progress.style.width='100%';progress.parentElement.setAttribute('aria-valuenow','100');}
                 if(progressLabel)progressLabel.textContent='Consulta concluída · 100%';
                 timedLocalResultado=paciente;renderizarResultadoTimedLocal(paciente);
-                const dadosTempoVITAI=retorno.tempos?retorno:(retorno.result?.tempos?retorno.result:(retorno.data?.tempos?retorno.data:{}));
+                const dadosTempoVITAI=retorno;
                 if(window.registrarTempoConsultaVITAI)window.registrarTempoConsultaVITAI({be,totalMs:performance.now()-inicioCronometroVITAI,tempos:dadosTempoVITAI.tempos||{},tempoPreparacaoSessao:dadosTempoVITAI.tempoPreparacaoSessao??null,sessaoReutilizada:Boolean(dadosTempoVITAI.sessaoReutilizada),sucesso:true});
                 atualizarBadgeVITAI('conectado');
             }catch(error){
