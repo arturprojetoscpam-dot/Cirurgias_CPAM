@@ -465,6 +465,82 @@
 
         /* Oculta apenas o atalho Novo Registro do menu lateral; fluxo de registro permanece disponível pelas telas de paciente */
         #menuLateral #navRegistro{display:none!important}
+
+        /* PADRÃO GLOBAL DE FORMULÁRIOS CPAM — tipografia, dimensões, foco e responsividade */
+        #appShell{
+          --cpam-field-focus:#2E7D32;
+          --cpam-field-height:44px;
+          --cpam-field-font:14px;
+        }
+        #appShell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+        #appShell select,
+        #appShell textarea,
+        #appShell .campo-paciente-modal,
+        #appShell .campo-cirurgia{
+          box-sizing:border-box!important;
+          min-height:var(--cpam-field-height);
+          font-family:'Inter',sans-serif!important;
+          font-size:var(--cpam-field-font)!important;
+          line-height:1.35!important;
+          padding:.65rem .8rem!important;
+          transition:border-color .18s ease,box-shadow .18s ease,background-color .18s ease!important;
+        }
+        #appShell textarea{min-height:96px;line-height:1.5!important}
+        #appShell input[type="checkbox"],#appShell input[type="radio"]{accent-color:var(--cpam-field-focus)}
+        #appShell label,.label-cirurgia{font-size:13px!important;line-height:1.4}
+        #appShell button:not(.login-eye){
+          min-height:40px;
+          font-size:13px;
+          transition:background-color .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease,transform .18s ease;
+        }
+        #appShell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
+        #appShell select:focus,#appShell textarea:focus,
+        #appShell .campo-paciente-modal:focus,#appShell .campo-cirurgia:focus{
+          border-color:var(--cpam-field-focus)!important;
+          outline:2px solid transparent!important;
+          outline-offset:1px;
+          box-shadow:0 0 0 3px rgba(46,125,50,.17)!important;
+        }
+        #appShell input[aria-invalid="true"]:focus,
+        #appShell select[aria-invalid="true"]:focus,
+        #appShell textarea[aria-invalid="true"]:focus,
+        #appShell .is-invalid:focus{
+          border-color:#dc2626!important;
+          box-shadow:0 0 0 3px rgba(220,38,38,.15)!important;
+        }
+        #appShell .grid{min-width:0}
+        #appShell .grid>*,#appShell .flex>*{min-width:0}
+        #appShell input,#appShell select,#appShell textarea{max-width:100%}
+        #appShell table{width:100%}
+        #appShell main,#appShell .app-content,#appShell section{min-width:0}
+        #appShell .overflow-x-auto{max-width:100%;overscroll-behavior-x:contain}
+        @media(max-width:1023px){
+          #appShell main{width:100%;max-width:100%;padding-left:1rem;padding-right:1rem}
+          #appShell .app-content{width:100%;max-width:100%}
+          #appShell section{max-width:100%}
+        }
+        @media(max-width:700px){
+          #appShell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+          #appShell select,#appShell textarea,
+          #appShell .campo-paciente-modal,#appShell .campo-cirurgia{font-size:14px!important}
+          #appShell button:not(.login-eye){min-height:42px}
+          #appShell .grid.grid-cols-2,
+          #appShell .grid.grid-cols-3,
+          #appShell .grid.grid-cols-4,
+          #appShell .grid.grid-cols-5,
+          #appShell .grid.grid-cols-6,
+          #appShell .grid.grid-cols-12{grid-template-columns:minmax(0,1fr)!important}
+          #appShell .flex.flex-wrap{row-gap:.65rem}
+          #appShell table th,#appShell table td{padding:.65rem .55rem}
+          #appShell .cpam-patient-identity{align-items:flex-start}
+        }
+        @media(min-width:701px) and (max-width:1023px){
+          #appShell .grid.grid-cols-3,
+          #appShell .grid.grid-cols-4,
+          #appShell .grid.grid-cols-5,
+          #appShell .grid.grid-cols-6,
+          #appShell .grid.grid-cols-12{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -2173,7 +2249,45 @@
         async function enviarLinkRedefinicao(emailCodificado){if(!perfilAtual||perfilAtual.role!=='administrador')return;const email=decodeURIComponent(emailCodificado||'');if(!email)return;const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});if(error){exibirToast('Não foi possível enviar o link: '+error.message,'erro');return;}exibirToast('Link de redefinição enviado para '+email+'.','sucesso');}
         async function salvarPerfilUsuario(id){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
-            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true',full_name=document.getElementById('nome-usuario-'+id).value.trim();
+            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true',full_nam
+        /* Enter percorre os campos como Tab; nunca dispara botões nem envia formulários.
+           Textareas e editores mantêm o Enter nativo para permitir quebras de linha. */
+        document.addEventListener('keydown',function(event){
+            if(event.key!=='Enter'||event.isComposing||event.defaultPrevented)return;
+            const alvo=event.target;
+            if(!(alvo instanceof HTMLElement))return;
+            if(alvo.isContentEditable||alvo.closest('[contenteditable="true"]'))return;
+            if(alvo instanceof HTMLTextAreaElement)return;
+            if(alvo instanceof HTMLButtonElement||alvo instanceof HTMLAnchorElement||
+               alvo.getAttribute('role')==='button'||alvo.getAttribute('role')==='link'){
+                event.preventDefault();
+                return;
+            }
+            const campo=alvo instanceof HTMLInputElement||alvo instanceof HTMLSelectElement;
+            if(!campo)return;
+            if(alvo instanceof HTMLInputElement&&['button','submit','reset','image','hidden'].includes(alvo.type)){
+                event.preventDefault();
+                return;
+            }
+            const escopo=alvo.closest('form')||alvo.closest('[role="dialog"]')||
+                alvo.closest('section')||alvo.closest('#appShell')||document;
+            const seletor='input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex]:not([tabindex="-1"])';
+            const campos=Array.from(escopo.querySelectorAll(seletor)).filter(function(el){
+                if(!(el instanceof HTMLElement)||el.hasAttribute('disabled'))return false;
+                if(el instanceof HTMLInputElement&&['checkbox','radio','file'].includes(el.type))return false;
+                if(el instanceof HTMLTextAreaElement)return false;
+                if(el.closest('[hidden],.hidden,[aria-hidden="true"]'))return false;
+                const estilo=window.getComputedStyle(el);
+                return estilo.display!=='none'&&estilo.visibility!=='hidden'&&el.getClientRects().length>0;
+            });
+            const indice=campos.indexOf(alvo);
+            if(indice<0)return;
+            event.preventDefault();
+            const proximo=campos[indice+1];
+            if(proximo){proximo.focus({preventScroll:false});}
+            /* No último campo, mantém o foco: não avança para Salvar/Excluir. */
+        },true);
+e=document.getElementById('nome-usuario-'+id).value.trim();
             const {error}=await supabaseClient.from('user_profiles').update({role:role,active:active,full_name:full_name||null}).eq('user_id',id);
             if(error){exibirToast('Não foi possível atualizar: '+error.message,'erro');return;}
             exibirToast('Perfil atualizado.','sucesso');
