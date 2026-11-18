@@ -403,6 +403,58 @@
         #appShell .header-logo-button{width:52px;height:52px;min-width:52px;overflow:hidden}
         #appShell .header-logo-button img{width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center}
         @media(max-width:700px){#appShell .header-logo-button{width:42px;height:42px;min-width:42px}#appShell .header-logo-button img{width:100%;height:100%;max-width:100%}}
+
+        /* Header responsivo — mantém a composição desktop e reorganiza em duas linhas no mobile */
+        @media(max-width:767px){
+          #appShell>header.cpam-main-header .header-inner{
+            display:flex!important;flex-wrap:wrap!important;align-items:center!important;
+            justify-content:space-between!important;gap:8px 10px!important;
+            padding:10px 12px!important;
+          }
+          #appShell>header.cpam-main-header .header-brand-group{
+            order:1;flex:1 1 calc(100% - 112px);width:auto;min-width:0;gap:9px;
+          }
+          #appShell>header.cpam-main-header .header-logo-button{
+            width:42px;height:42px;min-width:42px;flex:0 0 42px;
+          }
+          #appShell>header.cpam-main-header .header-logo-button img{
+            width:100%;height:100%;max-width:100%;object-fit:contain;
+          }
+          #appShell>header.cpam-main-header .header-system-title{flex:1 1 auto;min-width:0}
+          #appShell>header.cpam-main-header .header-system-title h1{
+            font-size:14px!important;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+          }
+          #appShell>header.cpam-main-header .header-system-title p{
+            max-width:100%;font-size:10px!important;line-height:1.25;white-space:normal;
+          }
+          #appShell>header.cpam-main-header .header-actions{display:contents!important}
+          #appShell>header.cpam-main-header .header-action-buttons{
+            order:2;display:flex!important;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:6px;margin-left:auto;
+          }
+          #appShell>header.cpam-main-header .header-users-button,
+          #appShell>header.cpam-main-header .header-logout-button{
+            min-height:42px;padding:8px 11px!important;font-size:11px!important;white-space:nowrap;
+          }
+          #appShell>header.cpam-main-header .header-user-group{
+            order:3;display:flex!important;flex:1 0 100%;width:100%;min-width:0;
+            padding:8px 10px;border:1px solid rgba(49,95,67,.16);border-radius:10px;
+            background:rgba(255,255,255,.42);gap:9px;
+          }
+          #appShell>header.cpam-main-header .header-avatar{width:34px;height:34px;flex:0 0 34px;font-size:11px}
+          #appShell>header.cpam-main-header .header-profile-copy{flex:1 1 auto;min-width:0;overflow:hidden}
+          #appShell>header.cpam-main-header .header-profile-name{
+            display:block;max-width:100%;font-size:12px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+          }
+          #appShell>header.cpam-main-header .header-profile-meta{display:flex;min-width:0;flex-wrap:wrap;gap:4px 7px}
+          #appShell>header.cpam-main-header .header-profile-role{font-size:10px!important;white-space:nowrap}
+          #appShell>header.cpam-main-header .header-profile-email{display:none!important}
+        }
+        @media(max-width:380px){
+          #appShell>header.cpam-main-header .header-system-title h1{font-size:12px!important}
+          #appShell>header.cpam-main-header .header-system-title p{font-size:9px!important}
+          #appShell>header.cpam-main-header .header-users-button,
+          #appShell>header.cpam-main-header .header-logout-button{padding:7px 8px!important;font-size:10px!important}
+        }
         /* Fim do CPAM POSITIVUS DESIGN SYSTEM */
 
         /* Ajustes finos solicitados: foco dos campos e cabeçalho */
