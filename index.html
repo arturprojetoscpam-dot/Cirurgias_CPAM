@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="./logo-vertical-cpam.png?v=1">
-    <link rel="apple-touch-icon" href="./logo-vertical-cpam.png?v=1">
+    <link rel="icon" type="image/png" href="./logo-cpam.png?v=2">
+    <link rel="apple-touch-icon" href="./logo-cpam.png?v=2">
     <meta name="description" content="Sistema de Registro de Cirurgias do Bloco Cirúrgico do CPAM.">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Bloco Cirúrgico - CPAM">
     <meta property="og:description" content="Sistema de Registro de Cirurgias do Bloco Cirúrgico do CPAM.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/logo-vertical-cpam.png">
-    <meta property="og:image:alt" content="Logo vertical do CPAM">
+    <meta property="og:image" content="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/logo-cpam.png">
+    <meta property="og:image:alt" content="Logo CPAM">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Bloco Cirúrgico - CPAM">
     <meta name="twitter:description" content="Sistema de Registro de Cirurgias do Bloco Cirúrgico do CPAM.">
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/logo-vertical-cpam.png">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/logo-cpam.png">
     <title>Bloco Cirúrgico - CPAM</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -629,6 +629,71 @@
           #appShell .grid.grid-cols-6,
           #appShell .grid.grid-cols-12{grid-template-columns:repeat(2,minmax(0,1fr))!important}
         }
+
+        /* Correção definitiva: reserva espaço físico para a lupa no campo de pesquisa */
+        #buscaListaPacientes{
+          padding-left:2.75rem!important;
+          text-indent:0!important;
+          box-sizing:border-box!important;
+        }
+        #appShell .relative:has(>#buscaListaPacientes)>i{
+          left:12px!important;
+          top:50%!important;
+          transform:translateY(-50%)!important;
+          width:14px!important;
+          text-align:center!important;
+          pointer-events:none!important;
+        }
+        /* Botão da marca com indicação explícita de navegação em dispositivos móveis */
+        @media(max-width:767px){
+          #appShell .header-logo-button{
+            position:relative!important;
+            display:inline-flex!important;
+            align-items:center!important;
+            justify-content:center!important;
+            padding:3px!important;
+            border:1px solid rgba(23,59,42,.24)!important;
+            border-radius:9px!important;
+            background:rgba(255,255,255,.34)!important;
+            box-shadow:0 1px 3px rgba(23,59,42,.10)!important;
+            overflow:visible!important;
+            min-width:42px!important;
+            min-height:42px!important;
+          }
+          #appShell .header-logo-button img{
+            display:block!important;
+            width:auto!important;
+            height:32px!important;
+            max-width:104px!important;
+            object-fit:contain!important;
+          }
+          #appShell .header-logo-button::after{
+            content:"☰"!important;
+            font-family:Arial,sans-serif!important;
+            font-size:10px!important;
+            font-weight:800!important;
+            line-height:1!important;
+            position:absolute!important;
+            right:-7px!important;
+            bottom:-5px!important;
+            z-index:5!important;
+            display:flex!important;
+            align-items:center!important;
+            justify-content:center!important;
+            width:19px!important;
+            height:19px!important;
+            border:2px solid #E2ECE4!important;
+            border-radius:50%!important;
+            background:#173B2A!important;
+            color:#fff!important;
+            box-shadow:0 1px 3px rgba(0,0,0,.2)!important;
+            pointer-events:none!important;
+          }
+          #appShell .header-logo-button:active{
+            transform:scale(.96)!important;
+            opacity:.82!important;
+          }
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -1096,7 +1161,7 @@
         <section id="secPacientes" class="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm">
             <div class="space-y-3 border-b border-slate-100 bg-slate-50/50 p-4 sm:p-5">
                 <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-users mr-2 text-teal-700"></i>Pacientes cadastrados</h2><p class="mt-1 text-xs text-slate-500">Pesquise por nome, prontuário interno, cadastro ambulatorial, BE VITAI, CPF ou Cartão SUS. O histórico é carregado somente quando você abre um paciente.</p></div><button type="button" onclick="abrirCadastroPaciente()" id="btnNovoPacienteLista" class="rounded-xl bg-emerald-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-emerald-800"><i class="fa-solid fa-plus mr-1"></i>Novo Paciente</button></div>
-                <div class="space-y-2"><div class="relative"><i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xs text-slate-400" aria-hidden="true"></i><input id="buscaListaPacientes" type="search" oninput="pesquisarListaPacientes()" placeholder="Nº do cadastro ambulatorial, nome ou Cartão SUS (CNS)" class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-12 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><div class="max-w-xs"><label for="buscaDataNascimentoLista" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input id="buscaDataNascimentoLista" type="date" onchange="pesquisarListaPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><p class="text-[10px] text-slate-500">A data pode ser usada sozinha ou junto com a pesquisa acima. A busca consulta o banco sem baixar todos os cadastros no navegador.</p></div>
+                <div class="space-y-2"><div class="relative"><i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400" aria-hidden="true"></i><input id="buscaListaPacientes" type="search" oninput="pesquisarListaPacientes()" placeholder="Nº do cadastro ambulatorial, nome ou Cartão SUS (CNS)" style="padding-left:2.75rem!important" class="w-full rounded-xl border border-slate-300 bg-white py-2 pl-11 pr-4 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><div class="max-w-xs"><label for="buscaDataNascimentoLista" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input id="buscaDataNascimentoLista" type="date" onchange="pesquisarListaPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div><p class="text-[10px] text-slate-500">A data pode ser usada sozinha ou junto com a pesquisa acima. A busca consulta o banco sem baixar todos os cadastros no navegador.</p></div>
             </div>
             <div class="overflow-x-auto custom-scrollbar"><table class="w-full border-collapse text-left text-sm">
                 <thead class="border-b border-slate-200 bg-slate-100/80 font-semibold uppercase tracking-wider text-slate-600"><tr><th class="p-3.5">Nº interno</th><th class="p-3.5">Paciente</th><th class="p-3.5">Nascimento</th><th class="p-3.5">CNS</th><th class="p-3.5">Cadastro ambulatorial</th><th class="p-3.5 text-center">Ações</th></tr></thead>
