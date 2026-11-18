@@ -2771,7 +2771,7 @@
             const dot=document.getElementById('vitaiStatusDot'),label=document.getElementById('vitaiStatusText'),card=document.getElementById('vitaiHeaderStatus');
             if(dot)dot.className='h-2.5 w-2.5 rounded-full '+cfg.ponto;
             if(label){label.textContent=texto||cfg.rotulo;label.className='font-extrabold '+cfg.cor;}
-            if(card)card.className='mt-1 flex items-center gap-2 text-sm font-extrabold '+cfg.cor;
+            if(card)card.className='mt-12 flex items-center gap-2 text-sm font-extrabold '+cfg.cor;
             const consultar=document.getElementById('btnTimedConsultar');
             if(consultar)consultar.disabled=!(estado==='conectado'||vitaiConfigurado);
         }
