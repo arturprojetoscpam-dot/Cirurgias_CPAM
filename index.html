@@ -886,6 +886,125 @@
           }
         }
 
+    
+        /* Refinamento visual do header dinâmico — alinhamento fixo e transição suave */
+        #appShell>header.cpam-main-header,
+        #appShell>header.cpam-main-header .header-inner,
+        #appShell>header.cpam-main-header .header-brand-group,
+        #appShell>header.cpam-main-header .header-logo-button,
+        #appShell>header.cpam-main-header .header-logo-button img,
+        #appShell>header.cpam-main-header .header-system-title,
+        #appShell>header.cpam-main-header .header-user-group,
+        #appShell>header.cpam-main-header .header-actions,
+        #appShell>header.cpam-main-header .header-action-buttons,
+        #appShell>header.cpam-main-header .header-logout-button{
+          transition:all 300ms ease-in-out!important;
+        }
+        #appShell>header.cpam-main-header .header-inner{
+          justify-content:space-between!important;
+        }
+        #appShell>header.cpam-main-header .header-brand-group{
+          order:0!important;flex:0 1 auto!important;margin-right:auto!important;
+          transform:translateX(0)!important;
+        }
+        #appShell>header.cpam-main-header .header-actions{
+          order:1!important;margin-left:auto!important;flex:0 0 auto!important;
+          justify-content:flex-end!important;
+        }
+        #appShell>header.cpam-main-header .header-action-buttons{
+          order:0!important;margin-left:auto!important;justify-content:flex-end!important;
+        }
+        #appShell>header.cpam-main-header .header-logout-button{
+          order:1!important;margin-left:auto!important;flex:0 0 auto!important;
+          visibility:visible!important;opacity:1!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
+          display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+          align-items:center!important;justify-content:space-between!important;
+          min-height:0!important;padding:5px 14px!important;gap:10px!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-brand-group{
+          order:0!important;display:flex!important;flex:0 1 auto!important;
+          width:auto!important;min-width:0!important;margin:0 auto 0 0!important;
+          justify-content:flex-start!important;transform:translateX(0)!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
+          order:0!important;display:inline-flex!important;align-items:center!important;
+          justify-content:flex-start!important;flex:0 0 auto!important;
+          height:38px!important;min-height:38px!important;width:auto!important;
+          min-width:0!important;margin:0!important;padding:0!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
+          display:block!important;height:36px!important;width:auto!important;
+          max-width:150px!important;object-fit:contain!important;
+        }
+        /* Recolhe os textos sem display:none para a transição não dar um salto. */
+        #appShell>header.cpam-main-header.cpam-header-compact .header-system-title,
+        #appShell>header.cpam-main-header.cpam-header-compact .header-user-group{
+          display:flex!important;flex:0 1 auto!important;min-width:0!important;
+          max-height:0!important;max-width:0!important;margin:0!important;padding:0!important;
+          border:0!important;overflow:hidden!important;opacity:0!important;
+          transform:translateY(-5px)!important;pointer-events:none!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-actions{
+          order:1!important;display:flex!important;flex:0 0 auto!important;
+          width:auto!important;min-width:0!important;margin:0 0 0 auto!important;
+          justify-content:flex-end!important;gap:0!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-action-buttons{
+          order:0!important;display:flex!important;flex:0 0 auto!important;
+          width:auto!important;margin:0 0 0 auto!important;gap:0!important;
+          justify-content:flex-end!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-users-button{
+          display:none!important;
+        }
+        #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
+          order:1!important;display:inline-flex!important;flex:0 0 auto!important;
+          min-height:36px!important;height:36px!important;margin:0 0 0 auto!important;
+          padding:6px 12px!important;white-space:nowrap!important;
+          visibility:visible!important;opacity:1!important;transform:none!important;
+        }
+        /* No mobile, mantém a logo à esquerda e Sair à direita, sem inversão de ordem. */
+        @media(max-width:767px){
+          #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
+            flex-direction:row!important;flex-wrap:nowrap!important;
+            justify-content:space-between!important;padding:4px 10px!important;gap:8px!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-brand-group{
+            order:0!important;flex:0 1 auto!important;width:auto!important;
+            margin:0 auto 0 0!important;justify-content:flex-start!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
+            order:0!important;min-width:42px!important;width:auto!important;
+            height:38px!important;min-height:38px!important;margin:0!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
+            height:34px!important;max-width:140px!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-actions{
+            order:1!important;display:flex!important;flex:0 0 auto!important;
+            width:auto!important;margin:0 0 0 auto!important;justify-content:flex-end!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-action-buttons{
+            order:0!important;display:flex!important;flex:0 0 auto!important;
+            margin:0 0 0 auto!important;justify-content:flex-end!important;
+          }
+          #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
+            order:1!important;min-height:36px!important;height:36px!important;
+            margin-left:auto!important;padding:6px 10px!important;
+          }
+        }
+        /* O header sticky permanece no fluxo; o conteúdo conserva respiro abaixo dele. */
+        #appShell main.min-w-0.flex-1{
+          padding-top:clamp(1.25rem,3vh,2rem)!important;
+          scroll-margin-top:1rem!important;
+        }
+        /* Preserva o card branco e oculta somente a linha interna duplicada já acordada. */
+        #secCadastroCirurgia>div.w-full.rounded-2xl.border.bg-white{
+          display:block!important;visibility:visible!important;opacity:1!important;
+        }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
