@@ -1618,6 +1618,64 @@
           #secCadastroPaciente .cpam-patient-summary-card .cpam-patient-name,
           #secCadastroCirurgia .cpam-patient-summary-card .cpam-patient-name{font-size:13px!important}
         }
+
+        /* Ordem padrão do banner: título à esquerda, paciente centralizado e voltar à direita. */
+        #secCadastroPaciente .cpam-compact-page-header,
+        #secCadastroCirurgia .cpam-compact-page-header{
+          display:flex!important;flex-direction:row!important;align-items:center!important;
+          justify-content:space-between!important;flex-wrap:nowrap!important;
+          gap:16px!important;padding:10px 24px!important;min-height:72px!important;
+        }
+        #secCadastroPaciente .cpam-compact-page-header .cpam-page-heading,
+        #secCadastroCirurgia .cpam-compact-page-header .cpam-page-heading{
+          order:0!important;flex:0 1 28%!important;min-width:170px!important;
+          margin:0!important;text-align:left!important;
+        }
+        #secCadastroPaciente .cpam-patient-summary-card,
+        #secCadastroCirurgia .cpam-patient-summary-card{
+          order:1!important;flex:0 1 auto!important;width:auto!important;
+          max-width:min(58%,720px)!important;margin:0 auto!important;
+        }
+        #secCadastroPaciente .cpam-compact-page-header .cpam-header-back,
+        #secCadastroCirurgia .cpam-compact-page-header .cpam-header-back{
+          order:2!important;flex:0 0 auto!important;margin:0 0 0 auto!important;
+          position:static!important;right:auto!important;left:auto!important;
+        }
+        @media(max-width:767px){
+          #secCadastroPaciente .cpam-compact-page-header,
+          #secCadastroCirurgia .cpam-compact-page-header{
+            gap:8px!important;padding:8px 10px!important;min-height:58px!important;
+          }
+          #secCadastroPaciente .cpam-compact-page-header .cpam-page-heading,
+          #secCadastroCirurgia .cpam-compact-page-header .cpam-page-heading{
+            flex:1 1 0!important;min-width:0!important;
+          }
+          #secCadastroPaciente .cpam-compact-page-header #tituloModalPaciente,
+          #secCadastroCirurgia .cpam-compact-page-header #tituloModalCirurgia{
+            font-size:12px!important;
+          }
+          #secCadastroPaciente .cpam-compact-page-header #subtituloModalPaciente,
+          #secCadastroCirurgia .cpam-compact-page-header #subtituloModalCirurgia{
+            font-size:9px!important;
+          }
+          #secCadastroPaciente .cpam-patient-summary-card,
+          #secCadastroCirurgia .cpam-patient-summary-card{
+            flex:0 1 auto!important;width:auto!important;max-width:52%!important;
+            margin:0 auto!important;padding:6px 7px!important;gap:4px 8px!important;
+          }
+          #secCadastroPaciente .cpam-patient-summary-card .cpam-patient-name,
+          #secCadastroCirurgia .cpam-patient-summary-card .cpam-patient-name,
+          #secCadastroPaciente .cpam-patient-summary-card .cpam-patient-record,
+          #secCadastroCirurgia .cpam-patient-summary-card .cpam-patient-record{
+            font-size:10px!important;
+          }
+          #secCadastroPaciente .cpam-compact-page-header .cpam-header-back,
+          #secCadastroCirurgia .cpam-compact-page-header .cpam-header-back{
+            min-height:32px!important;height:32px!important;padding:5px 7px!important;
+            font-size:9px!important;
+          }
+        }
+
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -2008,21 +2066,21 @@
     <section id="secCadastroPaciente" class="hidden w-full space-y-4" aria-labelledby="tituloModalPaciente">
       <div class="w-full rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="cpam-sticky-context cpam-compact-page-header">
-          <button type="button" onclick="fecharModalPaciente()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button>
           <div class="cpam-page-heading">
             <h2 id="tituloModalPaciente">Edição</h2>
             <p id="subtituloModalPaciente">Cadastro de paciente</p>
           </div>
           <div id="pacienteCabecalhoIdentificacao" class="cpam-patient-summary-card">
-          <div class="cpam-patient-summary-name">
-            <span>Nome do paciente</span>
-            <strong id="pacienteCabecalhoNome" class="cpam-patient-name">-</strong>
+            <div class="cpam-patient-summary-name">
+              <span>Nome do paciente</span>
+              <strong id="pacienteCabecalhoNome" class="cpam-patient-name">-</strong>
+            </div>
+            <div class="cpam-patient-summary-record">
+              <span>Prontuário Bloco</span>
+              <strong id="pacienteCabecalhoCodigo" class="cpam-patient-record">-</strong>
+            </div>
           </div>
-          <div class="cpam-patient-summary-record">
-            <span>Prontuário Bloco</span>
-            <strong id="pacienteCabecalhoCodigo" class="cpam-patient-record">-</strong>
-          </div>
-          </div>
+          <button type="button" onclick="fecharModalPaciente()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button>
         </div>
         <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" class="p-4 sm:p-7">
           
@@ -2169,21 +2227,21 @@
     <section id="secCadastroCirurgia" class="hidden w-full space-y-4" aria-labelledby="tituloModalCirurgia">
       <div class="w-full rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="cpam-sticky-context cpam-compact-page-header">
-          <button type="button" onclick="fecharModalCirurgia()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button>
           <div class="cpam-page-heading">
             <h1 id="tituloModalCirurgia">Registro de Cirurgia</h1>
             <p id="subtituloModalCirurgia">Registro de procedimento realizado</p>
           </div>
           <div id="cirPacienteCabecalhoIdentificacao" class="cpam-patient-summary-card">
-          <div class="cpam-patient-summary-name">
-            <span>Nome do paciente</span>
-            <strong id="cirPacienteNomeSticky" class="cpam-patient-name">-</strong>
+            <div class="cpam-patient-summary-name">
+              <span>Nome do paciente</span>
+              <strong id="cirPacienteNomeSticky" class="cpam-patient-name">-</strong>
+            </div>
+            <div class="cpam-patient-summary-record">
+              <span>Prontuário Bloco</span>
+              <strong id="cirPacienteCodigoSticky" class="cpam-patient-record">-</strong>
+            </div>
           </div>
-          <div class="cpam-patient-summary-record">
-            <span>Prontuário Bloco</span>
-            <strong id="cirPacienteCodigoSticky" class="cpam-patient-record">-</strong>
-          </div>
-          </div>
+          <button type="button" onclick="fecharModalCirurgia()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button>
         </div>
         <form id="formModalCirurgia" onsubmit="salvarCirurgiaModal(event)" class="space-y-6 p-4 sm:p-7">
           <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
