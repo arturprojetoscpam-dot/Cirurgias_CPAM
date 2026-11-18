@@ -1843,7 +1843,64 @@
           #secCadastroPaciente #pacienteCabecalhoNome,#secCadastroPaciente #pacienteCabecalhoCodigo{font-size:11px!important}
         }
 
-      </style>
+      
+        /* Layout definitivo em duas linhas: título/subtítulo e identificação abaixo; Voltar isolado à direita. */
+        #secCadastroPaciente .cpam-sticky-context.cpam-compact-page-header,
+        #secCadastroCirurgia .cpam-sticky-context.cpam-compact-page-header{
+          display:grid!important;
+          grid-template-columns:minmax(0,1fr) auto!important;
+          grid-template-rows:auto auto!important;
+          align-items:center!important;
+          justify-content:initial!important;
+          justify-items:stretch!important;
+          column-gap:16px!important;
+          row-gap:8px!important;
+          flex-direction:initial!important;
+          flex-wrap:initial!important;
+          min-height:0!important;
+          height:auto!important;
+          padding:10px 20px!important;
+        }
+        #secCadastroPaciente .cpam-compact-page-header>.cpam-page-heading,
+        #secCadastroCirurgia .cpam-compact-page-header>.cpam-page-heading{
+          grid-column:1!important;grid-row:1!important;
+          order:initial!important;flex:none!important;
+          width:auto!important;max-width:none!important;min-width:0!important;
+          margin:0!important;align-self:center!important;
+        }
+        #secCadastroPaciente .cpam-compact-page-header>.cpam-header-back,
+        #secCadastroCirurgia .cpam-compact-page-header>.cpam-header-back{
+          grid-column:2!important;grid-row:1!important;
+          order:initial!important;justify-self:end!important;align-self:center!important;
+          flex:none!important;width:max-content!important;max-width:100%!important;
+          margin:0!important;position:static!important;inset:auto!important;
+        }
+        #secCadastroPaciente .cpam-compact-page-header>#pacienteCabecalhoIdentificacao,
+        #secCadastroCirurgia .cpam-compact-page-header>#cirPacienteCabecalhoIdentificacao{
+          grid-column:1 / -1!important;grid-row:2!important;
+          order:initial!important;display:flex!important;
+          flex:none!important;width:max-content!important;max-width:100%!important;
+          min-width:0!important;margin:0!important;justify-self:start!important;
+          align-self:start!important;
+        }
+        @media(max-width:767px){
+          #secCadastroPaciente .cpam-sticky-context.cpam-compact-page-header,
+          #secCadastroCirurgia .cpam-sticky-context.cpam-compact-page-header{
+            grid-template-columns:minmax(0,1fr) auto!important;
+            grid-template-rows:auto auto!important;
+            column-gap:8px!important;row-gap:7px!important;padding:9px 11px!important;
+          }
+          #secCadastroPaciente .cpam-compact-page-header>.cpam-page-heading,
+          #secCadastroCirurgia .cpam-compact-page-header>.cpam-page-heading{
+            max-width:100%!important;
+          }
+          #secCadastroPaciente .cpam-compact-page-header>#pacienteCabecalhoIdentificacao,
+          #secCadastroCirurgia .cpam-compact-page-header>#cirPacienteCabecalhoIdentificacao{
+            grid-column:1 / -1!important;grid-row:2!important;
+            width:max-content!important;max-width:100%!important;
+          }
+        }
+</style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
