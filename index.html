@@ -819,190 +819,151 @@
         }
         /* Fim dos ajustes finais de layout */
     
-        /* Cabeçalho inteligente: compacto durante a rolagem e completo no topo */
-        #appShell>header.cpam-main-header,
-        #appShell>header.cpam-main-header .header-inner,
-        #appShell>header.cpam-main-header .header-logo-button img,
-        #appShell>header.cpam-main-header .header-system-title,
-        #appShell>header.cpam-main-header .header-user-group,
-        #appShell>header.cpam-main-header .header-action-buttons{
-          transition:padding .22s ease,gap .22s ease,height .22s ease,max-height .22s ease,
-                     opacity .18s ease,transform .22s ease,margin .22s ease!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact{
-          box-shadow:0 2px 10px rgba(23,59,42,.14)!important;
-          border-bottom-width:2px!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
-          min-height:0!important;
-          padding:5px 12px!important;
-          gap:6px!important;
-          flex-wrap:nowrap!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-brand-group{
-          flex:0 1 auto!important;width:auto!important;min-width:0!important;
-          gap:0!important;margin:0!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
-          min-height:0!important;height:38px!important;width:auto!important;
-          min-width:0!important;padding:0!important;border:0!important;
-          background:transparent!important;box-shadow:none!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
-          height:36px!important;width:auto!important;max-width:150px!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-system-title,
-        #appShell>header.cpam-main-header.cpam-header-compact .header-user-group{
-          display:none!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-actions{
-          display:flex!important;flex:0 0 auto!important;margin-left:auto!important;
-          gap:0!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-action-buttons{
-          display:flex!important;order:initial!important;margin:0!important;
-          gap:0!important;flex:0 0 auto!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-users-button{
-          display:none!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
-          display:inline-flex!important;visibility:visible!important;opacity:1!important;
-          min-height:36px!important;height:36px!important;padding:6px 11px!important;
-          font-size:11px!important;white-space:nowrap!important;
-        }
-        @media(max-width:767px){
-          #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
-            padding:4px 10px!important;gap:6px!important;
-          }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
-            height:38px!important;min-height:38px!important;
-          }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
-            height:34px!important;max-width:140px!important;
-          }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
-            min-height:36px!important;height:36px!important;padding:6px 10px!important;
-          }
-        }
 
-    
-        /* Refinamento visual do header dinâmico — alinhamento fixo e transição suave */
+        /* Header fixo simples: sem compactação, animação ou alteração por rolagem. */
+        #appShell>header.cpam-main-header{
+          position:sticky!important;position:-webkit-sticky!important;top:0!important;
+          z-index:1000!important;width:100%!important;transform:none!important;
+          background:#E2ECE4!important;border-bottom:3px solid #315F43!important;
+          box-shadow:0 2px 8px rgba(23,59,42,.08)!important;
+        }
         #appShell>header.cpam-main-header,
-        #appShell>header.cpam-main-header .header-inner,
-        #appShell>header.cpam-main-header .header-brand-group,
-        #appShell>header.cpam-main-header .header-logo-button,
-        #appShell>header.cpam-main-header .header-logo-button img,
-        #appShell>header.cpam-main-header .header-system-title,
-        #appShell>header.cpam-main-header .header-user-group,
-        #appShell>header.cpam-main-header .header-actions,
-        #appShell>header.cpam-main-header .header-action-buttons,
-        #appShell>header.cpam-main-header .header-logout-button{
-          transition:all 300ms ease-in-out!important;
-        }
+        #appShell>header.cpam-main-header *{transition:none!important;animation:none!important}
         #appShell>header.cpam-main-header .header-inner{
-          justify-content:space-between!important;
-        }
-        #appShell>header.cpam-main-header .header-brand-group{
-          order:0!important;flex:0 1 auto!important;margin-right:auto!important;
-          transform:translateX(0)!important;
-        }
-        #appShell>header.cpam-main-header .header-actions{
-          order:1!important;margin-left:auto!important;flex:0 0 auto!important;
-          justify-content:flex-end!important;
-        }
-        #appShell>header.cpam-main-header .header-action-buttons{
-          order:0!important;margin-left:auto!important;justify-content:flex-end!important;
-        }
-        #appShell>header.cpam-main-header .header-logout-button{
-          order:1!important;margin-left:auto!important;flex:0 0 auto!important;
-          visibility:visible!important;opacity:1!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
           display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
           align-items:center!important;justify-content:space-between!important;
-          min-height:0!important;padding:5px 14px!important;gap:10px!important;
+          gap:14px!important;padding:8px 18px!important;min-height:68px!important;
         }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-brand-group{
-          order:0!important;display:flex!important;flex:0 1 auto!important;
-          width:auto!important;min-width:0!important;margin:0 auto 0 0!important;
-          justify-content:flex-start!important;transform:translateX(0)!important;
+        #appShell>header.cpam-main-header .header-brand-group{
+          order:0!important;display:flex!important;flex:0 0 auto!important;
+          align-items:center!important;gap:10px!important;width:auto!important;
+          min-width:0!important;margin:0 auto 0 0!important;
         }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
-          order:0!important;display:inline-flex!important;align-items:center!important;
-          justify-content:flex-start!important;flex:0 0 auto!important;
-          height:38px!important;min-height:38px!important;width:auto!important;
-          min-width:0!important;margin:0!important;padding:0!important;
+        #appShell>header.cpam-main-header .header-logo-button{
+          display:inline-flex!important;align-items:center!important;justify-content:center!important;
+          flex:0 0 auto!important;gap:8px!important;width:auto!important;height:44px!important;
+          min-width:44px!important;margin:0!important;padding:3px!important;
+          background:transparent!important;border:0!important;box-shadow:none!important;
         }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
-          display:block!important;height:36px!important;width:auto!important;
+        #appShell>header.cpam-main-header .header-menu-icon{
+          display:inline-block!important;color:#173B2A!important;font-size:19px!important;
+        }
+        #appShell>header.cpam-main-header .header-logo-button img{
+          display:block!important;width:auto!important;height:40px!important;
           max-width:150px!important;object-fit:contain!important;
         }
-        /* Recolhe os textos sem display:none para a transição não dar um salto. */
-        #appShell>header.cpam-main-header.cpam-header-compact .header-system-title,
-        #appShell>header.cpam-main-header.cpam-header-compact .header-user-group{
-          display:flex!important;flex:0 1 auto!important;min-width:0!important;
-          max-height:0!important;max-width:0!important;margin:0!important;padding:0!important;
-          border:0!important;overflow:hidden!important;opacity:0!important;
-          transform:translateY(-5px)!important;pointer-events:none!important;
+        #appShell>header.cpam-main-header .header-system-title{
+          display:block!important;flex:0 1 auto!important;min-width:0!important;
+          max-width:260px!important;max-height:none!important;opacity:1!important;
+          overflow:visible!important;transform:none!important;
         }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-actions{
+        #appShell>header.cpam-main-header .header-system-title h1{
+          font-size:16px!important;line-height:1.2!important;white-space:nowrap!important;
+        }
+        #appShell>header.cpam-main-header .header-system-title p{
+          font-size:10px!important;line-height:1.25!important;white-space:nowrap!important;
+        }
+        #appShell>header.cpam-main-header .header-actions{
+          order:1!important;display:flex!important;flex:0 1 auto!important;
+          align-items:center!important;justify-content:flex-end!important;
+          gap:12px!important;width:auto!important;min-width:0!important;margin:0 0 0 auto!important;
+        }
+        #appShell>header.cpam-main-header .header-user-group{
+          order:0!important;display:flex!important;flex:0 1 auto!important;
+          align-items:center!important;width:auto!important;min-width:0!important;
+          max-width:320px!important;max-height:none!important;margin:0!important;
+          padding:6px 10px!important;gap:9px!important;overflow:visible!important;
+          opacity:1!important;transform:none!important;border:1px solid rgba(49,95,67,.2)!important;
+          border-radius:10px!important;background:rgba(255,255,255,.5)!important;
+        }
+        #appShell>header.cpam-main-header .header-avatar{
+          width:34px!important;height:34px!important;flex:0 0 34px!important;
+        }
+        #appShell>header.cpam-main-header .header-profile-copy{
+          display:block!important;flex:1 1 auto!important;min-width:0!important;overflow:hidden!important;
+        }
+        #appShell>header.cpam-main-header .header-profile-name{
+          display:block!important;font-size:12px!important;white-space:nowrap!important;
+          overflow:hidden!important;text-overflow:ellipsis!important;
+        }
+        #appShell>header.cpam-main-header .header-profile-meta{
+          display:flex!important;flex-wrap:wrap!important;gap:2px 7px!important;min-width:0!important;
+        }
+        #appShell>header.cpam-main-header .header-profile-role,
+        #appShell>header.cpam-main-header .header-profile-email{
+          display:block!important;font-size:10px!important;white-space:nowrap!important;
+        }
+        #appShell>header.cpam-main-header .header-action-buttons{
           order:1!important;display:flex!important;flex:0 0 auto!important;
-          width:auto!important;min-width:0!important;margin:0 0 0 auto!important;
-          justify-content:flex-end!important;gap:0!important;
+          align-items:center!important;justify-content:flex-end!important;
+          gap:7px!important;width:auto!important;margin:0!important;
         }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-action-buttons{
-          order:0!important;display:flex!important;flex:0 0 auto!important;
-          width:auto!important;margin:0 0 0 auto!important;gap:0!important;
-          justify-content:flex-end!important;
+        #appShell>header.cpam-main-header .header-users-button,
+        #appShell>header.cpam-main-header .header-logout-button{
+          display:inline-flex;align-items:center;justify-content:center;
+          min-height:38px!important;height:38px!important;padding:7px 11px!important;
+          font-size:11px!important;white-space:nowrap!important;
         }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-users-button{
-          display:none!important;
-        }
-        #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
-          order:1!important;display:inline-flex!important;flex:0 0 auto!important;
-          min-height:36px!important;height:36px!important;margin:0 0 0 auto!important;
-          padding:6px 12px!important;white-space:nowrap!important;
-          visibility:visible!important;opacity:1!important;transform:none!important;
-        }
-        /* No mobile, mantém a logo à esquerda e Sair à direita, sem inversão de ordem. */
+        /* Mobile: identidade em uma segunda linha estável; ações sempre à direita. */
         @media(max-width:767px){
-          #appShell>header.cpam-main-header.cpam-header-compact .header-inner{
-            flex-direction:row!important;flex-wrap:nowrap!important;
-            justify-content:space-between!important;padding:4px 10px!important;gap:8px!important;
+          #appShell>header.cpam-main-header .header-inner{
+            flex-wrap:wrap!important;gap:6px 8px!important;
+            padding:7px 10px!important;min-height:0!important;
           }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-brand-group{
-            order:0!important;flex:0 1 auto!important;width:auto!important;
-            margin:0 auto 0 0!important;justify-content:flex-start!important;
+          #appShell>header.cpam-main-header .header-brand-group{
+            order:0!important;flex:1 1 auto!important;width:auto!important;
+            min-width:0!important;gap:7px!important;margin:0 auto 0 0!important;
           }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button{
-            order:0!important;min-width:42px!important;width:auto!important;
-            height:38px!important;min-height:38px!important;margin:0!important;
+          #appShell>header.cpam-main-header .header-logo-button{
+            height:38px!important;min-height:38px!important;min-width:38px!important;
+            gap:6px!important;padding:1px!important;
           }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-logo-button img{
-            height:34px!important;max-width:140px!important;
+          #appShell>header.cpam-main-header .header-menu-icon{font-size:17px!important}
+          #appShell>header.cpam-main-header .header-logo-button img{
+            height:35px!important;max-width:105px!important;
           }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-actions{
+          #appShell>header.cpam-main-header .header-system-title{max-width:140px!important}
+          #appShell>header.cpam-main-header .header-system-title h1{font-size:13px!important}
+          #appShell>header.cpam-main-header .header-system-title p{
+            font-size:9px!important;white-space:normal!important;
+          }
+          #appShell>header.cpam-main-header .header-actions{
+            display:contents!important;
+          }
+          #appShell>header.cpam-main-header .header-action-buttons{
             order:1!important;display:flex!important;flex:0 0 auto!important;
-            width:auto!important;margin:0 0 0 auto!important;justify-content:flex-end!important;
+            margin:0 0 0 auto!important;gap:5px!important;
           }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-action-buttons{
-            order:0!important;display:flex!important;flex:0 0 auto!important;
-            margin:0 0 0 auto!important;justify-content:flex-end!important;
+          #appShell>header.cpam-main-header .header-users-button,
+          #appShell>header.cpam-main-header .header-logout-button{
+            min-height:35px!important;height:35px!important;padding:6px 8px!important;
+            font-size:10px!important;
           }
-          #appShell>header.cpam-main-header.cpam-header-compact .header-logout-button{
-            order:1!important;min-height:36px!important;height:36px!important;
-            margin-left:auto!important;padding:6px 10px!important;
+          #appShell>header.cpam-main-header .header-user-group{
+            order:2!important;display:flex!important;flex:1 0 100%!important;
+            width:100%!important;max-width:none!important;min-width:0!important;
+            margin:0!important;padding:5px 8px!important;gap:8px!important;
           }
+          #appShell>header.cpam-main-header .header-avatar{
+            width:30px!important;height:30px!important;flex-basis:30px!important;
+          }
+          #appShell>header.cpam-main-header .header-profile-name{font-size:11px!important}
+          #appShell>header.cpam-main-header .header-profile-role,
+          #appShell>header.cpam-main-header .header-profile-email{font-size:9px!important}
         }
-        /* O header sticky permanece no fluxo; o conteúdo conserva respiro abaixo dele. */
-        #appShell main.min-w-0.flex-1{
-          padding-top:clamp(1.25rem,3vh,2rem)!important;
-          scroll-margin-top:1rem!important;
-        }
-        /* Preserva o card branco e oculta somente a linha interna duplicada já acordada. */
+        /* Restaura o fundo branco original do card do registro, sem alterar seu conteúdo. */
         #secCadastroCirurgia>div.w-full.rounded-2xl.border.bg-white{
           display:block!important;visibility:visible!important;opacity:1!important;
+          background:#fff!important;background-color:#fff!important;
+          border-color:#e2e8f0!important;box-shadow:0 1px 2px rgba(15,23,42,.08)!important;
+        }
+        #secCadastroCirurgia>div.w-full.rounded-2xl.border.bg-white>form{
+          background:#fff!important;
+        }
+        /* Mantém oculta somente a linha de identificação repetida no cabeçalho interno. */
+        #secCadastroCirurgia .cpam-patient-identity{display:none!important}
+        #appShell main.min-w-0.flex-1{
+          padding-top:clamp(1rem,2vh,1.5rem)!important;scroll-margin-top:1rem!important;
         }
 
     </style>
@@ -1077,7 +1038,7 @@
         <div class="header-inner w-full px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
             <div class="header-brand-group flex items-center gap-3">
                 <button type="button" class="header-logo-button" onclick="alternarSidebarPeloLogo()" title="Abrir Barra Lateral" aria-label="Abrir Barra Lateral">
-                    <img src="./logo-cpam.png" alt="Logo CPAM" title="Abrir Barra Lateral">
+                    <i class="fa-solid fa-bars header-menu-icon" aria-hidden="true"></i><img src="./logo-cpam.png" alt="Logo CPAM" title="Abrir Barra Lateral">
                 </button>
                 <div class="header-system-title">
                     <h1 class="text-lg font-bold tracking-tight leading-none">Bloco Cirúrgico</h1>
@@ -2798,34 +2759,7 @@
 
     <script>
       /* Expande o cabeçalho no topo e o compacta após iniciar a rolagem. */
-      (function(){
-        const header = document.querySelector('#appShell>header.cpam-main-header');
-        if(!header) return;
-        let compact = false;
-        let scheduled = false;
-        const updateHeader = function(){
-          const y = Math.max(
-            window.scrollY || 0,
-            document.documentElement ? document.documentElement.scrollTop : 0,
-            document.body ? document.body.scrollTop : 0
-          );
-          const next = y > 70;
-          if(next !== compact){
-            compact = next;
-            header.classList.toggle('cpam-header-compact', compact);
-            header.setAttribute('data-header-state', compact ? 'compacto' : 'expandido');
-          }
-          scheduled = false;
-        };
-        const onScroll = function(){
-          if(scheduled) return;
-          scheduled = true;
-          window.requestAnimationFrame(updateHeader);
-        };
-        window.addEventListener('scroll', onScroll, {passive:true});
-        document.addEventListener('scroll', onScroll, {passive:true,capture:true});
-        updateHeader();
-      })();
+  
     </script>
 
 </body>
