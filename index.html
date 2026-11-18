@@ -1486,6 +1486,58 @@
 
 
     
+
+        /* Correção de topo: a aplicação e a barra institucional começam junto ao topo da janela. */
+        html, body{
+          margin:0!important;padding:0!important;
+        }
+        body{min-height:100vh!important}
+        #appShell{margin-top:0!important;padding-top:0!important}
+        #appShell>header.cpam-main-header{
+          top:0!important;margin-top:0!important;padding-top:0!important;
+        }
+
+        /* Identificação do paciente integrada à própria faixa verde. */
+        #secCadastroPaciente .cpam-compact-page-header,
+        #secCadastroCirurgia .cpam-compact-page-header{
+          top:86px!important;min-height:66px!important;height:auto!important;
+          flex-wrap:nowrap!important;gap:12px!important;
+          border-radius:0!important;box-shadow:none!important;
+          padding:8px 16px!important;
+        }
+        #secCadastroPaciente .cpam-patient-summary-card,
+        #secCadastroCirurgia .cpam-patient-summary-card{
+          flex:0 1 auto!important;width:auto!important;max-width:min(58%,720px)!important;
+          margin:0 0 0 auto!important;padding:7px 12px!important;
+          gap:6px 18px!important;border:1px solid rgba(255,255,255,.7)!important;
+          border-radius:9px!important;background:#fff!important;
+          box-shadow:0 1px 3px rgba(0,0,0,.12)!important;
+        }
+        #secCadastroPaciente .cpam-patient-summary-card>div,
+        #secCadastroCirurgia .cpam-patient-summary-card>div{min-width:0!important}
+        #secCadastroPaciente .cpam-patient-summary-card span,
+        #secCadastroCirurgia .cpam-patient-summary-card span{font-size:8px!important}
+        #secCadastroPaciente .cpam-patient-summary-card .cpam-patient-name,
+        #secCadastroCirurgia .cpam-patient-summary-card .cpam-patient-name{
+          font-size:12px!important;line-height:1.2!important
+        }
+        #secCadastroPaciente .cpam-patient-summary-card .cpam-patient-record,
+        #secCadastroCirurgia .cpam-patient-summary-card .cpam-patient-record{font-size:12px!important}
+        @media(max-width:767px){
+          #secCadastroPaciente .cpam-compact-page-header,
+          #secCadastroCirurgia .cpam-compact-page-header{
+            top:108px!important;min-height:0!important;flex-wrap:wrap!important;
+            gap:7px 10px!important;padding:7px 10px!important;
+          }
+          #secCadastroPaciente .cpam-page-heading,
+          #secCadastroCirurgia .cpam-page-heading{flex:1 1 calc(100% - 100px)!important}
+          #secCadastroPaciente .cpam-patient-summary-card,
+          #secCadastroCirurgia .cpam-patient-summary-card{
+            flex:1 1 100%!important;width:100%!important;max-width:100%!important;
+            margin:2px 0 0!important;padding:7px 9px!important;gap:6px 14px!important;
+          }
+        }
+
         /* Cabeçalho compacto compartilhado: cadastro/edição de paciente e registro/edição de cirurgia. */
         #secCadastroPaciente .cpam-compact-page-header,
         #secCadastroCirurgia .cpam-compact-page-header{
@@ -1961,8 +2013,7 @@
             <h2 id="tituloModalPaciente">Edição</h2>
             <p id="subtituloModalPaciente">Cadastro de paciente</p>
           </div>
-        </div>
-        <div id="pacienteCabecalhoIdentificacao" class="cpam-patient-summary-card">
+          <div id="pacienteCabecalhoIdentificacao" class="cpam-patient-summary-card">
           <div class="cpam-patient-summary-name">
             <span>Nome do paciente</span>
             <strong id="pacienteCabecalhoNome" class="cpam-patient-name">-</strong>
@@ -1970,6 +2021,7 @@
           <div class="cpam-patient-summary-record">
             <span>Prontuário Bloco</span>
             <strong id="pacienteCabecalhoCodigo" class="cpam-patient-record">-</strong>
+          </div>
           </div>
         </div>
         <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" class="p-4 sm:p-7">
@@ -2122,8 +2174,7 @@
             <h1 id="tituloModalCirurgia">Registro de Cirurgia</h1>
             <p id="subtituloModalCirurgia">Registro de procedimento realizado</p>
           </div>
-        </div>
-        <div id="cirPacienteCabecalhoIdentificacao" class="cpam-patient-summary-card">
+          <div id="cirPacienteCabecalhoIdentificacao" class="cpam-patient-summary-card">
           <div class="cpam-patient-summary-name">
             <span>Nome do paciente</span>
             <strong id="cirPacienteNomeSticky" class="cpam-patient-name">-</strong>
@@ -2131,6 +2182,7 @@
           <div class="cpam-patient-summary-record">
             <span>Prontuário Bloco</span>
             <strong id="cirPacienteCodigoSticky" class="cpam-patient-record">-</strong>
+          </div>
           </div>
         </div>
         <form id="formModalCirurgia" onsubmit="salvarCirurgiaModal(event)" class="space-y-6 p-4 sm:p-7">
