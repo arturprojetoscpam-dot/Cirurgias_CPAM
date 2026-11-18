@@ -53,7 +53,7 @@ const now = () => Number(process.hrtime.bigint()) / 1e9;
 const seconds = start => Number((now() - start).toFixed(2));
 
 // Sessão experimental única, mantida somente na memória deste processo.
-const timed = { browser: null, context: null, pages: [], usuario: null, senha: null, ready: false, busy: false, sessionToken: null };
+const timed = { browser: null, context: null, pages: [], usuario: null, senha: null, ready: false, busy: false, sessionToken: null, httpSessionCookie: '', sessionMode: 'none', lastActivityAt: 0 };
 
 function requireSessionToken(req, res, next) {
   const supplied = req.get('X-CPAM-Session');
@@ -97,6 +97,9 @@ async function ensureBrowser() {
 }
 async function doLogin() {
   if (!timed.usuario || !timed.senha) throw new Error('Sessão sem credenciais em memória. Inicie a sessão novamente.');
+  timed.httpSessionCookie = '';
+  timed.sessionMode = 'browser';
+  timed.lastActivityAt = Date.now();
   await ensureBrowser();
   let page = timed.pages.find(p => !p.isClosed());
   if (!page) { page = await timed.context.newPage(); timed.pages.push(page); }
@@ -143,6 +146,15 @@ async function doLogin() {
   throw new Error('O TIMED não confirmou o login em até 8 segundos. Confira as credenciais e a disponibilidade do sistema.');
 }
 async function ensurePanel() {
+  const sessionIdle = timed.lastActivityAt && Date.now() - timed.lastActivityAt > 15 * 60 * 1000;
+  if (timed.sessionMode === 'direct_http' && timed.httpSessionCookie) {
+    if (sessionIdle) return await doHttpLogin();
+    return 'sessao_http_reutilizada';
+  }
+  if (timed.sessionMode === 'browser' && sessionIdle) {
+    await doLogin();
+    return 'login_refeito_por_inatividade';
+  }
   await ensureBrowser();
   if (await visibleLogin()) {
     timed.ready = false;
@@ -317,6 +329,225 @@ async function goHome() {
   await findVisible(MENU_SELECTORS, 30000);
   timed.ready = true;
 }
+
+const VITAI_BASE_URL = new URL(TIMED_LOGIN).origin;
+const VITAI_USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+
+function vitaiSetCookies(headers) {
+  if (typeof headers.getSetCookie === 'function') return headers.getSetCookie();
+  const combined = headers.get('set-cookie') || '';
+  return combined ? combined.split(/,(?=\s*[^;,=\s]+=)/g) : [];
+}
+function mergeVitaiCookies(...groups) {
+  const cookies = new Map();
+  for (const item of groups.flat()) {
+    const first = String(item || '').split(';')[0];
+    const index = first.indexOf('=');
+    if (index <= 0) continue;
+    const name = first.slice(0, index).trim();
+    const value = first.slice(index + 1).trim();
+    if (name && value) cookies.set(name, value);
+  }
+  return Array.from(cookies, ([name, value]) => name + '=' + value).join('; ');
+}
+async function vitaiHttpFetch(url, options = {}) {
+  return fetch(url, { ...options, signal: AbortSignal.timeout(15000), cache: 'no-store' });
+}
+async function doHttpLogin() {
+  if (!timed.usuario || !timed.senha) throw new Error('Sessão sem credenciais em memória. Inicie a sessão novamente.');
+  const headersBase = { 'User-Agent': VITAI_USER_AGENT };
+  const warmUp = await vitaiHttpFetch(TIMED_LOGIN, { method: 'GET', headers: headersBase });
+  const initialCookies = vitaiSetCookies(warmUp.headers);
+  const params = new URLSearchParams();
+  params.append('perform', 'login');
+  params.append('controle', '1');
+  params.append('login', timed.usuario.trim().toLowerCase());
+  params.append('senha', timed.senha);
+  const loginResponse = await vitaiHttpFetch(TIMED_LOGIN, {
+    method: 'POST',
+    redirect: 'manual',
+    headers: {
+      ...headersBase,
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Accept': 'application/json, text/javascript, */*; q=0.01',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Origin': VITAI_BASE_URL,
+      'Referer': TIMED_LOGIN,
+      'Cookie': mergeVitaiCookies(initialCookies)
+    },
+    body: params
+  });
+  const responseText = await loginResponse.text();
+  let loginData = {};
+  try { loginData = JSON.parse(responseText); } catch (_) {}
+  if (!loginResponse.ok || loginData.status !== 'ok') {
+    throw new Error(typeof loginData.mensagem === 'string' ? loginData.mensagem : 'O VITAI não confirmou a autenticação direta.');
+  }
+  const cookie = mergeVitaiCookies(initialCookies, vitaiSetCookies(loginResponse.headers));
+  if (!cookie) throw new Error('O VITAI autenticou, mas não retornou os cookies necessários para manter a sessão.');
+  timed.httpSessionCookie = cookie;
+  timed.sessionMode = 'direct_http';
+  timed.lastActivityAt = Date.now();
+  timed.ready = true;
+  return 'direct_http';
+}
+function decodeVitaiResponse(buffer) {
+  try { return new TextDecoder('utf-8', { fatal: true }).decode(buffer); }
+  catch (_) { return new TextDecoder('iso-8859-1').decode(buffer); }
+}
+function vitaiPickString(data, preferredKeys, fallbackPattern) {
+  const normalize = value => {
+    if (value === null || value === undefined || typeof value === 'boolean') return '';
+    const valueText = String(value).trim();
+    if (!valueText || /^(null|undefined|false|true|nan)$/i.test(valueText)) return '';
+    return valueText;
+  };
+  for (const key of preferredKeys) {
+    const value = normalize(data && data[key]);
+    if (value) return value;
+  }
+  if (!fallbackPattern) return '';
+  const queue = [data];
+  const visited = new Set();
+  while (queue.length) {
+    const current = queue.shift();
+    if (!current || typeof current !== 'object' || visited.has(current)) continue;
+    visited.add(current);
+    for (const [key, raw] of Object.entries(current)) {
+      if (fallbackPattern.test(key)) {
+        const value = normalize(raw);
+        if (value) return value;
+      }
+      if (raw && typeof raw === 'object') queue.push(raw);
+    }
+  }
+  return '';
+}
+function vitaiCpfFromText(text) {
+  const match = String(text || '').match(/CPF[^0-9]{0,40}(\d{3}\.?\d{3}\.?\d{3}-?\d{2})|numeroCPF[^0-9]{0,40}(\d{11})/i);
+  return match ? String(match[1] || match[2]).replace(/\D/g, '') : '';
+}
+function vitaiBrDateToIso(value) {
+  const match = String(value || '').match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  return match ? match[3] + '-' + match[2] + '-' + match[1] : '';
+}
+async function runDirectBeSearch(be) {
+  if (!/^\d{1,12}$/.test(String(be))) throw Object.assign(new Error('Número de BE inválido.'), { notFound: true });
+  if (!timed.httpSessionCookie) throw new Error('A sessão HTTP do VITAI não está disponível.');
+  const started = now();
+  const searchParams = new URLSearchParams();
+  searchParams.append('perform', 'pesquisar');
+  searchParams.append('numeroBE', String(be));
+  const boletimParams = new URLSearchParams();
+  boletimParams.append('perform', 'pesquisar');
+  boletimParams.append('pesquisa', String(be));
+  boletimParams.append('dataNascimento', 'undefined');
+  boletimParams.append('comAlta', 'N');
+  boletimParams.append('interno', 'S');
+  boletimParams.append('controle', '26');
+  const evolucaoParams = new URLSearchParams();
+  evolucaoParams.append('perform', 'pesquisar');
+  evolucaoParams.append('controle', '5');
+  evolucaoParams.append('boletimEmergenciaId', String(be));
+  evolucaoParams.append('itensPrescritosAguardandoLiberacao', 'false');
+  const commonHeaders = {
+    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+    'Cookie': timed.httpSessionCookie,
+    'User-Agent': VITAI_USER_AGENT,
+    'Origin': VITAI_BASE_URL,
+    'X-Requested-With': 'XMLHttpRequest'
+  };
+  const [searchResponse, boletimResponse, evolucaoResponse] = await Promise.all([
+    vitaiHttpFetch(VITAI_BASE_URL + '/vitai/pages/paciente.do', {
+      method: 'POST',
+      headers: {
+        ...commonHeaders,
+        'Accept': 'application/json, text/javascript, */*; q=0.01',
+        'Referer': VITAI_BASE_URL + '/vitai/pages/prescricao.do?action=5&modulo=S'
+      },
+      body: searchParams
+    }),
+    vitaiHttpFetch(VITAI_BASE_URL + '/vitai/pages/boletimEmergencia.do', {
+      method: 'POST',
+      headers: { ...commonHeaders, 'Accept': '*/*', 'Referer': VITAI_BASE_URL + '/vitai/pages/evolucaoPacienteInterno.do' },
+      body: boletimParams
+    }).catch(() => null),
+    vitaiHttpFetch(VITAI_BASE_URL + '/vitai/pages/evolucaoPacienteInterno.do', {
+      method: 'POST',
+      headers: { ...commonHeaders, 'Accept': 'text/html, */*; q=0.01', 'Referer': VITAI_BASE_URL + '/vitai/pages/evolucaoPacienteInterno.do' },
+      body: evolucaoParams
+    }).catch(() => null)
+  ]);
+  const rotatedCookie = mergeVitaiCookies(
+    timed.httpSessionCookie,
+    vitaiSetCookies(searchResponse.headers),
+    vitaiSetCookies(boletimResponse ? boletimResponse.headers : new Headers()),
+    vitaiSetCookies(evolucaoResponse ? evolucaoResponse.headers : new Headers())
+  );
+  if (rotatedCookie) timed.httpSessionCookie = rotatedCookie;
+  const etapas = { consultaParalela: seconds(started) };
+  const mapStarted = now();
+  const responseText = decodeVitaiResponse(Buffer.from(await searchResponse.arrayBuffer()));
+  if (/login\.do|sess[aã]o.{0,40}(expir|inv[aá]lid)|autentica[cç][aã]o.{0,30}(expir|necess[aá]ria)/i.test(responseText) || searchResponse.status === 401 || searchResponse.status === 403) {
+    throw Object.assign(new Error('Sessão VITAI expirada durante a consulta.'), { expired: true });
+  }
+  if (!searchResponse.ok) throw new Error('A pesquisa direta do VITAI respondeu com status ' + searchResponse.status + '.');
+  let record;
+  try { record = JSON.parse(responseText); }
+  catch (_) { throw new Error('A resposta direta do VITAI não veio em JSON. Será necessário usar a consulta pelo navegador.'); }
+  if (!record || typeof record !== 'object' || Array.isArray(record)) {
+    throw new Error('O VITAI retornou um formato de paciente inesperado.');
+  }
+  let boletimHtml = '';
+  if (boletimResponse && boletimResponse.ok) boletimHtml = new TextDecoder('iso-8859-1').decode(await boletimResponse.arrayBuffer()).slice(0, 300000);
+  let evolucaoHtml = '';
+  if (evolucaoResponse && evolucaoResponse.ok) evolucaoHtml = new TextDecoder('iso-8859-1').decode(await evolucaoResponse.arrayBuffer()).slice(0, 300000);
+  const nome = vitaiPickString(record, ['nome'], /^(nome|nomePaciente)$/i);
+  const numeroBE = vitaiPickString(record, ['numeroBE', 'be'], /numeroBE/i);
+  if (!nome) {
+    throw Object.assign(new Error('BE não encontrada no VITAI. Verifique o número informado.'), { notFound: true });
+  }
+  if (numeroBE && numeroBE.replace(/\D/g, '') !== String(be).replace(/\D/g, '')) {
+    throw new Error('O VITAI retornou um cadastro com BE diferente da solicitada. Será usada a consulta pelo navegador.');
+  }
+  const cpf = vitaiPickString(record, ['numeroCPF', 'numeroCpf', 'CPF', 'cpf'], /cpf/i) || vitaiCpfFromText(responseText) || vitaiCpfFromText(boletimHtml);
+  const phones = [
+    { tipo: 'Celular', ddd: vitaiPickString(record, ['dddMovel']), numero: vitaiPickString(record, ['numeroMovel', 'celular']) },
+    { tipo: 'Fixo', ddd: vitaiPickString(record, ['dddFixo']), numero: vitaiPickString(record, ['numeroFixo']) },
+    { tipo: 'Extra 1', ddd: vitaiPickString(record, ['dddExtraUm']), numero: vitaiPickString(record, ['numeroExtraUm']) },
+    { tipo: 'Extra 2', ddd: vitaiPickString(record, ['dddExtraDois']), numero: vitaiPickString(record, ['numeroExtraDois']) }
+  ].filter(item => item.numero).slice(0, 2).map(item => ({ ...item, completo: Boolean(item.ddd) }));
+  const endereco = {
+    cep: vitaiPickString(record, ['cep']),
+    municipio: vitaiPickString(record, ['municipioNome', 'municipio']),
+    municipioId: vitaiPickString(record, ['municipioId']),
+    tipoLogradouro: vitaiPickString(record, ['tipoLogradouroNome', 'tipoLogradouro']),
+    logradouro: vitaiPickString(record, ['logradouroNome', 'logradouro']),
+    logradouroId: vitaiPickString(record, ['logradouroId']),
+    numero: vitaiPickString(record, ['numeroLogradouro', 'numero']),
+    complemento: vitaiPickString(record, ['complementoNome', 'complemento']),
+    bairro: vitaiPickString(record, ['bairroNome', 'bairro'])
+  };
+  const paciente = {
+    nome,
+    sexo: vitaiPickString(record, ['sexo']),
+    prontuarioTimed: vitaiPickString(record, ['numeroProntuario', 'prontuario', 'numeroPront'], /pront/i),
+    nascimento: vitaiPickString(record, ['dataNascimento', 'nascimento']),
+    racaCor: vitaiPickString(record, ['racaCorNome', 'racaCor']),
+    cpf,
+    cns: vitaiPickString(record, ['numeroCns', 'numeroCNS', 'CNS', 'cns'], /cns/i),
+    mae: vitaiPickString(record, ['maeNome', 'nomeMae'], /maeNome|nomeMae/i),
+    endereco,
+    telefones: phones
+  };
+  const admissao = vitaiPickString(record, ['dataInternacao', 'dataInternação', 'dataEntrada'], /interna[cç][aã]o/i) ||
+    boletimHtml.match(/INTERNA[CÇ][AÃ]O\s*:?\s*(?:<[^>]*>\s*)*(\d{2}\/\d{2}\/\d{4})/i)?.[1] || '';
+  paciente.admissaoDate = vitaiBrDateToIso(admissao);
+  paciente.leito = evolucaoHtml.match(/Leito\s*:\s*(?:<[^>]*>\s*)*[^<]*?-\s*(?:<[^>]*>\s*)*([A-Za-z]{0,2}\d{1,4}[A-Za-z]?)\b/i)?.[1]?.toUpperCase() || '';
+  etapas.mapeamentoDados = seconds(mapStarted);
+  return { quantidadeResultados: 1, paciente, etapas };
+}
+
 async function runSearch(be) {
   const etapas = {};
   let etapa = now();
@@ -386,11 +617,19 @@ app.post('/api/sessao/iniciar', async (req, res) => {
   timed.busy = true;
   const start = now();
   try {
+    await closeSession();
     timed.usuario = usuario; timed.senha = senha; timed.ready = false;
     timed.sessionToken = crypto.randomBytes(32).toString('hex');
-    await ensureBrowser();
-    await doLogin();
-    res.json({ sucesso: true, token: timed.sessionToken, tempoLogin: seconds(start), mensagem: 'TIMED autenticado e pronto para receber consultas.' });
+    let modo = 'direct_http';
+    try {
+      await doHttpLogin();
+    } catch (httpError) {
+      // Compatibilidade: se o endpoint de login direto mudar, mantém o acesso atual via Playwright.
+      modo = 'playwright_fallback';
+      await ensureBrowser();
+      await doLogin();
+    }
+    res.json({ sucesso: true, token: timed.sessionToken, tempoLogin: seconds(start), modo, mensagem: 'TIMED autenticado e pronto para receber consultas.' });
   } catch (e) {
     await closeSession();
     res.status(500).json({ erro: e.message || 'Falha ao iniciar sessão.', tempoLogin: seconds(start) });
@@ -410,17 +649,55 @@ app.post('/api/consultar', requireSessionToken, async (req, res) => {
     tempos.verificacaoSessao = seconds(t);
     t = now();
     let result;
-    try { result = await runSearch(be); }
-    catch (err) {
-      if (!err.expired) throw err;
-      t = now(); await doLogin(); tempos.reloginRecuperacao = seconds(t);
-      t = now(); result = await runSearch(be); tempos.pesquisaExtracao = seconds(t);
-      loginStatus = 'login_refeito_durante_consulta';
+    if (timed.sessionMode === 'direct_http' && timed.httpSessionCookie) {
+      try {
+        result = await runDirectBeSearch(be);
+      } catch (err) {
+        if (err.notFound) throw err;
+        if (err.expired) {
+          try {
+            t = now();
+            await doHttpLogin();
+            tempos.reloginRecuperacao = seconds(t);
+            t = now();
+            result = await runDirectBeSearch(be);
+            loginStatus = 'sessao_http_renovada';
+          } catch (renewError) {
+            if (renewError.notFound) throw renewError;
+            // Se a renovação direta falhar, tenta recuperar pela sessão do navegador.
+            t = now();
+            await doLogin();
+            tempos.fallbackPlaywright = seconds(t);
+            t = now();
+            result = await runSearch(be);
+            loginStatus = 'fallback_playwright';
+          }
+        } else {
+          // Se a resposta direta for incompatível, tenta o fluxo já validado pelo navegador.
+          t = now();
+          await doLogin();
+          tempos.fallbackPlaywright = seconds(t);
+          t = now();
+          result = await runSearch(be);
+          loginStatus = 'fallback_playwright';
+        }
+      }
+    } else {
+      try { result = await runSearch(be); }
+      catch (err) {
+        if (!err.expired) throw err;
+        t = now(); await doLogin(); tempos.reloginRecuperacao = seconds(t);
+        t = now(); result = await runSearch(be); tempos.pesquisaExtracao = seconds(t);
+        loginStatus = 'login_refeito_durante_consulta';
+      }
     }
     if (tempos.pesquisaExtracao === undefined) tempos.pesquisaExtracao = seconds(t);
     tempos.etapas = result.etapas;
-    t = now(); await goHome(); tempos.retornoTelaInicial = seconds(t);
+    if (timed.sessionMode === 'browser') {
+      t = now(); await goHome(); tempos.retornoTelaInicial = seconds(t);
+    }
     tempos.totalConsulta = seconds(total);
+    timed.lastActivityAt = Date.now();
     return res.json({ sucesso: true, be, quantidadeResultados: result.quantidadeResultados, sessao: loginStatus, prontoParaProximaConsulta: true, tempos, paciente: result.paciente });
   } catch (err) {
     tempos.totalConsulta = seconds(total);
@@ -434,7 +711,7 @@ app.post('/api/consultar', requireSessionToken, async (req, res) => {
 async function closeSession() {
   if (timed.browser) await timed.browser.close().catch(() => {});
   timed.browser = null; timed.context = null; timed.pages = [];
-  timed.usuario = null; timed.senha = null; timed.ready = false; timed.sessionToken = null;
+  timed.usuario = null; timed.senha = null; timed.ready = false; timed.sessionToken = null; timed.httpSessionCookie = ''; timed.sessionMode = 'none'; timed.lastActivityAt = 0;
 }
 app.post('/api/sessao/encerrar', requireSessionToken, async (_req, res) => {
   if (timed.busy) return res.status(409).json({ erro: 'Aguarde a operação atual terminar.' });
