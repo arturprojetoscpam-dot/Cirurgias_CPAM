@@ -655,12 +655,23 @@ app.post('/api/consultar', requireSessionToken, async (req, res) => {
       } catch (err) {
         if (err.notFound) throw err;
         if (err.expired) {
-          t = now();
-          await doHttpLogin();
-          tempos.reloginRecuperacao = seconds(t);
-          t = now();
-          result = await runDirectBeSearch(be);
-          loginStatus = 'sessao_http_renovada';
+          try {
+            t = now();
+            await doHttpLogin();
+            tempos.reloginRecuperacao = seconds(t);
+            t = now();
+            result = await runDirectBeSearch(be);
+            loginStatus = 'sessao_http_renovada';
+          } catch (renewError) {
+            if (renewError.notFound) throw renewError;
+            // Se a renovação direta falhar, tenta recuperar pela sessão do navegador.
+            t = now();
+            await doLogin();
+            tempos.fallbackPlaywright = seconds(t);
+            t = now();
+            result = await runSearch(be);
+            loginStatus = 'fallback_playwright';
+          }
         } else {
           // Se a resposta direta for incompatível, tenta o fluxo já validado pelo navegador.
           t = now();
