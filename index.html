@@ -2269,6 +2269,9 @@
                 event.preventDefault();
                 return;
             }
+            /* Bloqueia o comportamento padrão do Enter em qualquer campo, inclusive
+               checkbox/radio, para impedir submissão implícita do formulário. */
+            event.preventDefault();
             const escopo=alvo.closest('form')||alvo.closest('[role="dialog"]')||
                 alvo.closest('section')||alvo.closest('#appShell')||document;
             const seletor='input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex]:not([tabindex="-1"])';
@@ -2282,7 +2285,6 @@
             });
             const indice=campos.indexOf(alvo);
             if(indice<0)return;
-            event.preventDefault();
             const proximo=campos[indice+1];
             if(proximo){proximo.focus({preventScroll:false});}
             /* No último campo, mantém o foco: não avança para Salvar/Excluir. */
