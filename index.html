@@ -1530,7 +1530,8 @@
                     document.getElementById('tituloModalPaciente').textContent=data.nome_paciente||'Paciente';document.getElementById('subtituloModalPaciente').textContent='Prontuário interno nº '+formatarCodigoPaciente(data.codigo_paciente)+' · Edição';await carregarHistoricoPacienteModal(data.id);
                 }catch(error){exibirToast('Não foi possível carregar o paciente: '+error.message,'erro');return;}
             }else{pacienteHistoricoAtual=null;document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';document.getElementById('subtituloModalPaciente').textContent='Informe os dados do paciente · Prontuário interno gerado automaticamente ao salvar';await carregarHistoricoPacienteModal(null);}
-            document.getElementById('paciente_nome').focus();window.scrollTo({top:0,behavior:'auto'});
+            if(id){document.getElementById('paciente_nome').focus();window.scrollTo({top:0,behavior:'auto'});}
+            else{const campoBe=document.getElementById('timedPacienteBe');if(campoBe){campoBe.focus({preventScroll:true});campoBe.scrollIntoView({behavior:'smooth',block:'center',inline:'nearest'});}}
         }
         function fecharModalPaciente(limparRota=true){
             document.getElementById('secCadastroPaciente').classList.add('hidden');
