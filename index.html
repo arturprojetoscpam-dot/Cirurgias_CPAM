@@ -1196,6 +1196,85 @@
           #authScreen .login-mobile-institution span{font-size:10px!important}
         }
 
+    
+        /* Cabeçalhos fixos das páginas: respiro sob a barra institucional e título sempre visível. */
+        #appShell>header.cpam-main-header{
+          top:8px!important;
+          margin-top:8px!important;
+          border-radius:14px!important;
+        }
+        #secCadastroPaciente .cpam-sticky-context,
+        #secCadastroCirurgia .cpam-sticky-context{
+          position:sticky!important;
+          position:-webkit-sticky!important;
+          top:86px!important;
+          z-index:40!important;
+          display:flex!important;
+          align-items:flex-start!important;
+          justify-content:space-between!important;
+          flex-wrap:wrap!important;
+          gap:12px!important;
+          width:100%!important;
+          min-height:max-content!important;
+          height:auto!important;
+          overflow:visible!important;
+          background:#fff!important;
+          padding-top:16px!important;
+          padding-bottom:16px!important;
+          box-shadow:0 4px 12px rgba(23,59,42,.08)!important;
+        }
+        #secCadastroPaciente .cpam-sticky-context>div,
+        #secCadastroCirurgia .cpam-sticky-context>div{
+          flex:1 1 240px!important;
+          min-width:0!important;
+          overflow:visible!important;
+        }
+        #secCadastroPaciente #tituloModalPaciente,
+        #secCadastroCirurgia #tituloModalCirurgia{
+          display:block!important;
+          max-width:100%!important;
+          white-space:normal!important;
+          overflow:visible!important;
+          text-overflow:clip!important;
+          overflow-wrap:anywhere!important;
+          height:auto!important;
+          max-height:none!important;
+          line-height:1.25!important;
+        }
+        #secCadastroPaciente #subtituloModalPaciente,
+        #secCadastroCirurgia #subtituloModalCirurgia{
+          display:block!important;
+          white-space:normal!important;
+          overflow:visible!important;
+          line-height:1.35!important;
+        }
+        #secCadastroPaciente .cpam-sticky-context>button,
+        #secCadastroCirurgia .cpam-sticky-context>button{
+          flex:0 0 auto!important;
+          margin-top:2px!important;
+        }
+        @media(max-width:767px){
+          #appShell>header.cpam-main-header{
+            top:6px!important;
+            margin-top:6px!important;
+          }
+          #secCadastroPaciente .cpam-sticky-context,
+          #secCadastroCirurgia .cpam-sticky-context{
+            top:126px!important;
+            gap:9px!important;
+            padding:13px 14px!important;
+          }
+          #secCadastroPaciente .cpam-sticky-context>div,
+          #secCadastroCirurgia .cpam-sticky-context>div{
+            flex-basis:100%!important;
+          }
+          #secCadastroPaciente .cpam-sticky-context>button,
+          #secCadastroCirurgia .cpam-sticky-context>button{
+            min-height:40px!important;
+          }
+        }
+        /* Fim do ajuste exclusivo dos cabeçalhos fixos. */
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
