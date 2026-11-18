@@ -478,10 +478,17 @@ async function runDirectBeSearch(be) {
       body: evolucaoParams
     }).catch(() => null)
   ]);
+  const rotatedCookie = mergeVitaiCookies(
+    timed.httpSessionCookie,
+    vitaiSetCookies(searchResponse.headers),
+    vitaiSetCookies(boletimResponse ? boletimResponse.headers : new Headers()),
+    vitaiSetCookies(evolucaoResponse ? evolucaoResponse.headers : new Headers())
+  );
+  if (rotatedCookie) timed.httpSessionCookie = rotatedCookie;
   const etapas = { consultaParalela: seconds(started) };
   const mapStarted = now();
   const responseText = decodeVitaiResponse(Buffer.from(await searchResponse.arrayBuffer()));
-  if (/login\.do/i.test(responseText) || searchResponse.status === 401 || searchResponse.status === 403) {
+  if (/login\.do|sess[aã]o.{0,40}(expir|inv[aá]lid)|autentica[cç][aã]o.{0,30}(expir|necess[aá]ria)/i.test(responseText) || searchResponse.status === 401 || searchResponse.status === 403) {
     throw Object.assign(new Error('Sessão VITAI expirada durante a consulta.'), { expired: true });
   }
   if (!searchResponse.ok) throw new Error('A pesquisa direta do VITAI respondeu com status ' + searchResponse.status + '.');
