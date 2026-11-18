@@ -53,7 +53,7 @@ const now = () => Number(process.hrtime.bigint()) / 1e9;
 const seconds = start => Number((now() - start).toFixed(2));
 
 // Sessão experimental única, mantida somente na memória deste processo.
-const timed = { browser: null, context: null, pages: [], usuario: null, senha: null, ready: false, busy: false, sessionToken: null, httpSessionCookie: '', sessionMode: 'none' };
+const timed = { browser: null, context: null, pages: [], usuario: null, senha: null, ready: false, busy: false, sessionToken: null, httpSessionCookie: '', sessionMode: 'none', lastActivityAt: 0 };
 
 function requireSessionToken(req, res, next) {
   const supplied = req.get('X-CPAM-Session');
@@ -99,6 +99,7 @@ async function doLogin() {
   if (!timed.usuario || !timed.senha) throw new Error('Sessão sem credenciais em memória. Inicie a sessão novamente.');
   timed.httpSessionCookie = '';
   timed.sessionMode = 'browser';
+  timed.lastActivityAt = Date.now();
   await ensureBrowser();
   let page = timed.pages.find(p => !p.isClosed());
   if (!page) { page = await timed.context.newPage(); timed.pages.push(page); }
@@ -145,7 +146,15 @@ async function doLogin() {
   throw new Error('O TIMED não confirmou o login em até 8 segundos. Confira as credenciais e a disponibilidade do sistema.');
 }
 async function ensurePanel() {
-  if (timed.sessionMode === 'direct_http' && timed.httpSessionCookie) return 'sessao_http_reutilizada';
+  const sessionIdle = timed.lastActivityAt && Date.now() - timed.lastActivityAt > 15 * 60 * 1000;
+  if (timed.sessionMode === 'direct_http' && timed.httpSessionCookie) {
+    if (sessionIdle) return await doHttpLogin();
+    return 'sessao_http_reutilizada';
+  }
+  if (timed.sessionMode === 'browser' && sessionIdle) {
+    await doLogin();
+    return 'login_refeito_por_inatividade';
+  }
   await ensureBrowser();
   if (await visibleLogin()) {
     timed.ready = false;
@@ -378,6 +387,7 @@ async function doHttpLogin() {
   if (!cookie) throw new Error('O VITAI autenticou, mas não retornou os cookies necessários para manter a sessão.');
   timed.httpSessionCookie = cookie;
   timed.sessionMode = 'direct_http';
+  timed.lastActivityAt = Date.now();
   timed.ready = true;
   return 'direct_http';
 }
@@ -600,6 +610,7 @@ app.post('/api/sessao/iniciar', async (req, res) => {
   timed.busy = true;
   const start = now();
   try {
+    await closeSession();
     timed.usuario = usuario; timed.senha = senha; timed.ready = false;
     timed.sessionToken = crypto.randomBytes(32).toString('hex');
     let modo = 'direct_http';
@@ -668,6 +679,7 @@ app.post('/api/consultar', requireSessionToken, async (req, res) => {
       t = now(); await goHome(); tempos.retornoTelaInicial = seconds(t);
     }
     tempos.totalConsulta = seconds(total);
+    timed.lastActivityAt = Date.now();
     return res.json({ sucesso: true, be, quantidadeResultados: result.quantidadeResultados, sessao: loginStatus, prontoParaProximaConsulta: true, tempos, paciente: result.paciente });
   } catch (err) {
     tempos.totalConsulta = seconds(total);
@@ -681,7 +693,7 @@ app.post('/api/consultar', requireSessionToken, async (req, res) => {
 async function closeSession() {
   if (timed.browser) await timed.browser.close().catch(() => {});
   timed.browser = null; timed.context = null; timed.pages = [];
-  timed.usuario = null; timed.senha = null; timed.ready = false; timed.sessionToken = null; timed.httpSessionCookie = ''; timed.sessionMode = 'none';
+  timed.usuario = null; timed.senha = null; timed.ready = false; timed.sessionToken = null; timed.httpSessionCookie = ''; timed.sessionMode = 'none'; timed.lastActivityAt = 0;
 }
 app.post('/api/sessao/encerrar', requireSessionToken, async (_req, res) => {
   if (timed.busy) return res.status(409).json({ erro: 'Aguarde a operação atual terminar.' });
