@@ -414,20 +414,6 @@
         #appShell .header-logo-button img{width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center}
         @media(max-width:700px){#appShell .header-logo-button{width:42px;height:42px;min-width:42px}#appShell .header-logo-button img{width:100%;height:100%;max-width:100%}}
 
-        /* Indicador de menu no toque da logo em telas menores */
-        @media(max-width:767px){
-          #appShell .header-logo-button{position:relative!important;overflow:visible!important}
-          #appShell .header-logo-button::after{
-            content:"\\f0c9";font-family:"Font Awesome 6 Free";font-weight:900;
-            position:absolute;right:-5px;bottom:-3px;z-index:2;
-            display:flex;align-items:center;justify-content:center;
-            width:19px;height:19px;border:2px solid #E2ECE4;border-radius:50%;
-            background:#173B2A;color:#fff;font-size:9px;line-height:1;
-            box-shadow:0 1px 3px rgba(0,0,0,.18);pointer-events:none
-          }
-          #appShell .header-logo-button:active{transform:scale(.96);opacity:.82}
-        }
-
         /* Header responsivo — mantém a composição desktop e reorganiza em duas linhas no mobile */
         @media(max-width:767px){
           #appShell>header.cpam-main-header .header-inner{
