@@ -2249,42 +2249,7 @@
         async function enviarLinkRedefinicao(emailCodificado){if(!perfilAtual||perfilAtual.role!=='administrador')return;const email=decodeURIComponent(emailCodificado||'');if(!email)return;const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});if(error){exibirToast('Não foi possível enviar o link: '+error.message,'erro');return;}exibirToast('Link de redefinição enviado para '+email+'.','sucesso');}
         async function salvarPerfilUsuario(id){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
-            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true',full_nam
-        /* Enter percorre os campos dos formulários internos como Tab.
-           Login e botões preservam integralmente seu comportamento nativo. */
-        document.addEventListener('keydown',function(event){
-            if(event.key!=='Enter'||event.isComposing||event.defaultPrevented)return;
-            const alvo=event.target;
-            if(!(alvo instanceof HTMLElement))return;
-            /* O login fica fora desta regra: Enter envia o formulário e os botões
-               de visualizar senha/recuperação continuam com seus eventos próprios. */
-            if(!alvo.closest('#appShell'))return;
-            if(alvo.isContentEditable||alvo.closest('[contenteditable="true"]'))return;
-            if(alvo instanceof HTMLTextAreaElement)return;
-            if(alvo instanceof HTMLButtonElement||alvo instanceof HTMLAnchorElement||
-               alvo.getAttribute('role')==='button'||alvo.getAttribute('role')==='link')return;
-            if(!(alvo instanceof HTMLInputElement||alvo instanceof HTMLSelectElement))return;
-            if(alvo instanceof HTMLInputElement&&
-               ['button','submit','reset','image','hidden','checkbox','radio','file'].includes(alvo.type))return;
-            /* Não deixa o Enter enviar formulário implicitamente. */
-            event.preventDefault();
-            const escopo=alvo.closest('form')||alvo.closest('[role="dialog"]')||
-                alvo.closest('section')||alvo.closest('#appShell');
-            if(!escopo)return;
-            const seletor='input:not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="image"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(:disabled),select:not(:disabled)';
-            const campos=Array.from(escopo.querySelectorAll(seletor)).filter(function(el){
-                if(!(el instanceof HTMLElement)||el.hasAttribute('disabled'))return false;
-                if(el.closest('[hidden],.hidden,[aria-hidden="true"]'))return false;
-                const estilo=window.getComputedStyle(el);
-                return estilo.display!=='none'&&estilo.visibility!=='hidden'&&el.getClientRects().length>0;
-            });
-            const indice=campos.indexOf(alvo);
-            if(indice<0)return;
-            const proximo=campos[indice+1];
-            if(proximo)proximo.focus({preventScroll:false});
-            /* No último campo, mantém o foco e não alcança Salvar/Excluir. */
-        },true);
-e=document.getElementById('nome-usuario-'+id).value.trim();
+            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true',full_name=document.getElementById('nome-usuario-'+id).value.trim();
             const {error}=await supabaseClient.from('user_profiles').update({role:role,active:active,full_name:full_name||null}).eq('user_id',id);
             if(error){exibirToast('Não foi possível atualizar: '+error.message,'erro');return;}
             exibirToast('Perfil atualizado.','sucesso');
