@@ -16,6 +16,7 @@ if (!AGENT_TOKEN) {
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 let stopping = false;
 let activeSession = null;
+let activeSessionTimer = null;
 process.on("SIGINT", () => { stopping = true; });
 process.on("SIGTERM", () => { stopping = true; });
 
@@ -47,6 +48,8 @@ async function complete(jobId, success, result = null, error = null) {
 }
 
 async function closeActiveSession() {
+  if (activeSessionTimer) clearTimeout(activeSessionTimer);
+  activeSessionTimer = null;
   if (!activeSession) return;
   const token = activeSession.token;
   activeSession = null;
@@ -54,16 +57,26 @@ async function closeActiveSession() {
   catch (_) { /* Sessão local pode já ter expirado; não registrar segredo. */ }
 }
 
+function renewSessionIdleTimeout() {
+  if (activeSessionTimer) clearTimeout(activeSessionTimer);
+  activeSessionTimer = setTimeout(() => {
+    closeActiveSession().catch(() => {});
+  }, 15 * 60 * 1000);
+  activeSessionTimer.unref?.();
+}
+
 async function getSessionForJob(job) {
   const usuario = String(job.credentials?.usuario || "");
   const senha = String(job.credentials?.senha || "");
   if (!usuario || !senha) throw new Error("A tarefa não trouxe credenciais TIMED válidas.");
   if (activeSession && activeSession.usuario === usuario && activeSession.senha === senha) {
+    renewSessionIdleTimeout();
     return activeSession.token;
   }
   await closeActiveSession();
   const session = await local("/api/sessao/iniciar", { usuario, senha }, "");
   activeSession = { token: session.token, usuario, senha, mode: session.modo || "unknown" };
+  renewSessionIdleTimeout();
   return activeSession.token;
 }
 
