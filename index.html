@@ -1900,6 +1900,22 @@
             width:max-content!important;max-width:100%!important;
           }
         }
+
+        /* Alinha a faixa verde exatamente à área interna do formulário/card VITAI. */
+        #secCadastroPaciente .cpam-sticky-context.cpam-compact-page-header{
+          box-sizing:border-box!important;
+          width:calc(100% - 56px)!important;
+          max-width:none!important;
+          margin-left:28px!important;
+          margin-right:28px!important;
+        }
+        @media(max-width:767px){
+          #secCadastroPaciente .cpam-sticky-context.cpam-compact-page-header{
+            width:calc(100% - 32px)!important;
+            margin-left:16px!important;
+            margin-right:16px!important;
+          }
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
