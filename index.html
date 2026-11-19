@@ -844,24 +844,43 @@
           #secDetalhesCirurgia .detalhe-header-actions{flex:0 0 auto!important;gap:5px!important}
           #secDetalhesCirurgia .detalhe-header-button,#secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-header-back{min-height:32px!important;padding:6px 8px!important;font-size:10px!important}
         }
+        .print-document-header,.print-document-footer{display:none}
         @media print{
-          @page{size:A4;margin:16mm 15mm 17mm}
+          @page{size:A4 portrait;margin:13mm 14mm 15mm}
+          html,body{background:#fff!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
           body *{visibility:hidden!important}
           #secDetalhesCirurgia,#secDetalhesCirurgia *{visibility:visible!important}
           #secDetalhesCirurgia{display:block!important;position:absolute!important;left:0!important;top:0!important;width:100%!important;margin:0!important;padding:0!important}
-          #secDetalhesCirurgia>div{border:0!important;box-shadow:none!important}
-          #secDetalhesCirurgia .cpam-sticky-context{position:static!important;padding:0 0 12px!important}
-          #detalheConteudoImpressao{padding:16px 0!important;font-size:11pt!important;line-height:1.5!important}
-          #detalheConteudoImpressao>div{margin-bottom:15px!important;break-inside:avoid}
-          #detalheConteudoImpressao h4{margin-bottom:7px!important;padding-bottom:5px!important}
-          #detalheHeaderStatus{gap:10px!important;margin:0 0 18px!important}
-          #detalheHeaderStatus .detalhe-info-card{padding:10px!important;border:1px solid #cbd5e1!important;background:#fff!important}
-          #secDetalhesCirurgia button,#toastContainer,#appShell>header,#menuLateral{display:none!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header{position:static!important;top:auto!important;background:#164E43!important;color:#fff!important;border-radius:0!important;padding:10px 0 14px!important;margin-bottom:10px!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-page-heading h1{color:#fff!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-page-heading p{color:#e2e8f0!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{margin-left:auto!important}
-          #secDetalhesCirurgia .detalhe-info-card{break-inside:avoid}
+          #secDetalhesCirurgia>div{border:0!important;box-shadow:none!important;border-radius:0!important}
+          #secDetalhesCirurgia button,#toastContainer,#appShell>header,#menuLateral,.detalhe-cirurgia-page-header{display:none!important}
+          .print-document-header{display:block!important;border-bottom:2px solid #1d5548!important;padding:0 0 11px!important;margin:0 0 15px!important;color:#173f36!important}
+          .print-brand{display:flex!important;align-items:center!important;gap:12px!important;padding-bottom:10px!important;border-bottom:1px solid #d7e2dd!important}
+          .print-brand img{display:block!important;width:auto!important;height:54px!important;max-width:100px!important;object-fit:contain!important}
+          .print-brand div{display:flex!important;flex-direction:column!important;gap:3px!important}
+          .print-brand strong{font-size:10pt!important;letter-spacing:.45px!important}
+          .print-brand span{font-size:8pt!important;letter-spacing:1.2px!important;color:#547168!important}
+          .print-document-title{text-align:center!important;padding:12px 0 10px!important}
+          .print-document-title h2{font-size:16pt!important;letter-spacing:1.1px!important;font-weight:800!important;margin:0!important;color:#174b3f!important}
+          .print-document-title p{font-size:8pt!important;color:#64748b!important;margin:3px 0 0!important}
+          .print-patient-line{display:flex!important;justify-content:space-between!important;gap:12px!important;padding:8px 10px!important;background:#f1f6f3!important;border:1px solid #d9e5df!important;border-radius:5px!important;font-size:9pt!important}
+          #detalheConteudoImpressao{padding:0!important;font-size:9pt!important;line-height:1.38!important;color:#263b35!important}
+          #detalheConteudoImpressao>div{margin-bottom:11px!important;break-inside:avoid!important}
+          #detalheConteudoImpressao h4{font-size:9pt!important;color:#174b3f!important;margin:0 0 7px!important;padding:0 0 5px!important;border-color:#b9cec4!important}
+          #detalheConteudoImpressao strong{color:#405b52!important}
+          #detalheConteudoImpressao span,#detalheConteudoImpressao p{overflow-wrap:anywhere!important}
+          #detalheHeaderStatus{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;margin:0 0 13px!important}
+          #detalheHeaderStatus .detalhe-info-card{padding:8px!important;border:1px solid #d3dfd9!important;border-radius:5px!important;background:#f8faf9!important;break-inside:avoid!important}
+          #detalheHeaderStatus .detalhe-info-label{font-size:7pt!important;color:#647b72!important}
+          #detalheHeaderStatus .detalhe-info-value{font-size:9pt!important}
+          #detalheConteudoImpressao .grid{column-gap:14px!important;row-gap:8px!important}
+          #detalheConteudoImpressao [class*="text-slate-400"]{color:#71847c!important}
+          #detalheBoxCancelamento{background:#fff7f7!important;border:1px solid #e8b8b8!important;padding:9px!important}
+          .print-document-footer{display:block!important;margin-top:18px!important;padding-top:9px!important;border-top:1px solid #cbd8d1!important;color:#52665e!important;break-inside:avoid!important}
+          .print-emission{text-align:right!important;font-size:7.5pt!important;margin-bottom:19px!important}
+          .print-signatures{display:grid!important;grid-template-columns:1fr 1fr!important;gap:28px!important;margin:0 8px 12px!important}
+          .print-signatures div{border-top:1px solid #879b91!important;padding-top:5px!important;text-align:center!important;font-size:7.5pt!important}
+          .print-footer-note{text-align:center!important;font-size:7pt!important;color:#829189!important}
+          #secDetalhesCirurgia .detalhe-info-card{break-inside:avoid!important}
         }
         /* Header fixo simples: sem compactação, animação ou alteração por rolagem. */
         #appShell>header.cpam-main-header{
@@ -2712,6 +2731,14 @@
     <!-- PÁGINA DEDICADA DE CONSULTA DA CIRURGIA -->
     <section id="secDetalhesCirurgia" class="hidden w-full space-y-4">
         <div class="w-full rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div class="print-document-header">
+              <div class="print-brand">
+                <img src="./logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
+                <div><strong>COMPLEXO PEDIÁTRICO ARLINDA MARQUES</strong><span>CPAM · BLOCO CIRÚRGICO</span></div>
+              </div>
+              <div class="print-document-title"><h2>RESUMO DA CIRURGIA</h2><p>Registro assistencial · Documento para conferência</p></div>
+              <div class="print-patient-line"><span>Paciente: <strong id="printPacienteNome">-</strong></span><span>Prontuário Bloco: <strong id="printPacienteProntuario">-</strong></span></div>
+            </div>
             <!-- Cabeçalho no mesmo padrão visual da edição da cirurgia -->
             <div class="cpam-sticky-context cpam-compact-page-header detalhe-cirurgia-page-header">
               <div class="cpam-page-heading">
@@ -2797,6 +2824,12 @@
                         <div><strong class="block text-slate-400 text-[10px]">DIGITADO POR / EM</strong> <span id="detalheDigitadoInfo" class="text-slate-500">-</span></div>
                     </div>
                 </div>
+            </div>
+
+            <div class="print-document-footer">
+              <div class="print-emission">Documento emitido em <strong id="printDataEmissao">-</strong> · Sistema de Registro de Cirurgias – CPAM</div>
+              <div class="print-signatures"><div><span>Responsável pela conferência</span></div><div><span>Assinatura / carimbo</span></div></div>
+              <div class="print-footer-note">Documento de uso institucional. As informações devem ser conferidas no sistema de origem.</div>
             </div>
 
             <!-- Ações da consulta -->
@@ -3671,7 +3704,7 @@
             const carater=(r.Carater_Atendimento||'').toUpperCase()!=='ELETIVA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>'+(String(r.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA'):'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className=carater?'font-bold text-amber-700':'font-bold text-blue-700';
             if(atualizarHistorico)telaAnteriorDetalhes=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'historico':'pesquisa');['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secFormulario','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));document.getElementById('btnEditarCirurgiaDetalhe').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarCirurgiaCabecalho').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('secDetalhesCirurgia').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});
         }
-        function imprimirResumoCirurgia(){window.print();}
+        function imprimirResumoCirurgia(){const nome=document.getElementById('detalhePacienteCabecalho')?.textContent||'-';const prontuario=document.getElementById('detalheProntuarioCabecalho')?.textContent||'-';document.getElementById('printPacienteNome').textContent=nome;document.getElementById('printPacienteProntuario').textContent=prontuario;document.getElementById('printDataEmissao').textContent=new Date().toLocaleString('pt-BR');window.print();}
         function fecharModalDetalhes(){document.getElementById('secDetalhesCirurgia').classList.add('hidden');if(telaAnteriorDetalhes==='cadastroPaciente')document.getElementById('secCadastroPaciente').classList.remove('hidden');else if(telaAnteriorDetalhes==='historico')document.getElementById('secHistoricoCirurgias').classList.remove('hidden');else document.getElementById('secPacientes').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});}
         function formatarData(d){if(!d)return '-';if(d.includes('/'))return d;const p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
         function calcularIdade(valor){
