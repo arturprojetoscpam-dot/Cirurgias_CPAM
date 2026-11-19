@@ -2053,7 +2053,7 @@
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<section id="authScreen" class="login-screen">
+<section id="authScreen" class="login-screen hidden">
   <div class="login-card">
     <aside class="login-brand">
       <div class="login-brand-photo" aria-hidden="true"></div>
@@ -2758,7 +2758,7 @@
                 if(evento==='SIGNED_OUT')mostrarLogin();
             });
             const {data,error}=await supabaseClient.auth.getSession();
-            if(error){mostrarMensagemAuth(error.message);return;}
+            if(error){mostrarLogin();mostrarMensagemAuth(error.message);return;}
             if(data.session&&data.session.user) await ativarSessao(data.session.user); else mostrarLogin();
         });
 
@@ -2795,8 +2795,8 @@
                 document.getElementById('navPesquisa').classList.remove('hidden');
                 document.getElementById('navNovoPaciente').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navCancelamentos').classList.remove('hidden');document.getElementById('navDashboards').classList.remove('hidden');
-                document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
-                document.getElementById('secFormulario').classList.add('hidden');
+                document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
+                document.getElementById('secCadastroPaciente').classList.add('hidden');document.getElementById('secFormulario').classList.add('hidden');
                 atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);resolverRotaAtual();
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
             finally{carregandoPerfil=false;}
