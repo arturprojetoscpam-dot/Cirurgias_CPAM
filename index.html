@@ -2766,8 +2766,9 @@
             el.className='mt-4 rounded-xl p-3 text-xs '+(sucesso?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700');el.classList.remove('hidden');
         }
         function ocultarMensagemAuth(){const el=document.getElementById('authMensagem');el.textContent='';el.classList.add('hidden');}
-        function mostrarLogin(){
+        function mostrarLogin(atualizarHistorico=true){
             usuarioAtual=null;perfilAtual=null;todosRegistros=[];registrosFiltrados=[];
+            if(atualizarHistorico)definirRota('/login',true);
             document.getElementById('appShell').classList.add('hidden');document.getElementById('authScreen').classList.remove('hidden');
             document.getElementById('authLogin').classList.remove('hidden');document.getElementById('authNovaSenha').classList.add('hidden');ocultarMensagemAuth();
         }
@@ -2779,6 +2780,7 @@
                 if(error)throw error;
                 if(!perfil||!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Acesso suspenso. Procure o administrador.');return;}
                 usuarioAtual=usuario;perfilAtual=perfil;
+                if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/pacientes',true);
                 document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
                 document.getElementById('usuarioEmail').textContent=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email;
                 document.getElementById('usuarioEmailSecundario').textContent=usuario.email||perfil.email||'';
@@ -3709,13 +3711,35 @@
             if(!location.hash.startsWith('#/pacientes/novo'))return null;
             const parametros=new URLSearchParams(location.hash.split('?')[1]||'');return {id:parametros.get('id')||null};
         }
-        window.addEventListener('popstate',function(){
-            const rota=obterRotaPaciente();
-            if(rota&&perfilAtual){abrirCadastroPaciente(rota.id,false);}
-            else if(!rota&&!document.getElementById('secCadastroPaciente').classList.contains('hidden'))fecharModalPaciente(false);
-        });
-        function navegarSistema(destino){
+        function caminhoAtual(){return (location.pathname||'/').replace(/\\/+$/,'')||'/';}
+        function definirRota(caminho,substituir){
+            const destino=caminho==='/'?'/login':caminho;
+            if(caminhoAtual()===destino)return;
+            const metodo=substituir?'replaceState':'pushState';
+            history[metodo]({rota:destino},'',destino);
+        }
+        function resolverRotaAtual(){
+            const caminho=caminhoAtual();
+            if(caminho==='/login'){
+                if(perfilAtual){definirRota('/pacientes',true);navegarSistema('pesquisa',false);}
+                else mostrarLogin(false);
+                return;
+            }
+            if(caminho==='/pacientes'||caminho.startsWith('/pacientes/')){
+                if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}
+                if(location.hash.startsWith('#/pacientes/novo')){
+                    const rota=obterRotaPaciente();
+                    if(rota)abrirCadastroPaciente(rota.id,false);
+                }else navegarSistema('pesquisa',false);
+                return;
+            }
+            if(perfilAtual){definirRota('/pacientes',true);navegarSistema('pesquisa',false);}
+            else{definirRota('/login',true);mostrarLogin(false);}
+        }
+        window.addEventListener('popstate',function(){resolverRotaAtual();});
+        function navegarSistema(destino,atualizarHistorico=true){
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
+            if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pacientes',false);
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
             ['secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
