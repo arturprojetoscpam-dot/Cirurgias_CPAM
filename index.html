@@ -2753,8 +2753,13 @@
             document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();
             supabaseClient.auth.onAuthStateChange(function(evento,sessao){
                 if(evento==='PASSWORD_RECOVERY'){mostrarNovaSenha();return;}
-                if(sessao&&sessao.user) window.setTimeout(function(){ativarSessao(sessao.user);},0);
-                else mostrarLogin();
+                if(sessao&&sessao.user){
+                    window.setTimeout(function(){ativarSessao(sessao.user);},0);
+                    return;
+                }
+                // INITIAL_SESSION pode chegar sem sessão antes de getSession concluir.
+                // Só exibe o login quando houver um encerramento real da sessão.
+                if(evento==='SIGNED_OUT')mostrarLogin();
             });
             const {data,error}=await supabaseClient.auth.getSession();
             if(error){mostrarMensagemAuth(error.message);return;}
