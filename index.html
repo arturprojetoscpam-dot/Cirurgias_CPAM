@@ -825,6 +825,43 @@
         #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{
           order:2!important;flex:0 1 auto!important;margin:0 0 0 auto!important
         }
+        /* Cabeçalho em duas faixas: dados à esquerda, ações à direita e paciente abaixo */
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header{
+          display:grid!important;
+          grid-template-columns:minmax(0,1fr) auto!important;
+          grid-template-areas:"heading actions" "patient patient"!important;
+          align-items:center!important;column-gap:22px!important;row-gap:13px!important;
+          min-height:0!important;padding:17px 20px!important
+        }
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-page-heading{
+          grid-area:heading!important;order:initial!important;
+          width:100%!important;min-width:0!important;padding:0!important
+        }
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header .detalhe-header-actions{
+          grid-area:actions!important;order:initial!important;
+          justify-self:end!important;align-self:start!important;
+          justify-content:flex-end!important;flex-wrap:wrap!important
+        }
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{
+          grid-area:patient!important;order:initial!important;
+          display:grid!important;grid-template-columns:minmax(0,1fr) minmax(180px,auto)!important;
+          align-items:center!important;gap:12px 24px!important;
+          width:100%!important;max-width:none!important;margin:0!important;
+          padding:13px 17px!important;border:1px solid #dce9e2!important;
+          border-radius:10px!important;background:#fff!important
+        }
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card span{
+          display:block!important;margin-bottom:4px!important;font-size:9px!important;
+          font-weight:800!important;letter-spacing:.045em!important;text-transform:uppercase!important
+        }
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card .cpam-patient-name,
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card .cpam-patient-record{
+          display:block!important;font-size:14px!important;line-height:1.35!important;
+          overflow-wrap:anywhere!important
+        }
+        #secDetalhesCirurgia .detalhe-cirurgia-page-header .detalhe-header-procedure{
+          margin-top:7px!important;font-size:.9rem!important
+        }
         #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{
           display:flex!important;flex:0 1 auto!important;width:auto!important;max-width:min(42%,560px)!important;
           gap:6px 18px!important;margin:0 0 0 auto!important;padding:7px 12px!important;
@@ -852,12 +889,20 @@
         #secDetalhesCirurgia .detalhe-info-label{font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#64748b}
         #secDetalhesCirurgia .detalhe-info-value{font-size:14px;font-weight:800;color:#173b2a}
         @media(max-width:767px){
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header{top:108px!important;flex-wrap:wrap!important;gap:8px 10px!important;padding:9px 10px!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header{align-items:flex-start!important;flex-wrap:wrap!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header .detalhe-header-actions{order:0!important;flex:0 0 100%!important;justify-content:flex-start!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-page-heading{order:1!important;flex:1 1 100%!important;padding:2px 0!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{order:2!important;margin:2px 0 0!important}
-          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{flex:1 1 100%!important;width:100%!important;max-width:100%!important;margin:2px 0 0!important;padding:7px 9px!important;gap:6px 14px!important}
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header{
+            top:108px!important;grid-template-columns:minmax(0,1fr)!important;
+            grid-template-areas:"heading" "patient" "actions"!important;
+            gap:11px!important;padding:12px!important;align-items:stretch!important
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-page-heading{grid-area:heading!important}
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{
+            grid-area:patient!important;grid-template-columns:minmax(0,1fr) auto!important;
+            width:100%!important;max-width:100%!important;margin:0!important;padding:10px!important
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .detalhe-header-actions{
+            grid-area:actions!important;justify-self:end!important;flex:0 0 auto!important;
+            justify-content:flex-end!important;gap:5px!important
+          }
           #secDetalhesCirurgia .detalhe-header-actions{flex:0 0 auto!important;gap:5px!important}
           #secDetalhesCirurgia .detalhe-header-button,#secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-header-back{min-height:32px!important;padding:6px 8px!important;font-size:10px!important}
         }
