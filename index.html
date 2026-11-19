@@ -2715,7 +2715,7 @@
             <!-- Cabeçalho no mesmo padrão visual da edição da cirurgia -->
             <div class="cpam-sticky-context cpam-compact-page-header detalhe-cirurgia-page-header">
               <div class="cpam-page-heading">
-                <h1 id="detalheTituloPrincipal">Edição da Cirurgia</h1>
+                <h1 id="detalheTituloPrincipal">Dados da Cirurgia</h1>
                 <p id="detalheSubtitulo">-</p>
               </div>
               <div class="cpam-patient-summary-card">
@@ -3660,7 +3660,7 @@
                 detalheCrmAnest:r.CRM_ANEST||'-',detalheAnestesia:r.Anestesia1||'-',detalheDigitadoInfo:(r.DIGITADO_POR||'SISTEMA')+' em '+(r.DIGITADO_EM||'-'),detalheCaraterBadge:r.Carater_Atendimento||'-'};
             Object.keys(v).forEach(function(id){document.getElementById(id).textContent=v[id];});
             const nomePacienteCabecalho=(pacienteDetalhe&&pacienteDetalhe.nome_paciente)||r.Nome_Paciente||'-',codigoPacienteCabecalho=(pacienteDetalhe&&pacienteDetalhe.codigo_paciente!=null)?formatarCodigoPaciente(pacienteHistoricoAtual.codigo_paciente):'-';
-            document.getElementById('detalheTituloPrincipal').textContent='Edição da Cirurgia';
+            document.getElementById('detalheTituloPrincipal').textContent='Dados da Cirurgia';
             document.getElementById('detalheEspecialidadeCard').textContent=r.Especialidade||'-';
             document.getElementById('detalheSubtitulo').textContent='Data: '+formatarData(r.Data_da_Cirurgia)+' · Registro do procedimento';
             preencherTexto('detalhePacienteCabecalho',nomePacienteCabecalho);preencherTexto('detalheProntuarioCabecalho',codigoPacienteCabecalho);
