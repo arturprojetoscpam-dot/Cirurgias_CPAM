@@ -2796,7 +2796,7 @@
                 document.getElementById('navCancelamentos').classList.remove('hidden');document.getElementById('navDashboards').classList.remove('hidden');
                 document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
                 document.getElementById('secFormulario').classList.add('hidden');
-                atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);await carregarPacientes();const rotaPaciente=obterRotaPaciente();if(rotaPaciente)await abrirCadastroPaciente(rotaPaciente.id,false);
+                atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);resolverRotaAtual();
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
             finally{carregandoPerfil=false;}
         }
@@ -2890,10 +2890,14 @@
         }
         function fecharModalPaciente(limparRota=true){
             document.getElementById('secCadastroPaciente').classList.add('hidden');
-            if(telaAnteriorCadastroPaciente==='historico'&&pacienteHistoricoAtual){document.getElementById('secHistoricoCirurgias').classList.remove('hidden');}
-            else{document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');carregarPacientes();}
+            if(telaAnteriorCadastroPaciente==='historico'&&pacienteHistoricoAtual){
+                document.getElementById('secHistoricoCirurgias').classList.remove('hidden');
+                if(limparRota)definirRota('/pacientes/'+encodeURIComponent(pacienteHistoricoAtual.id),true);
+            }else{
+                document.getElementById('secPacientes').classList.remove('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');carregarPacientes();
+                if(limparRota)definirRota('/pacientes',true);
+            }
             document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){const ativo=btn.getAttribute('data-nav')==='pesquisa';btn.classList.toggle('nav-ativo',ativo);btn.setAttribute('aria-current',ativo?'page':'false');});
-            if(limparRota&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             window.scrollTo({top:0,behavior:'auto'});
         }
         async function salvarPacienteModal(evento){
@@ -2915,7 +2919,7 @@
                 let resposta;if(pacienteModalAtual)resposta=await supabaseClient.from('pacientes').update(payload).eq('id',pacienteModalAtual.id).select(CAMPOS_PACIENTE_MODAL).single();
                 else resposta=await supabaseClient.from('pacientes').insert([payload]).select(CAMPOS_PACIENTE_MODAL).single();
                 if(resposta.error)throw resposta.error;
-                pacienteModalAtual=resposta.data;pacienteHistoricoAtual=resposta.data;preencherCampo('paciente_codigo',formatarCodigoPaciente(resposta.data.codigo_paciente));document.getElementById('tituloModalPaciente').textContent='Edição';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';document.getElementById('pacienteDadosContexto').textContent=' (Paciente: '+(resposta.data.nome_paciente||'Paciente')+' - Nº '+formatarCodigoPaciente(resposta.data.codigo_paciente)+')';
+                pacienteModalAtual=resposta.data;pacienteHistoricoAtual=resposta.data;if(!eraEdicao)definirRota('/pacientes/'+encodeURIComponent(resposta.data.id)+'/editar',true);preencherCampo('paciente_codigo',formatarCodigoPaciente(resposta.data.codigo_paciente));document.getElementById('tituloModalPaciente').textContent='Edição';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';document.getElementById('pacienteDadosContexto').textContent=' (Paciente: '+(resposta.data.nome_paciente||'Paciente')+' - Nº '+formatarCodigoPaciente(resposta.data.codigo_paciente)+')';
                 pacientesPagina=pacientesPagina.map(p=>p.id===resposta.data.id?resposta.data:p);
                 pacientesEncontrados=pacientesEncontrados.map(p=>p.id===resposta.data.id?resposta.data:p);
                 if(pacienteHistoricoAtual&&pacienteHistoricoAtual.id===resposta.data.id){pacienteHistoricoAtual=resposta.data;atualizarResumoPacienteHistorico(resposta.data);}
@@ -3339,7 +3343,8 @@
         function editarPacienteDaLista(id){abrirCadastroPaciente(id);}
         function paginaPacientesAnterior(){if(paginaPacientes>1){paginaPacientes--;carregarPacientes();}}
         function proximaPaginaPacientes(){if(paginaPacientes<Math.ceil(totalPacientes/50)){paginaPacientes++;carregarPacientes();}}
-        async function abrirHistoricoPaciente(id){
+        async function abrirHistoricoPaciente(id,atualizarHistorico=true){
+            if(atualizarHistorico)definirRota('/pacientes/'+encodeURIComponent(id),false);
             const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').select(CAMPOS_PACIENTE_MODAL).eq('id',id).single();if(erroPaciente)throw erroPaciente;
             pacienteHistoricoAtual=paciente;atualizarResumoPacienteHistorico(paciente);document.getElementById('btnNovaCirurgiaHistorico').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarPacienteHistorico').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.remove('hidden');
             document.getElementById('tituloPacienteHistorico').textContent=formatarCodigoPaciente(paciente.codigo_paciente)+' · '+paciente.nome_paciente;
@@ -3351,7 +3356,7 @@
             }todosRegistros=todos;aplicarFiltros();}
             catch(error){console.error(error);document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="6" class="p-8 text-center text-rose-600">Falha ao buscar histórico: '+escaparHtml(error.message)+'</td></tr>';exibirToast('Erro ao carregar histórico: '+error.message,'erro');}
         }
-        function voltarListaPacientes(){document.getElementById('secHistoricoCirurgias').classList.add('hidden');document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];}
+        function voltarListaPacientes(){document.getElementById('secHistoricoCirurgias').classList.add('hidden');document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];definirRota('/pacientes',false);}
         function atualizarDashboard(){
             const total=todosRegistros.length;
             const realizadas=todosRegistros.filter(r=>(r.Situaçao||'').toUpperCase()==='REALIZADA').length;
@@ -3704,12 +3709,20 @@
         function alternarVisibilidadeSidebar(){document.getElementById('menuLateral').classList.toggle('sidebar-oculta');}
         function alternarSidebarPeloLogo(){if(window.matchMedia('(min-width: 1024px)').matches){alternarVisibilidadeSidebar();}else{alternarMenuLateral();}}
         function atualizarRotaPaciente(id){
-            const rota='#/pacientes/novo'+(id?'?id='+encodeURIComponent(id):'');
-            if(location.hash!==rota)history.pushState({tela:'paciente',id:id||null},'',location.pathname+location.search+rota);
+            definirRota(id?'/pacientes/'+encodeURIComponent(id)+'/editar':'/pacientes/novo',false);
         }
         function obterRotaPaciente(){
-            if(!location.hash.startsWith('#/pacientes/novo'))return null;
-            const parametros=new URLSearchParams(location.hash.split('?')[1]||'');return {id:parametros.get('id')||null};
+            const caminho=caminhoAtual();
+            if(caminho==='/pacientes/novo')return {tipo:'novo',id:null};
+            const edicao=caminho.match(/^\\/pacientes\\/([^/]+)\\/editar$/);
+            if(edicao)return {tipo:'editar',id:decodeURIComponent(edicao[1])};
+            const historico=caminho.match(/^\\/pacientes\\/([^/]+)$/);
+            if(historico&&historico[1]!=='novo')return {tipo:'historico',id:decodeURIComponent(historico[1])};
+            if(location.hash.startsWith('#/pacientes/novo')){
+                const parametros=new URLSearchParams(location.hash.split('?')[1]||'');
+                return {tipo:parametros.get('id')?'editar':'novo',id:parametros.get('id')||null,legado:true};
+            }
+            return null;
         }
         function caminhoAtual(){const caminho=location.pathname||'/';return caminho.length>1&&caminho.endsWith('/')?caminho.slice(0,-1):caminho;}
         function definirRota(caminho,substituir){
@@ -3727,9 +3740,11 @@
             }
             if(caminho==='/pacientes'||caminho.startsWith('/pacientes/')){
                 if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}
-                if(location.hash.startsWith('#/pacientes/novo')){
-                    const rota=obterRotaPaciente();
-                    if(rota)abrirCadastroPaciente(rota.id,false);
+                const rota=obterRotaPaciente();
+                if(rota){
+                    if(rota.legado){definirRota(rota.id?'/pacientes/'+encodeURIComponent(rota.id)+'/editar':'/pacientes/novo',true);}
+                    if(rota.tipo==='novo'||rota.tipo==='editar')void abrirCadastroPaciente(rota.id,false);
+                    else if(rota.tipo==='historico')void abrirHistoricoPaciente(rota.id,false);
                 }else navegarSistema('pesquisa',false);
                 return;
             }
