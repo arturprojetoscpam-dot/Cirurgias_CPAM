@@ -2097,7 +2097,7 @@
               <div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="loginSenha" type="password" required autocomplete="current-password" placeholder="Digite sua senha"><button type="button" onclick="alternarVisibilidadeSenha('loginSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div>
             </div>
             <div class="login-options"><label class="login-remember"><input id="lembrarAcesso" type="checkbox"><span>Lembrar meu acesso</span></label><button type="button" onclick="solicitarRecuperacao()" class="login-forgot">Esqueceu a senha?</button></div>
-            <button id="btnEntrar" type="submit" class="login-submit"><span>ACESSAR SISTEMA</span><i class="fa-solid fa-arrow-right"></i></button>
+            <button id="btnEntrar" type="submit" onclick="autorizarEnvioLogin()" class="login-submit"><span>ACESSAR SISTEMA</span><i class="fa-solid fa-arrow-right"></i></button>
           </form>
           <p class="login-privacy"><i class="fa-solid fa-shield-halved"></i> Acesso restrito a usuários autorizados.</p>
         </div>
@@ -2745,20 +2745,16 @@
         const SUPABASE_PUBLISHABLE_KEY='sb_publishable_gfCUsl8E1eDT4eJSG6qghg_Q0juc4uP';
         const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
         let timedLocalResultado=null,vitaiConfigurado=false,vitaiEstado='desconhecido',vitaiVerificacaoEmAndamento=false;
-        let pacienteModalAtual=null,cirurgiaModalAtual=null,telaAnteriorCirurgia='historico',telaAnteriorDetalhes='historico',cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
+        let pacienteModalAtual=null,cirurgiaModalAtual=null,telaAnteriorCirurgia='historico',telaAnteriorDetalhes='historico',cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,loginEnviadoPorClique=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
 
         window.addEventListener('DOMContentLoaded',async function(){
             document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();
-            supabaseClient.auth.onAuthStateChange(function(evento,sessao){
+            // A sessão é restaurada uma única vez por getSession().
+            // O listener fica responsável apenas por recuperação de senha e logout.
+            supabaseClient.auth.onAuthStateChange(function(evento){
                 if(evento==='PASSWORD_RECOVERY'){mostrarNovaSenha();return;}
-                if(sessao&&sessao.user){
-                    window.setTimeout(function(){ativarSessao(sessao.user);},0);
-                    return;
-                }
-                // INITIAL_SESSION pode chegar sem sessão antes de getSession concluir.
-                // Só exibe o login quando houver um encerramento real da sessão.
                 if(evento==='SIGNED_OUT')mostrarLogin();
             });
             const {data,error}=await supabaseClient.auth.getSession();
@@ -2807,8 +2803,12 @@
         }
         (function restaurarEmailSalvo(){try{const salvo=localStorage.getItem('cpam_login_email');if(salvo){document.getElementById('loginEmail').value=salvo;document.getElementById('lembrarAcesso').checked=true;}}catch(e){console.warn('Não foi possível restaurar o e-mail salvo.');}})();
         (function restaurarEmailSalvo(){try{const salvo=localStorage.getItem('cpam_login_email');if(salvo){document.getElementById('loginEmail').value=salvo;document.getElementById('lembrarAcesso').checked=true;}const check=document.getElementById('lembrarAcesso');check.addEventListener('change',()=>{try{if(check.checked)localStorage.setItem('cpam_login_email',document.getElementById('loginEmail').value.trim());else localStorage.removeItem('cpam_login_email');}catch(e){console.warn('Não foi possível salvar a preferência de acesso.');}});document.getElementById('loginEmail').addEventListener('change',()=>{try{if(check.checked)localStorage.setItem('cpam_login_email',document.getElementById('loginEmail').value.trim());}catch(e){}});}catch(e){console.warn('Não foi possível restaurar o e-mail salvo.');}})();
+        function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         async function entrar(evento){
-            evento.preventDefault();ocultarMensagemAuth();const botao=document.getElementById('btnEntrar');botao.disabled=true;botao.textContent='Autenticando...';
+            evento.preventDefault();
+            if(!loginEnviadoPorClique)return;
+            loginEnviadoPorClique=false;
+            ocultarMensagemAuth();const botao=document.getElementById('btnEntrar');botao.disabled=true;botao.textContent='Autenticando...';
             const {data,error}=await supabaseClient.auth.signInWithPassword({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginSenha').value});
             botao.disabled=false;botao.textContent='Entrar';
             if(error){mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');return;}
