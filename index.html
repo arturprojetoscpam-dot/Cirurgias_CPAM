@@ -943,6 +943,42 @@
             font-size:7.4pt!important;line-height:1.25!important;
             letter-spacing:.25px!important;color:#60766c!important
           }
+          /* Respiro interno: afasta os dados das linhas e contornos */
+          #detalheConteudoImpressao{
+            padding:0 3.5mm!important
+          }
+          #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            padding:3.2mm 3.5mm 3.5mm!important;
+            margin:0 0 4.2mm!important;
+            border:1px solid #dce6e0!important;
+            border-radius:2mm!important;
+            background:#fff!important;
+            box-sizing:border-box!important
+          }
+          #detalheConteudoImpressao h4{
+            padding:0 0 2.2mm!important;
+            margin:0 0 2.8mm!important
+          }
+          #detalheConteudoImpressao .grid{
+            padding:0 1.2mm!important;
+            column-gap:5mm!important;
+            row-gap:3.5mm!important
+          }
+          #detalheConteudoImpressao .grid>div{
+            padding:1mm 1.2mm!important;
+            box-sizing:border-box!important
+          }
+          #detalheConteudoImpressao strong{
+            margin-bottom:1.2mm!important
+          }
+          #detalheConteudoImpressao span,#detalheConteudoImpressao p{
+            display:inline-block!important;
+            max-width:100%!important;
+            padding-top:.4mm!important
+          }
+          #detalheHeaderStatus .detalhe-info-card{
+            padding:3mm 3.5mm!important
+          }
           #detalheConteudoImpressao span,#detalheConteudoImpressao p{
             font-size:9pt!important;line-height:1.42!important;
             overflow-wrap:anywhere!important;word-break:normal!important
