@@ -3760,11 +3760,14 @@
                 })();
                 return;
             }
-            const rotasDiretas={'/cancelamentos':'cancelamentos','/dashboards':'dashboards','/auditoria':'auditoria','/usuarios':'usuarios'};
+            const rotasDiretas={'/cancelamentos':'cancelamentos','/dashboards':'dashboards','/auditoria':'auditoria','/usuarios':'usuarios','/profissionais':'medicos'};
             if(rotasDiretas[caminho]){
                 if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}
                 const destino=rotasDiretas[caminho];
                 if(['auditoria','usuarios'].includes(destino)&&perfilAtual.role!=='administrador'){
+                    definirRota('/pacientes',true);navegarSistema('pesquisa',false);return;
+                }
+                if(destino==='medicos'&&!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){
                     definirRota('/pacientes',true);navegarSistema('pesquisa',false);return;
                 }
                 navegarSistema(destino,false);return;
@@ -3777,8 +3780,9 @@
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
             const podeAdministrar=perfilAtual&&perfilAtual.role==='administrador';
             if(['auditoria','usuarios'].includes(destino)&&!podeAdministrar){exibirToast('Acesso restrito ao perfil Administrador.','erro');return;}
+            if(destino==='medicos'&&!podeEditar){exibirToast('Seu perfil não permite acessar os profissionais.','erro');return;}
             if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pacientes',false);
-            const rotasDestino={'cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios'};
+            const rotasDestino={'cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios','medicos':'/profissionais'};
             if(atualizarHistorico&&rotasDestino[destino])definirRota(rotasDestino[destino],false);
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
