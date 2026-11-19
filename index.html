@@ -2314,7 +2314,78 @@
           #secCadastroPaciente .cpam-paciente-dados-sticky{top:108px!important;padding:9px!important}
         }
 
-    </style>
+    
+        /* Cabeçalho: identificação do paciente à esquerda, ocupando o espaço com respiro */
+        @media(min-width:768px){
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header{
+            display:grid!important;
+            grid-template-columns:minmax(300px,1.15fr) minmax(260px,1fr) auto!important;
+            grid-template-areas:"patient heading actions"!important;
+            align-items:center!important;
+            column-gap:clamp(18px,2.2vw,32px)!important;
+            row-gap:16px!important;
+            width:100%!important;
+            box-sizing:border-box!important;
+            padding:20px clamp(20px,2.4vw,34px)!important;
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{
+            grid-area:patient!important;
+            display:grid!important;
+            grid-template-columns:minmax(0,1fr) minmax(125px,auto)!important;
+            align-items:center!important;
+            gap:14px 22px!important;
+            width:100%!important;
+            max-width:none!important;
+            min-width:0!important;
+            margin:0!important;
+            padding:18px 22px!important;
+            box-sizing:border-box!important;
+            border:1px solid rgba(255,255,255,.72)!important;
+            border-radius:12px!important;
+            background:#fff!important;
+            box-shadow:0 3px 10px rgba(8,35,28,.12)!important;
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-page-heading{
+            grid-area:heading!important;
+            min-width:0!important;
+            width:100%!important;
+            margin:0!important;
+            padding:0!important;
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .detalhe-header-actions{
+            grid-area:actions!important;
+            justify-self:end!important;
+            align-self:center!important;
+            display:flex!important;
+            flex-wrap:wrap!important;
+            justify-content:flex-end!important;
+            gap:8px!important;
+            margin:0!important;
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card span{
+            display:block!important;margin-bottom:6px!important;
+            font-size:9px!important;font-weight:800!important;
+            letter-spacing:.055em!important;text-transform:uppercase!important;
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card .cpam-patient-name,
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card .cpam-patient-record{
+            display:block!important;font-size:14px!important;line-height:1.4!important;
+            overflow-wrap:anywhere!important;
+          }
+        }
+        @media(max-width:767px){
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header{
+            grid-template-columns:minmax(0,1fr)!important;
+            grid-template-areas:"heading" "patient" "actions"!important;
+            gap:12px!important;padding:13px!important;
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header .cpam-patient-summary-card{
+            grid-template-columns:minmax(0,1fr) auto!important;
+            width:100%!important;max-width:100%!important;
+            margin:0!important;padding:12px!important;
+          }
+        }
+</style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
