@@ -3714,9 +3714,9 @@
         function obterRotaPaciente(){
             const caminho=caminhoAtual();
             if(caminho==='/pacientes/novo')return {tipo:'novo',id:null};
-            const edicao=caminho.match(/^\\/pacientes\\/([^/]+)\\/editar$/);
+            const edicao=caminho.match(/^\/pacientes\/([^/]+)\/editar$/);
             if(edicao)return {tipo:'editar',id:decodeURIComponent(edicao[1])};
-            const historico=caminho.match(/^\\/pacientes\\/([^/]+)$/);
+            const historico=caminho.match(/^\/pacientes\/([^/]+)$/);
             if(historico&&historico[1]!=='novo')return {tipo:'historico',id:decodeURIComponent(historico[1])};
             if(location.hash.startsWith('#/pacientes/novo')){
                 const parametros=new URLSearchParams(location.hash.split('?')[1]||'');
