@@ -2196,7 +2196,8 @@
                     <button id="navPesquisa" data-nav="pesquisa" onclick="navegarSistema('pesquisa')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-magnifying-glass w-5 text-center text-base"></i><span>Pesquisa de pacientes</span></button>
                     <button id="navCancelamentos" data-nav="cancelamentos" onclick="navegarSistema('cancelamentos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-calendar-xmark w-5 text-center text-base"></i><span>Cancelamentos</span></button>
                     <button id="navDashboards" data-nav="dashboards" onclick="navegarSistema('dashboards')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-chart-pie w-5 text-center text-base"></i><span>Dashboards</span></button>
-                    <button id="navAuditoria" data-nav="auditoria" onclick="alternarAuditoria()" class="hidden flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-clipboard-list w-5 text-center text-base"></i><span>Auditoria</span></button>
+                    <button id="navAuditoria" data-nav="auditoria" onclick="navegarSistema('auditoria')" class="hidden flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-clipboard-list w-5 text-center text-base"></i><span>Auditoria</span></button>
+                     <button id="navUsuarios" data-nav="usuarios" onclick="navegarSistema('usuarios')" class="hidden flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-users-gear w-5 text-center text-base"></i><span>Usuários</span></button>
                 </nav>
                 <div class="sidebar-footer-text mt-auto border-t border-slate-100 px-3 pt-4"><div class="flex items-center gap-2 text-[10px] font-medium text-slate-400"><i class="fa-solid fa-shield-halved text-teal-600"></i><span>Acesso protegido por perfil</span></div><div class="mt-3 border-t border-slate-100 pt-3"><p id="sidebarNomeUsuario" class="truncate text-xs font-extrabold text-slate-700"></p><p id="sidebarPerfilUsuario" class="mt-0.5 text-[10px] text-slate-500"></p><button type="button" onclick="sair()" class="mt-3 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs font-semibold text-rose-700 hover:bg-rose-50"><i class="fa-solid fa-right-from-bracket"></i><span>Sair do sistema</span></button></div></div>
             </div>
@@ -2790,6 +2791,7 @@
                 document.getElementById('usuarioPerfil').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
                 document.getElementById('btnUsuarios').classList.toggle('hidden',perfil.role!=='administrador');
                 document.getElementById('navAuditoria').classList.toggle('hidden',perfil.role!=='administrador');
+                document.getElementById('navUsuarios').classList.toggle('hidden',perfil.role!=='administrador');
                 document.getElementById('navRegistro').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navMedicos').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navPesquisa').classList.remove('hidden');
@@ -3758,13 +3760,26 @@
                 })();
                 return;
             }
+            const rotasDiretas={'/cancelamentos':'cancelamentos','/dashboards':'dashboards','/auditoria':'auditoria','/usuarios':'usuarios'};
+            if(rotasDiretas[caminho]){
+                if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}
+                const destino=rotasDiretas[caminho];
+                if(['auditoria','usuarios'].includes(destino)&&perfilAtual.role!=='administrador'){
+                    definirRota('/pacientes',true);navegarSistema('pesquisa',false);return;
+                }
+                navegarSistema(destino,false);return;
+            }
             if(perfilAtual){definirRota('/pacientes',true);navegarSistema('pesquisa',false);}
             else{definirRota('/login',true);mostrarLogin(false);}
         }
         window.addEventListener('popstate',function(){resolverRotaAtual();});
         function navegarSistema(destino,atualizarHistorico=true){
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
+            const podeAdministrar=perfilAtual&&perfilAtual.role==='administrador';
+            if(['auditoria','usuarios'].includes(destino)&&!podeAdministrar){exibirToast('Acesso restrito ao perfil Administrador.','erro');return;}
             if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pacientes',false);
+            const rotasDestino={'cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios'};
+            if(atualizarHistorico&&rotasDestino[destino])definirRota(rotasDestino[destino],false);
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
             ['secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
@@ -3774,12 +3789,14 @@
             else if(destino==='novoPaciente'){pacienteHistoricoAtual=null;abrirCadastroPaciente();}
             else if(destino==='cancelamentos'){document.getElementById('secCancelamentos').classList.remove('hidden');carregarCancelamentos();}
             else if(destino==='dashboards'){document.getElementById('secDashboards').classList.remove('hidden');carregarDashboard();}
+            else if(destino==='auditoria'){document.getElementById('secAuditoria').classList.remove('hidden');carregarAuditoria();}
+            else if(destino==='usuarios'){document.getElementById('secAdmin').classList.remove('hidden');carregarUsuarios();}
             document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){const ativo=btn.getAttribute('data-nav')===destino;btn.classList.toggle('nav-ativo',ativo);btn.setAttribute('aria-current',ativo?'page':'false');});
             fecharMenuLateral();window.scrollTo({top:0,behavior:'smooth'});
         }
         function alternarPainelUsuarios(){
-            if(!perfilAtual||perfilAtual.role!=='administrador')return;const sec=document.getElementById('secAdmin'),abrir=sec.classList.contains('hidden');
-            sec.classList.toggle('hidden',!abrir);if(abrir){carregarUsuarios();sec.scrollIntoView({behavior:'smooth'});}
+            if(!perfilAtual||perfilAtual.role!=='administrador')return;
+            navegarSistema('usuarios');
         }
         async function carregarUsuarios(){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
@@ -3797,9 +3814,7 @@
         }
         function alternarAuditoria(){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
-            const sec=document.getElementById('secAuditoria'),abrir=sec.classList.contains('hidden');
-            sec.classList.toggle('hidden',!abrir);
-            if(abrir){carregarAuditoria();sec.scrollIntoView({behavior:'smooth'});}
+            navegarSistema('auditoria');
         }
         async function carregarAuditoria(){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
