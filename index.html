@@ -881,6 +881,93 @@
           .print-signatures div{border-top:1px solid #879b91!important;padding-top:5px!important;text-align:center!important;font-size:7.5pt!important}
           .print-footer-note{text-align:center!important;font-size:7pt!important;color:#829189!important}
           #secDetalhesCirurgia .detalhe-info-card{break-inside:avoid!important}
+          /* Refinamento institucional da impressão */
+          body{margin:0!important;padding:0!important}
+          #secDetalhesCirurgia{
+            position:static!important;left:auto!important;top:auto!important;
+            width:100%!important;max-width:none!important;min-width:0!important;
+            overflow:visible!important;background:#fff!important
+          }
+          #secDetalhesCirurgia .detalhe-cirurgia-page-header{
+            display:none!important;visibility:hidden!important;height:0!important;
+            min-height:0!important;margin:0!important;padding:0!important
+          }
+          #secDetalhesCirurgia>div{
+            width:100%!important;max-width:none!important;min-width:0!important;
+            margin:0!important;padding:0!important;overflow:visible!important;
+            border:0!important;border-radius:0!important;box-shadow:none!important
+          }
+          .print-document-header{
+            display:block!important;width:100%!important;box-sizing:border-box!important;
+            padding:0 0 9px!important;margin:0 0 12px!important;
+            border-bottom:2px solid #1d5548!important
+          }
+          .print-brand{min-height:48px!important;gap:14px!important}
+          .print-brand img{
+            width:auto!important;height:48px!important;max-width:112px!important;
+            object-fit:contain!important;object-position:left center!important
+          }
+          .print-document-title{padding:10px 0 9px!important}
+          .print-document-title h2{font-size:17pt!important;letter-spacing:1.25px!important}
+          .print-document-title p{font-size:8.5pt!important}
+          .print-patient-line{
+            padding:8px 11px!important;font-size:9pt!important;
+            background:#f2f7f4!important;border-color:#d5e2db!important
+          }
+          #detalheConteudoImpressao{
+            width:100%!important;box-sizing:border-box!important;
+            padding:0!important;font-size:9.5pt!important;line-height:1.48!important;
+            color:#263b35!important;overflow:visible!important
+          }
+          #detalheConteudoImpressao>div{
+            margin:0 0 15px!important;padding:0!important;
+            break-inside:auto!important;page-break-inside:auto!important
+          }
+          #detalheConteudoImpressao h4{
+            font-size:9.5pt!important;line-height:1.25!important;
+            margin:0 0 8px!important;padding:0 0 6px!important;
+            border-bottom:1px solid #b9cec4!important;
+            break-after:avoid!important;page-break-after:avoid!important
+          }
+          #detalheConteudoImpressao .grid{
+            display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+            column-gap:18px!important;row-gap:11px!important;
+            align-items:start!important
+          }
+          #detalheConteudoImpressao .grid>div{
+            min-width:0!important;break-inside:avoid!important;
+            page-break-inside:avoid!important
+          }
+          #detalheConteudoImpressao strong{
+            display:block!important;margin-bottom:2px!important;
+            font-size:7.4pt!important;line-height:1.25!important;
+            letter-spacing:.25px!important;color:#60766c!important
+          }
+          #detalheConteudoImpressao span,#detalheConteudoImpressao p{
+            font-size:9pt!important;line-height:1.42!important;
+            overflow-wrap:anywhere!important;word-break:normal!important
+          }
+          #detalheHeaderStatus{
+            grid-template-columns:repeat(3,minmax(0,1fr))!important;
+            gap:10px!important;margin:0 0 16px!important
+          }
+          #detalheHeaderStatus .detalhe-info-card{
+            min-width:0!important;padding:10px 11px!important;
+            border:1px solid #d5e1db!important;border-radius:6px!important;
+            background:#f7faf8!important
+          }
+          #detalheHeaderStatus .detalhe-info-label{font-size:7.2pt!important}
+          #detalheHeaderStatus .detalhe-info-value{font-size:9.5pt!important}
+          #detalheBoxCancelamento{break-inside:avoid!important;page-break-inside:avoid!important}
+          .print-document-footer{
+            width:100%!important;box-sizing:border-box!important;
+            margin-top:20px!important;padding-top:10px!important;
+            break-inside:avoid!important;page-break-inside:avoid!important
+          }
+          .print-emission{font-size:8pt!important;margin-bottom:25px!important}
+          .print-signatures{gap:34px!important;margin:0 12px 15px!important}
+          .print-signatures div{padding-top:6px!important;font-size:8pt!important}
+          .print-footer-note{font-size:7.5pt!important}
         }
         /* Header fixo simples: sem compactação, animação ou alteração por rolagem. */
         #appShell>header.cpam-main-header{
@@ -2142,7 +2229,7 @@
       <div class="login-brand-photo" aria-hidden="true"></div>
       <div class="login-brand-content">
         <div class="login-logo" aria-label="Complexo Pediátrico Arlinda Marques">
-          <img src="./logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
+          <img src="/logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
         </div>
         <h1>Sistema de Registro de Cirurgias</h1>
         <p class="login-institution">CPAM · GESTÃO HOSPITALAR</p>
