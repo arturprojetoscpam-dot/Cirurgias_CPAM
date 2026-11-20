@@ -3020,32 +3020,63 @@
           #secDetalhesCirurgia .print-signatures{display:none!important}
         }
 
-        /* Correção definitiva do caractere solto e do recuo dos cards */
+        /* Impressão final: recuo confortável sem perder a página A4 em escala 100% */
         @media print{
+          @page{size:A4 portrait;margin:7mm 9mm 7mm!important}
+          #secDetalhesCirurgia .print-document-header{
+            margin:0 0 2mm!important;padding:0 2mm 2mm!important;
+          }
+          #secDetalhesCirurgia .print-brand{min-height:0!important;padding-bottom:1.5mm!important}
+          #secDetalhesCirurgia .print-brand img{height:35px!important;max-width:86px!important}
+          #secDetalhesCirurgia .print-document-title{padding:2mm 1mm!important}
+          #secDetalhesCirurgia .print-document-title h2{font-size:10.5pt!important}
+          #secDetalhesCirurgia .print-document-title p{margin-top:1mm!important}
+          #secDetalhesCirurgia .print-patient-line{
+            margin-top:1mm!important;padding:2mm 3mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao{
+            padding:0 1.5mm!important;font-size:8.8pt!important;line-height:1.18!important;
+          }
           #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
             box-sizing:border-box!important;
-            padding:3.2mm 5.5mm 3.4mm!important;
-            margin-bottom:2.2mm!important;
+            padding:2.2mm 4mm 2.3mm!important;
+            margin:0 0 1.5mm!important;
+            break-inside:avoid!important;page-break-inside:avoid!important;
           }
-          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento) h4{
-            margin:0 0 2mm!important;
-            padding-bottom:1.2mm!important;
+          #secDetalhesCirurgia #detalheConteudoImpressao h4{
+            margin:0 0 1.2mm!important;padding:0 0 .8mm!important;
+            font-size:8.7pt!important;line-height:1.12!important;
           }
-          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento) .grid{
-            padding:0 1.2mm!important;
-            column-gap:5mm!important;
-            row-gap:1.8mm!important;
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid{
+            padding:0 .8mm!important;column-gap:3.5mm!important;row-gap:.8mm!important;
           }
-          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento) .grid>div{
-            padding:.8mm .6mm!important;
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid>div{
+            padding:.25mm .5mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao strong{
+            margin-bottom:.3mm!important;font-size:7pt!important;line-height:1.08!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao span,
+          #secDetalhesCirurgia #detalheConteudoImpressao p{
+            font-size:8.8pt!important;line-height:1.16!important;padding-top:0!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus{
+            gap:1.5mm!important;margin:0 0 1.5mm!important;
           }
           #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
-            box-sizing:border-box!important;
-            padding:2.4mm 3.5mm!important;
+            box-sizing:border-box!important;padding:2.2mm 4mm!important;
           }
           #secDetalhesCirurgia #detalheBoxCancelamento{
-            box-sizing:border-box!important;
-            padding:3mm 5mm!important;
+            box-sizing:border-box!important;padding:2mm 4mm!important;
+          }
+          #secDetalhesCirurgia .print-document-footer{
+            margin-top:1.5mm!important;padding:0 1.5mm!important;
+          }
+          #secDetalhesCirurgia .print-emission{
+            margin:0 0 2mm!important;font-size:7pt!important;line-height:1.12!important;
+          }
+          #secDetalhesCirurgia .print-footer-note{
+            font-size:6.8pt!important;line-height:1.1!important;
           }
         }
 
