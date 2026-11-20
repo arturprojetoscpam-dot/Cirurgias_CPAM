@@ -2717,7 +2717,70 @@
             margin-top:2mm!important;
           }
         }
-</style>
+
+        @media print{
+          /* A moldura externa vem do estilo global do cartão que envolve todo o documento.
+             Remove somente essa borda, sem apagar os contornos das seções internas. */
+          #appShell #secDetalhesCirurgia > div.rounded-2xl.border.bg-white{
+            border:0!important;
+            outline:0!important;
+            box-shadow:none!important;
+            border-radius:0!important;
+            background:#fff!important;
+          }
+
+          /* Recupera a leitura: escala natural e tipografia confortável. */
+          #secDetalhesCirurgia > div{zoom:1!important}
+          #secDetalhesCirurgia #detalheConteudoImpressao{
+            font-size:9pt!important;
+            line-height:1.3!important;
+            padding:0 3mm!important;
+            margin-top:0!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao > div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            padding:2.5mm 3mm 2.7mm!important;
+            margin:0 0 2.8mm!important;
+            border:1px solid #dce6e0!important;
+            border-radius:2mm!important;
+            background:#fff!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao h4{
+            margin:0 0 2mm!important;
+            padding:0 0 1.5mm!important;
+            font-size:9pt!important;
+            line-height:1.25!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid{
+            column-gap:4mm!important;
+            row-gap:2mm!important;
+            padding:0 1mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid>div{
+            padding:.5mm .7mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao strong{
+            font-size:7.2pt!important;
+            line-height:1.2!important;
+            margin-bottom:.8mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao span,
+          #secDetalhesCirurgia #detalheConteudoImpressao p{
+            font-size:9pt!important;
+            line-height:1.3!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus{
+            gap:2mm!important;
+            margin:0 0 2.5mm!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
+            padding:2mm 2.5mm!important;
+            border:1px solid #d5e1db!important;
+            border-radius:1.5mm!important;
+            background:#f7faf8!important;
+          }
+        }
+
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
