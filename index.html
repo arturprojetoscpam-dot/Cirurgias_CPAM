@@ -3080,6 +3080,20 @@
           }
         }
 
+
+        /* Ajustes do menu e calendário semanal da agenda eletiva */
+        #menuLateral .sidebar-brand p:first-child{font-size:12px!important;letter-spacing:.16em!important;color:#276749!important}
+        #menuLateral [data-nav].nav-ativo,#menuLateral [data-nav].nav-ativo:hover{background:#c9f0dc!important;color:#123c2b!important;border:1px solid #176344!important;box-shadow:inset 5px 0 0 #087443,0 2px 5px rgba(18,60,43,.12)!important}
+        #menuLateral [data-nav].nav-ativo i,#menuLateral [data-nav].nav-ativo span{color:#123c2b!important;opacity:1!important}
+        #menuLateral [data-nav].nav-ativo i{filter:none!important}
+        .agenda-dia-card{min-width:0;border:1px solid #d6e1da;border-radius:13px;background:#fff;padding:10px 8px;text-align:left;color:#26382f;transition:border-color .15s,background .15s,box-shadow .15s}
+        .agenda-dia-card:hover{border-color:#31845c;background:#f3fbf6}
+        .agenda-dia-card.selecionado{border:2px solid #176344;background:#e0f4e8;box-shadow:0 2px 7px rgba(23,99,68,.13);padding:9px 7px}
+        .agenda-dia-card .agenda-dia-numero{font-size:21px;font-weight:800;line-height:1.1;color:#173d2b}
+        .agenda-dia-card .agenda-dia-status{display:flex;justify-content:space-between;gap:4px;margin-top:7px;font-size:9px;line-height:1.25;color:#52645a}
+        .agenda-dia-card .agenda-dia-total{font-size:10px;font-weight:800;color:#176344}
+        @media(max-width:639px){.agenda-dia-card{padding:9px 7px}.agenda-dia-card .agenda-dia-numero{font-size:19px}}
+
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -3571,8 +3585,9 @@
 
         <section id="secAgendamentosEletivos" class="hidden space-y-5">
 <div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">Programação cirúrgica</p><h2 class="mt-1 text-xl font-bold text-slate-800"><i class="fa-solid fa-calendar-check mr-2 text-emerald-700"></i>Cirurgias eletivas</h2><p class="mt-1 text-xs text-slate-500">Agenda compartilhada entre Regulação e Bloco Cirúrgico.</p></div><div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600"><i class="fa-solid fa-shield-halved text-emerald-700"></i>Acesso por setor</div></div>
-<div class="grid grid-cols-1 gap-3 sm:grid-cols-3"><div class="rounded-2xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Data da agenda</p><input id="filtroDataAgendaEletiva" type="date" class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" aria-label="Data da agenda eletiva"></div><div class="rounded-2xl border border-slate-200 bg-white p-4 sm:col-span-2"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Responsabilidades</p><div class="mt-2 flex flex-wrap gap-2 text-xs"><span class="rounded-full bg-emerald-50 px-3 py-1.5 font-semibold text-emerald-800">Regulação · cria agendamentos</span><span class="rounded-full bg-sky-50 px-3 py-1.5 font-semibold text-sky-800">Bloco · responde à agenda</span></div></div></div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white"><div class="border-b border-slate-100 bg-slate-50/70 px-4 py-3"><h3 class="text-sm font-bold text-slate-800">Programação do dia</h3><p class="mt-1 text-[11px] text-slate-500">Os agendamentos serão exibidos aqui após a conferência e publicação da importação de 2027.</p></div><div class="flex flex-col items-center px-5 py-12 text-center"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><i class="fa-solid fa-calendar-days text-2xl"></i></div><h3 class="mt-4 text-sm font-bold text-slate-700">Agenda em preparação</h3><p class="mt-1 max-w-lg text-xs leading-6 text-slate-500">Os 181 registros de 2027 continuam preservados na área de importação. Eles ainda não foram publicados nesta agenda. Nenhum dado foi descartado.</p></div></div>
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-3"><div class="rounded-2xl border border-slate-200 bg-white p-4"><label for="filtroDataAgendaEletiva" class="block text-[10px] font-bold uppercase tracking-wide text-slate-500">Data da agenda</label><input id="filtroDataAgendaEletiva" type="date" onchange="atualizarSemanaAgendaEletiva()" class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" aria-label="Data da agenda eletiva"></div><div class="rounded-2xl border border-slate-200 bg-white p-4 sm:col-span-2"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Responsabilidades</p><div class="mt-2 flex flex-wrap gap-2 text-xs"><span class="rounded-full bg-emerald-50 px-3 py-1.5 font-semibold text-emerald-800">Regulação · cria agendamentos</span><span class="rounded-full bg-sky-50 px-3 py-1.5 font-semibold text-sky-800">Bloco · responde à agenda</span></div></div></div>
+<div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="mb-3 flex flex-wrap items-end justify-between gap-2"><div><p class="text-[10px] font-bold uppercase tracking-[.14em] text-emerald-700">Visão semanal</p><h3 id="agendaMesAno" class="mt-1 text-base font-bold text-slate-800">Semana da agenda</h3></div><p class="text-[10px] text-slate-500">Selecione um dia para consultar a programação</p></div><div id="agendaSemanaCards" class="grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-7" aria-live="polite"></div><p class="mt-3 text-[10px] text-slate-500">Os indicadores serão preenchidos com os registros publicados na agenda.</p></div>
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white"><div class="border-b border-slate-100 bg-slate-50/70 px-4 py-3"><div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="text-sm font-bold text-slate-800">Programação do dia</h3><p id="agendaDataSelecionadaLabel" class="mt-1 text-[11px] text-slate-500">Selecione uma data.</p></div><span class="rounded-full bg-amber-50 px-3 py-1 text-[10px] font-semibold text-amber-800">Agenda em preparação</span></div></div><div class="flex flex-col items-center px-5 py-10 text-center"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><i class="fa-solid fa-calendar-days text-2xl"></i></div><h3 class="mt-4 text-sm font-bold text-slate-700">Programação aguardando publicação</h3><p class="mt-1 max-w-lg text-xs leading-6 text-slate-500">Os 181 registros de 2027 continuam preservados na área de importação. Eles ainda não foram publicados nesta agenda. Nenhum dado foi descartado.</p></div></div>
 </section>
 
         <section id="secCancelamentos" class="hidden space-y-4">
@@ -4878,6 +4893,26 @@
             else{definirRota('/login',true);mostrarLogin(false);}
         }
         window.addEventListener('popstate',function(){resolverRotaAtual();});
+        function dataLocalISOAgenda(data){return data.getFullYear()+'-'+String(data.getMonth()+1).padStart(2,'0')+'-'+String(data.getDate()).padStart(2,'0');}
+        function inicializarAgendaEletiva(){const campo=document.getElementById('filtroDataAgendaEletiva');if(!campo)return;if(!campo.value)campo.value=dataLocalISOAgenda(new Date());atualizarSemanaAgendaEletiva();}
+        function atualizarSemanaAgendaEletiva(){
+            const campo=document.getElementById('filtroDataAgendaEletiva'),container=document.getElementById('agendaSemanaCards');if(!campo||!container)return;
+            const valor=campo.value||dataLocalISOAgenda(new Date());if(!campo.value)campo.value=valor;
+            const partes=valor.split('-').map(Number),selecionada=new Date(partes[0],partes[1]-1,partes[2],12),inicio=new Date(selecionada);
+            inicio.setDate(selecionada.getDate()-selecionada.getDay());
+            const hojeISO=dataLocalISOAgenda(new Date()),nomesDias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+            const mesAno=selecionada.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+            document.getElementById('agendaMesAno').textContent=mesAno.charAt(0).toLocaleUpperCase('pt-BR')+mesAno.slice(1);
+            document.getElementById('agendaDataSelecionadaLabel').textContent='Data selecionada: '+selecionada.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+            container.innerHTML='';
+            for(let i=0;i<7;i++){
+                const dia=new Date(inicio);dia.setDate(inicio.getDate()+i);const iso=dataLocalISOAgenda(dia),ativo=iso===valor,ehHoje=iso===hojeISO,botao=document.createElement('button');
+                botao.type='button';botao.className='agenda-dia-card'+(ativo?' selecionado':'');botao.setAttribute('aria-pressed',ativo?'true':'false');
+                botao.setAttribute('aria-label',dia.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})+(ehHoje?', hoje':''));
+                botao.innerHTML='<div class="flex items-center justify-between gap-1"><span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">'+nomesDias[i]+'</span>'+(ehHoje?'<span class="rounded-full bg-emerald-700 px-1.5 py-0.5 text-[8px] font-bold text-white">Hoje</span>':'')+'</div><div class="agenda-dia-numero mt-1">'+String(dia.getDate()).padStart(2,'0')+'</div><div class="agenda-dia-status"><span>Total</span><strong class="agenda-dia-total">—</strong></div><div class="agenda-dia-status"><span>Pend.</span><span>—</span></div><div class="agenda-dia-status"><span>Real.</span><span>—</span></div><div class="agenda-dia-status"><span>Canc.</span><span>—</span></div>';
+                botao.addEventListener('click',function(){campo.value=iso;atualizarSemanaAgendaEletiva();});container.appendChild(botao);
+            }
+        }
         function navegarSistema(destino,atualizarHistorico=true){
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
             const podeAdministrar=perfilAtual&&perfilAtual.role==='administrador';
@@ -4889,7 +4924,7 @@
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
             ['secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-            if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');}
+            if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');inicializarAgendaEletiva();}
             else if(destino==='registro'){document.getElementById('secFormulario').classList.remove('hidden');}
             else if(destino==='medicos'){document.getElementById('secProfissionais').classList.remove('hidden');carregarProfissionais();}
             else if(destino==='pesquisa'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];carregarPacientes();}
