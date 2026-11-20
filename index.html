@@ -2926,6 +2926,61 @@
             margin-bottom:2mm!important;
           }
         }
+
+        /* Correção do cabeçalho e alinhamento do rodapé da impressão */
+        @media print{
+          #secDetalhesCirurgia .print-brand{
+            gap:11px!important;
+            padding-bottom:4px!important;
+          }
+          #secDetalhesCirurgia .print-brand img{
+            height:43px!important;
+            max-width:100px!important;
+            object-fit:contain!important;
+          }
+          #secDetalhesCirurgia .print-brand strong{
+            font-size:9.2pt!important;
+            line-height:1.25!important;
+            letter-spacing:.3px!important;
+          }
+          #secDetalhesCirurgia .print-brand span{
+            font-size:7.8pt!important;
+            line-height:1.2!important;
+          }
+          #secDetalhesCirurgia .print-document-title{
+            padding:4px 1mm 4px!important;
+            margin:0!important;
+          }
+          #secDetalhesCirurgia .print-patient-line{
+            margin-top:1mm!important;
+            padding:2.5mm 3mm!important;
+          }
+          #secDetalhesCirurgia .print-document-footer{
+            align-items:flex-start!important;
+            text-align:left!important;
+            margin-top:3mm!important;
+            padding:0 2mm!important;
+          }
+          #secDetalhesCirurgia .print-emission,
+          #secDetalhesCirurgia .print-footer-note{
+            width:100%!important;
+            text-align:left!important;
+            margin-left:0!important;
+            margin-right:0!important;
+          }
+          #secDetalhesCirurgia .print-emission{
+            margin-bottom:2mm!important;
+          }
+          #secDetalhesCirurgia .print-footer-note{
+            margin-top:0!important;
+          }
+          #secDetalhesCirurgia .print-document-footer *::before,
+          #secDetalhesCirurgia .print-document-footer *::after{
+            content:none!important;
+            display:none!important;
+          }
+          #secDetalhesCirurgia .print-signatures{display:none!important}
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
