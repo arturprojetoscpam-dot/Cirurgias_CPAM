@@ -4044,6 +4044,22 @@
             if(cancelada)carregarCatalogoCancelamentos();
         }
         async function abrirDetalhesIndex(i,atualizarHistorico=true){
+            const registroAlvo=(i&&typeof i==='object')?i:registrosFiltrados[i];
+            if(!registroAlvo){exibirToast('Não foi possível identificar a cirurgia selecionada.','erro');return;}
+            if(atualizarHistorico){
+                telaAnteriorDetalhes=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'historico':'pesquisa');
+                if(registroAlvo.id)definirRota('/cirurgias/'+encodeURIComponent(registroAlvo.id),false);
+            }
+            ['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secFormulario','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
+            document.getElementById('secDetalhesCirurgia').classList.remove('hidden');
+            window.scrollTo({top:0,behavior:'auto'});
+            try{return await abrirDetalhesIndexConteudo(registroAlvo,false);}
+            catch(error){
+                console.error('Falha ao abrir os dados da cirurgia:',error);
+                exibirToast('Não foi possível abrir os dados da cirurgia: '+(error?.message||'erro inesperado'),'erro');
+            }
+        }
+        async function abrirDetalhesIndexConteudo(i,atualizarHistorico=true){
             const r=(i&&typeof i==='object')?i:registrosFiltrados[i];if(!r)return;
             cirurgiaModalAtual=r;if(atualizarHistorico&&r.id)definirRota('/cirurgias/'+encodeURIComponent(r.id),false);const procedimentoResolvido=await resolverNomeProcedimento(r);let pacienteDetalhe=pacienteHistoricoAtual;
             if(r.paciente_id&&(!pacienteDetalhe||String(pacienteDetalhe.id)!==String(r.paciente_id))){try{const {data,error}=await supabaseClient.from('pacientes').select('id,nome_paciente,codigo_paciente,cns,data_nascimento,sexo,nome_mae').eq('id',r.paciente_id).maybeSingle();if(error)throw error;if(data)pacienteDetalhe=data;}catch(error){console.warn('Não foi possível carregar a identificação do paciente para os detalhes:',error);}}
@@ -4053,7 +4069,7 @@
                 detalheProc3:r.Procedimento3||'-',detalheMedico:r.Medico||'-',detalheCrmCir:r.CRM_CIR||'-',detalheAnestesista:r.Anestesista||'-',
                 detalheCrmAnest:r.CRM_ANEST||'-',detalheAnestesia:r.Anestesia1||'-',detalheDigitadoInfo:(r.DIGITADO_POR||'SISTEMA')+' em '+(r.DIGITADO_EM||'-'),detalheCaraterBadge:r.Carater_Atendimento||'-'};
             Object.keys(v).forEach(function(id){document.getElementById(id).textContent=v[id];});
-            const nomePacienteCabecalho=(pacienteDetalhe&&pacienteDetalhe.nome_paciente)||r.Nome_Paciente||'-',codigoPacienteCabecalho=(pacienteDetalhe&&pacienteDetalhe.codigo_paciente!=null)?formatarCodigoPaciente(pacienteHistoricoAtual.codigo_paciente):'-';
+            const nomePacienteCabecalho=(pacienteDetalhe&&pacienteDetalhe.nome_paciente)||r.Nome_Paciente||'-',codigoPacienteCabecalho=(pacienteDetalhe&&pacienteDetalhe.codigo_paciente!=null)?formatarCodigoPaciente(pacienteDetalhe.codigo_paciente):'-';
             document.getElementById('detalheTituloPrincipal').textContent='Dados da Cirurgia';
             document.getElementById('detalheEspecialidadeCard').textContent=r.Especialidade||'-';
             document.getElementById('detalheSubtitulo').textContent='Data da cirurgia: '+formatarData(r.Data_da_Cirurgia);
