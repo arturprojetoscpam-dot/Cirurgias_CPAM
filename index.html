@@ -2528,6 +2528,37 @@
         }
 
         @media print{
+          /* Compensação para impressão em 105%: manter o conteúdo compacto em uma página */
+          #secDetalhesCirurgia>div{zoom:.94!important}
+          #detalheConteudoImpressao{font-size:8pt!important;line-height:1.22!important}
+          #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            margin-bottom:1.8mm!important;padding:1.8mm 2.2mm!important
+          }
+          #detalheConteudoImpressao h4{
+            margin-bottom:1.2mm!important;padding-bottom:1mm!important
+          }
+          #detalheConteudoImpressao .grid{
+            row-gap:1.2mm!important;column-gap:3mm!important
+          }
+          #detalheConteudoImpressao .grid>div{padding:.2mm .4mm!important}
+          #detalheConteudoImpressao strong{
+            font-size:6.8pt!important;margin-bottom:.5mm!important;line-height:1.1!important
+          }
+          #detalheConteudoImpressao span,#detalheConteudoImpressao p{
+            font-size:8pt!important;line-height:1.2!important
+          }
+          #detalheHeaderStatus{gap:1.5mm!important;margin-bottom:1.5mm!important}
+          #detalheHeaderStatus .detalhe-info-card{padding:1.5mm 2mm!important}
+          .print-document-header{margin-bottom:5px!important;padding-bottom:4px!important}
+          .print-brand{padding-bottom:3px!important}
+          .print-brand img{height:34px!important}
+          .print-document-title{padding:3px 1mm 4px!important}
+          .print-patient-line{padding:3px 6px!important}
+          .print-document-footer{margin-top:6px!important;padding-top:4px!important}
+          .print-emission{margin-bottom:8px!important}
+          .print-signatures{gap:18px!important;margin-bottom:5px!important}
+        }
+        @media print{
           /* Cabeçalho com margem interna para afastar logo e textos do contorno */
           .print-document-header{
             padding:0 5mm 6px!important;
