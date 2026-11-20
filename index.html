@@ -2780,6 +2780,91 @@
           }
         }
 
+    
+        @media print{
+          /* Compactação vertical: preservar a tipografia e ganhar espaço entre blocos. */
+          #secDetalhesCirurgia .print-document-header{
+            margin:0 0 5px!important;
+            padding:0 3mm 4px!important;
+          }
+          #secDetalhesCirurgia .print-brand{
+            min-height:0!important;
+            padding-bottom:3px!important;
+            gap:7px!important;
+          }
+          #secDetalhesCirurgia .print-brand img{
+            height:32px!important;
+            max-width:78px!important;
+          }
+          #secDetalhesCirurgia .print-document-title{
+            padding:3px 1mm 4px!important;
+          }
+          #secDetalhesCirurgia .print-document-title h2{
+            font-size:11.5pt!important;
+          }
+          #secDetalhesCirurgia .print-document-title p{
+            margin-top:1px!important;
+            font-size:8pt!important;
+          }
+          #secDetalhesCirurgia .print-patient-line{
+            padding:3px 7px!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao{
+            padding:0 2mm!important;
+            line-height:1.24!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            padding:1.3mm 2.2mm 1.5mm!important;
+            margin:0 0 1.3mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao h4{
+            margin:0 0 1mm!important;
+            padding:0 0 .8mm!important;
+            line-height:1.15!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid{
+            column-gap:3mm!important;
+            row-gap:1mm!important;
+            padding:0 .5mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid>div{
+            padding:.2mm .4mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao strong{
+            margin-bottom:.35mm!important;
+            line-height:1.1!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao span,
+          #secDetalhesCirurgia #detalheConteudoImpressao p{
+            line-height:1.2!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus{
+            gap:1.5mm!important;
+            margin:0 0 1.5mm!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
+            padding:1.2mm 2mm!important;
+          }
+          #secDetalhesCirurgia #detalheBoxCancelamento{
+            padding:1.5mm 2mm!important;
+          }
+          #secDetalhesCirurgia .print-document-footer{
+            margin-top:4mm!important;
+            padding-top:0!important;
+          }
+          #secDetalhesCirurgia .print-emission{
+            margin-bottom:5mm!important;
+            font-size:7.5pt!important;
+          }
+          #secDetalhesCirurgia .print-signatures{
+            gap:18px!important;
+            margin:0 8px 2mm!important;
+          }
+          #secDetalhesCirurgia .print-signatures div{
+            padding-top:4px!important;
+          }
+        }
+
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
