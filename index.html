@@ -2489,6 +2489,107 @@
             padding:10px 11px!important;gap:7px 10px!important;
           }
         }
+
+        /* Consulta da cirurgia: reduzir respiros sem alterar os dados */
+        #secDetalhesCirurgia{row-gap:8px!important}
+        #secDetalhesCirurgia>div{
+          border-radius:12px!important
+        }
+        #secDetalhesCirurgia #detalheConteudoImpressao{
+          padding:12px 14px!important;
+          font-size:13px!important;
+          line-height:1.32!important
+        }
+        #secDetalhesCirurgia #detalheConteudoImpressao>*+*{
+          margin-top:10px!important
+        }
+        #secDetalhesCirurgia #detalheHeaderStatus{
+          gap:8px!important;margin-bottom:9px!important
+        }
+        #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
+          padding:8px 10px!important
+        }
+        #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+          margin-bottom:9px!important
+        }
+        #secDetalhesCirurgia #detalheConteudoImpressao h4{
+          margin-bottom:5px!important;padding-bottom:4px!important
+        }
+        #secDetalhesCirurgia #detalheConteudoImpressao .grid{
+          column-gap:12px!important;row-gap:7px!important
+        }
+        @media(max-width:767px){
+          #secDetalhesCirurgia #detalheConteudoImpressao{
+            padding:10px!important
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
+            padding:7px 9px!important
+          }
+        }
+
+        @media print{
+          /* Cabeçalho com margem interna para afastar logo e textos do contorno */
+          .print-document-header{
+            padding:0 5mm 6px!important;
+            margin:0 0 8px!important;
+            border-bottom-width:1px!important
+          }
+          .print-brand{
+            min-height:0!important;
+            gap:9px!important;
+            padding:0 1mm 6px!important
+          }
+          .print-brand img{
+            height:38px!important;max-width:88px!important;
+            margin:0!important
+          }
+          .print-brand div{gap:2px!important}
+          .print-brand strong{font-size:8pt!important;line-height:1.2!important}
+          .print-brand span{font-size:7pt!important;line-height:1.15!important}
+          .print-document-title{
+            padding:5px 1mm 6px!important;margin:0!important
+          }
+          .print-document-title h2{
+            font-size:10.5pt!important;line-height:1.15!important;
+            letter-spacing:.4px!important
+          }
+          .print-document-title p{
+            font-size:7.5pt!important;line-height:1.15!important;
+            margin:2px 0 0!important
+          }
+          .print-patient-line{
+            padding:5px 7px!important;gap:4mm!important
+          }
+          #detalheConteudoImpressao{
+            padding:0 3mm!important;
+            font-size:8.5pt!important;line-height:1.3!important
+          }
+          #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            padding:2.5mm 3mm 2.7mm!important;
+            margin:0 0 2.8mm!important
+          }
+          #detalheConteudoImpressao h4{
+            margin:0 0 2mm!important;padding:0 0 1.5mm!important;
+            font-size:8.5pt!important
+          }
+          #detalheConteudoImpressao .grid{
+            column-gap:4mm!important;row-gap:2mm!important;
+            padding:0 1mm!important
+          }
+          #detalheConteudoImpressao .grid>div{padding:.5mm .7mm!important}
+          #detalheHeaderStatus{
+            gap:2mm!important;margin:0 0 2.5mm!important
+          }
+          #detalheHeaderStatus .detalhe-info-card{
+            padding:2mm 2.5mm!important
+          }
+          .print-document-footer{
+            margin-top:10px!important;padding-top:6px!important
+          }
+          .print-emission{margin-bottom:12px!important}
+          .print-signatures{gap:22px!important;margin:0 8px 8px!important}
+        }
+
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
