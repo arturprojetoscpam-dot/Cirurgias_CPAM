@@ -3227,6 +3227,7 @@
                     <button id="navNovoPaciente" data-nav="novoPaciente" onclick="navegarSistema('novoPaciente')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-user-plus w-5 text-center text-base"></i><span>Novo paciente</span></button>
                     <button id="navRegistro" data-nav="registro" onclick="navegarSistema('registro')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-file-circle-plus w-5 text-center text-base"></i><span>Novo registro</span></button>
                     <button id="navMedicos" data-nav="medicos" onclick="navegarSistema('medicos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-user-doctor w-5 text-center text-base"></i><span>Profissionais</span></button>
+                    <button id="navAgendamentos" data-nav="agendamentos" onclick="navegarSistema('agendamentos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-calendar-check w-5 text-center text-base"></i><span>Cirurgias eletivas</span></button>
                     <button id="navPesquisa" data-nav="pesquisa" onclick="navegarSistema('pesquisa')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-magnifying-glass w-5 text-center text-base"></i><span>Pesquisa de pacientes</span></button>
                     <button id="navCancelamentos" data-nav="cancelamentos" onclick="navegarSistema('cancelamentos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-calendar-xmark w-5 text-center text-base"></i><span>Cancelamentos</span></button>
                     <button id="navDashboards" data-nav="dashboards" onclick="navegarSistema('dashboards')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-chart-pie w-5 text-center text-base"></i><span>Dashboards</span></button>
@@ -3568,6 +3569,12 @@
             </section>
         </div>
 
+        <section id="secAgendamentosEletivos" class="hidden space-y-5">
+<div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">Programação cirúrgica</p><h2 class="mt-1 text-xl font-bold text-slate-800"><i class="fa-solid fa-calendar-check mr-2 text-emerald-700"></i>Cirurgias eletivas</h2><p class="mt-1 text-xs text-slate-500">Agenda compartilhada entre Regulação e Bloco Cirúrgico.</p></div><div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600"><i class="fa-solid fa-shield-halved text-emerald-700"></i>Acesso por setor</div></div>
+<div class="grid grid-cols-1 gap-3 sm:grid-cols-3"><div class="rounded-2xl border border-slate-200 bg-white p-4"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Data da agenda</p><input id="filtroDataAgendaEletiva" type="date" class="mt-2 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm" aria-label="Data da agenda eletiva"></div><div class="rounded-2xl border border-slate-200 bg-white p-4 sm:col-span-2"><p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Responsabilidades</p><div class="mt-2 flex flex-wrap gap-2 text-xs"><span class="rounded-full bg-emerald-50 px-3 py-1.5 font-semibold text-emerald-800">Regulação · cria agendamentos</span><span class="rounded-full bg-sky-50 px-3 py-1.5 font-semibold text-sky-800">Bloco · responde à agenda</span></div></div></div>
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white"><div class="border-b border-slate-100 bg-slate-50/70 px-4 py-3"><h3 class="text-sm font-bold text-slate-800">Programação do dia</h3><p class="mt-1 text-[11px] text-slate-500">Os agendamentos serão exibidos aqui após a conferência e publicação da importação de 2027.</p></div><div class="flex flex-col items-center px-5 py-12 text-center"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><i class="fa-solid fa-calendar-days text-2xl"></i></div><h3 class="mt-4 text-sm font-bold text-slate-700">Agenda em preparação</h3><p class="mt-1 max-w-lg text-xs leading-6 text-slate-500">Os 181 registros de 2027 continuam preservados na área de importação. Eles ainda não foram publicados nesta agenda. Nenhum dado foi descartado.</p></div></div>
+</section>
+
         <section id="secCancelamentos" class="hidden space-y-4">
             <div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-calendar-xmark mr-2 text-rose-600"></i>Cancelamentos cirúrgicos</h2><p class="mt-1 text-xs text-slate-500">Consulta dos registros cancelados, com classificação do motivo e da responsabilidade.</p></div><button type="button" onclick="carregarCancelamentos(true)" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-1"></i>Atualizar</button></div>
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -3807,7 +3814,7 @@
         let timedLocalResultado=null,vitaiConfigurado=false,vitaiEstado='desconhecido',vitaiVerificacaoEmAndamento=false;
         let pacienteModalAtual=null,cirurgiaModalAtual=null,telaAnteriorCirurgia='historico',telaAnteriorDetalhes='historico',cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,loginEnviadoPorClique=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
-        const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta'};
+        const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta',regulacao:'Regulação',bloco:'Bloco Cirúrgico'};
 
         window.addEventListener('DOMContentLoaded',async function(){
             document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();
@@ -3841,7 +3848,7 @@
                 if(error)throw error;
                 if(!perfil||!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Acesso suspenso. Procure o administrador.');return;}
                 usuarioAtual=usuario;perfilAtual=perfil;
-                if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/pacientes',true);
+                if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/agendamentos-eletivos',true);
                 document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
                 document.getElementById('usuarioEmail').textContent=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email;
                 document.getElementById('usuarioEmailSecundario').textContent=usuario.email||perfil.email||'';
@@ -4818,7 +4825,7 @@
         function resolverRotaAtual(){
             const caminho=caminhoAtual();
             if(caminho==='/login'){
-                if(perfilAtual){definirRota('/pacientes',true);navegarSistema('pesquisa',false);}
+                if(perfilAtual){definirRota('/agendamentos-eletivos',true);navegarSistema('agendamentos',false);}
                 else mostrarLogin(false);
                 return;
             }
@@ -4855,7 +4862,7 @@
                 })();
                 return;
             }
-            const rotasDiretas={'/cancelamentos':'cancelamentos','/dashboards':'dashboards','/auditoria':'auditoria','/usuarios':'usuarios','/profissionais':'medicos'};
+            const rotasDiretas={'/agendamentos-eletivos':'agendamentos','/cancelamentos':'cancelamentos','/dashboards':'dashboards','/auditoria':'auditoria','/usuarios':'usuarios','/profissionais':'medicos'};
             if(rotasDiretas[caminho]){
                 if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}
                 const destino=rotasDiretas[caminho];
@@ -4867,7 +4874,7 @@
                 }
                 navegarSistema(destino,false);return;
             }
-            if(perfilAtual){definirRota('/pacientes',true);navegarSistema('pesquisa',false);}
+            if(perfilAtual){definirRota('/agendamentos-eletivos',true);navegarSistema('agendamentos',false);}
             else{definirRota('/login',true);mostrarLogin(false);}
         }
         window.addEventListener('popstate',function(){resolverRotaAtual();});
@@ -4877,12 +4884,13 @@
             if(['auditoria','usuarios'].includes(destino)&&!podeAdministrar){exibirToast('Acesso restrito ao perfil Administrador.','erro');return;}
             if(destino==='medicos'&&!podeEditar){exibirToast('Seu perfil não permite acessar os profissionais.','erro');return;}
             if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pacientes',false);
-            const rotasDestino={'cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios','medicos':'/profissionais'};
+            const rotasDestino={'agendamentos':'/agendamentos-eletivos','cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios','medicos':'/profissionais'};
             if(atualizarHistorico&&rotasDestino[destino])definirRota(rotasDestino[destino],false);
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
-            ['secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-            if(destino==='registro'){document.getElementById('secFormulario').classList.remove('hidden');}
+            ['secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+            if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');}
+            else if(destino==='registro'){document.getElementById('secFormulario').classList.remove('hidden');}
             else if(destino==='medicos'){document.getElementById('secProfissionais').classList.remove('hidden');carregarProfissionais();}
             else if(destino==='pesquisa'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];carregarPacientes();}
             else if(destino==='novoPaciente'){pacienteHistoricoAtual=null;abrirCadastroPaciente();}
