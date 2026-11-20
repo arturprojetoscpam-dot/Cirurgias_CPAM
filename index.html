@@ -2529,16 +2529,16 @@
 
         @media print{
           /* Compactação vertical para tentar manter uma página sem reduzir a escala */
-          #secDetalhesCirurgia>div{zoom:1!important}
+          #secDetalhesCirurgia>div{zoom:.94!important}
           #detalheConteudoImpressao{font-size:8pt!important;line-height:1.16!important}
           #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
-            margin-bottom:1.1mm!important;padding:1.1mm 2.2mm!important
+            margin-bottom:.7mm!important;padding:.7mm 2mm!important
           }
           #detalheConteudoImpressao h4{
-            margin-bottom:.8mm!important;padding-bottom:.7mm!important
+            margin-bottom:.5mm!important;padding-bottom:.5mm!important
           }
           #detalheConteudoImpressao .grid{
-            row-gap:.7mm!important;column-gap:3mm!important
+            row-gap:.45mm!important;column-gap:2.5mm!important
           }
           #detalheConteudoImpressao .grid>div{padding:0 .3mm!important}
           #detalheConteudoImpressao strong{
@@ -2548,7 +2548,7 @@
             font-size:8pt!important;line-height:1.14!important
           }
           #detalheHeaderStatus{gap:1mm!important;margin-bottom:1mm!important}
-          #detalheHeaderStatus .detalhe-info-card{padding:1mm 2mm!important}
+          #detalheHeaderStatus .detalhe-info-card{padding:.7mm 1.8mm!important}
           .print-document-header{margin-bottom:3px!important;padding-bottom:3px!important}
           .print-brand{padding-bottom:2px!important}
           .print-brand img{height:32px!important}
@@ -3295,14 +3295,6 @@
                 </div>
 
 
-                <div class="space-y-2"><h4 class="border-b pb-1 text-[11px] font-bold uppercase text-teal-800"><i class="fa-solid fa-clipboard-list mr-1"></i> Dados complementares do procedimento</h4><div class="grid grid-cols-2 gap-3 sm:grid-cols-3"><div><strong class="block text-[10px] text-slate-400">HORÁRIO</strong><span id="detalheHorario">-</span></div><div><strong class="block text-[10px] text-slate-400">SALA / BLOCO</strong><span id="detalheSala">-</span></div><div><strong class="block text-[10px] text-slate-400">CÓDIGO TUSS / SUS</strong><span id="detalheCodigo">-</span></div><div><strong class="block text-[10px] text-slate-400">MÉDICO AUXILIAR</strong><span id="detalheAuxiliar">-</span></div><div><strong class="block text-[10px] text-slate-400">INSTRUMENTADOR / ENFERMAGEM</strong><span id="detalheInstrumentador">-</span></div><div><strong class="block text-[10px] text-slate-400">BIÓPSIA</strong><span id="detalheBiopsia">-</span></div><div><strong class="block text-[10px] text-slate-400">ENCAMINHADO À UTI</strong><span id="detalheUti">-</span></div><div><strong class="block text-[10px] text-slate-400">HEMODERIVADOS</strong><span id="detalheHemoderivados">-</span></div><div class="col-span-2 sm:col-span-3"><strong class="block text-[10px] text-slate-400">OBSERVAÇÕES / INTERCORRÊNCIAS</strong><p id="detalheDescricao" class="mt-1 whitespace-pre-wrap text-slate-700">-</p></div></div></div>
-
-                <!-- Motivo Cancelamento (Se houver) -->
-                <div id="detalheBoxCancelamento" class="hidden p-3 bg-rose-50 rounded-xl border border-rose-200">
-                    <strong class="block text-rose-800 text-[10px] uppercase font-bold">Motivo do Cancelamento</strong>
-                    <p id="detalheMotivoCancelamento" class="text-xs text-rose-900 font-medium mt-0.5">-</p>
-                </div>
-
                 <!-- Equipe Médica -->
                 <div class="space-y-2">
                     <h4 class="font-bold text-teal-800 uppercase text-[11px] border-b pb-1 flex items-center gap-1.5">
@@ -3316,7 +3308,17 @@
                         <div><strong class="block text-slate-400 text-[10px]">TIPO ANESTESIA</strong> <span id="detalheAnestesia">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">DIGITADO POR / EM</strong> <span id="detalheDigitadoInfo" class="text-slate-500">-</span></div>
                     </div>
+                </div
+
+                <div class="space-y-2"><h4 class="border-b pb-1 text-[11px] font-bold uppercase text-teal-800"><i class="fa-solid fa-clipboard-list mr-1"></i> Dados complementares do procedimento</h4><div class="grid grid-cols-2 gap-3 sm:grid-cols-3"><div><strong class="block text-[10px] text-slate-400">HORÁRIO</strong><span id="detalheHorario">-</span></div><div><strong class="block text-[10px] text-slate-400">SALA / BLOCO</strong><span id="detalheSala">-</span></div><div><strong class="block text-[10px] text-slate-400">CÓDIGO TUSS / SUS</strong><span id="detalheCodigo">-</span></div><div><strong class="block text-[10px] text-slate-400">MÉDICO AUXILIAR</strong><span id="detalheAuxiliar">-</span></div><div><strong class="block text-[10px] text-slate-400">INSTRUMENTADOR / ENFERMAGEM</strong><span id="detalheInstrumentador">-</span></div><div><strong class="block text-[10px] text-slate-400">BIÓPSIA</strong><span id="detalheBiopsia">-</span></div><div><strong class="block text-[10px] text-slate-400">ENCAMINHADO À UTI</strong><span id="detalheUti">-</span></div><div><strong class="block text-[10px] text-slate-400">HEMODERIVADOS</strong><span id="detalheHemoderivados">-</span></div><div class="col-span-2 sm:col-span-3"><strong class="block text-[10px] text-slate-400">OBSERVAÇÕES / INTERCORRÊNCIAS</strong><p id="detalheDescricao" class="mt-1 whitespace-pre-wrap text-slate-700">-</p></div></div></div>
+
+                <!-- Motivo Cancelamento (Se houver) -->
+                <div id="detalheBoxCancelamento" class="hidden p-3 bg-rose-50 rounded-xl border border-rose-200">
+                    <strong class="block text-rose-800 text-[10px] uppercase font-bold">Motivo do Cancelamento</strong>
+                    <p id="detalheMotivoCancelamento" class="text-xs text-rose-900 font-medium mt-0.5">-</p>
                 </div>
+
+>
             </div>
 
             <div class="print-document-footer">
