@@ -1066,6 +1066,40 @@
           .print-signatures{gap:34px!important;margin:0 12px 15px!important}
           .print-signatures div{padding-top:6px!important;font-size:8pt!important}
           .print-footer-note{font-size:7.5pt!important}
+
+          /* Cabeçalho institucional e identificação única do paciente */
+          .print-brand strong{
+            font-size:8.5pt!important;letter-spacing:.35px!important;
+            line-height:1.25!important
+          }
+          .print-brand span{font-size:7.5pt!important}
+          .print-document-title{
+            text-align:left!important;padding:8px 0 9px!important
+          }
+          .print-document-title h2{
+            text-align:left!important;font-size:12pt!important;
+            letter-spacing:.65px!important;font-weight:750!important
+          }
+          .print-document-title p{
+            text-align:left!important;font-size:8.5pt!important;
+            margin:3px 0 0!important
+          }
+          .print-patient-line strong{
+            text-transform:uppercase!important;letter-spacing:.2px!important
+          }
+          #detalheConteudoImpressao #detalheNome,
+          #detalheConteudoImpressao>div:has(#detalheNome){
+            display:none!important
+          }
+          #detalheConteudoImpressao{
+            padding:0 5mm!important
+          }
+          #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            padding:4.5mm 5mm 4.8mm!important
+          }
+          #detalheConteudoImpressao .grid{
+            padding:0 2mm!important
+          }
         }
         /* Header fixo simples: sem compactação, animação ou alteração por rolagem. */
         #appShell>header.cpam-main-header{
@@ -3017,7 +3051,7 @@
                 <img src="/logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
                 <div><strong>COMPLEXO PEDIÁTRICO ARLINDA MARQUES</strong><span>CPAM · BLOCO CIRÚRGICO</span></div>
               </div>
-              <div class="print-document-title"><h2>RESUMO DA CIRURGIA</h2><p>Registro assistencial · Documento para conferência</p></div>
+              <div class="print-document-title"><h2>REGISTRO DE CIRURGIA</h2><p>Registro assistencial · Documento para conferência</p></div>
               <div class="print-patient-line"><span>Paciente: <strong id="printPacienteNome">-</strong></span><span>Prontuário Bloco: <strong id="printPacienteProntuario">-</strong></span></div>
             </div>
             <!-- Cabeçalho no mesmo padrão visual da edição da cirurgia -->
@@ -3988,7 +4022,7 @@
             const carater=(r.Carater_Atendimento||'').toUpperCase()!=='ELETIVA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>'+(String(r.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA'):'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className=carater?'font-bold text-amber-700':'font-bold text-blue-700';
             if(atualizarHistorico)telaAnteriorDetalhes=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'historico':'pesquisa');['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secFormulario','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));document.getElementById('btnEditarCirurgiaDetalhe').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarCirurgiaCabecalho').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('secDetalhesCirurgia').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});
         }
-        function imprimirResumoCirurgia(){const nome=document.getElementById('detalhePacienteCabecalho')?.textContent||'-';const prontuario=document.getElementById('detalheProntuarioCabecalho')?.textContent||'-';document.getElementById('printPacienteNome').textContent=nome;document.getElementById('printPacienteProntuario').textContent=prontuario;document.getElementById('printDataEmissao').textContent=new Date().toLocaleString('pt-BR');window.print();}
+        function imprimirResumoCirurgia(){const nome=(document.getElementById('detalhePacienteCabecalho')?.textContent||'-').trim().toLocaleUpperCase('pt-BR');const prontuario=document.getElementById('detalheProntuarioCabecalho')?.textContent||'-';document.getElementById('printPacienteNome').textContent=nome;document.getElementById('printPacienteProntuario').textContent=prontuario;document.getElementById('printDataEmissao').textContent=new Date().toLocaleString('pt-BR');window.print();}
         function fecharModalDetalhes(){document.getElementById('secDetalhesCirurgia').classList.add('hidden');if(telaAnteriorDetalhes==='cadastroPaciente')document.getElementById('secCadastroPaciente').classList.remove('hidden');else if(telaAnteriorDetalhes==='historico')document.getElementById('secHistoricoCirurgias').classList.remove('hidden');else document.getElementById('secPacientes').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});}
         function formatarData(d){if(!d)return '-';if(d.includes('/'))return d;const p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
         function calcularIdade(valor){
