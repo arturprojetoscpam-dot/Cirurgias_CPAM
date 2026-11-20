@@ -3019,6 +3019,36 @@
           }
           #secDetalhesCirurgia .print-signatures{display:none!important}
         }
+
+        /* Correção definitiva do caractere solto e do recuo dos cards */
+        @media print{
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            box-sizing:border-box!important;
+            padding:3.2mm 5.5mm 3.4mm!important;
+            margin-bottom:2.2mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento) h4{
+            margin:0 0 2mm!important;
+            padding-bottom:1.2mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento) .grid{
+            padding:0 1.2mm!important;
+            column-gap:5mm!important;
+            row-gap:1.8mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento) .grid>div{
+            padding:.8mm .6mm!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
+            box-sizing:border-box!important;
+            padding:2.4mm 3.5mm!important;
+          }
+          #secDetalhesCirurgia #detalheBoxCancelamento{
+            box-sizing:border-box!important;
+            padding:3mm 5mm!important;
+          }
+        }
+
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -3706,7 +3736,7 @@
                         <div><strong class="block text-slate-400 text-[10px]">TIPO ANESTESIA</strong> <span id="detalheAnestesia">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">DIGITADO POR / EM</strong> <span id="detalheDigitadoInfo" class="text-slate-500">-</span></div>
                     </div>
-                </div
+                </div>
 
                 <div class="space-y-2"><h4 class="border-b pb-1 text-[11px] font-bold uppercase text-teal-800"><i class="fa-solid fa-clipboard-list mr-1"></i> Dados complementares do procedimento</h4><div class="grid grid-cols-2 gap-3 sm:grid-cols-3"><div><strong class="block text-[10px] text-slate-400">HORÁRIO</strong><span id="detalheHorario">-</span></div><div><strong class="block text-[10px] text-slate-400">SALA / BLOCO</strong><span id="detalheSala">-</span></div><div><strong class="block text-[10px] text-slate-400">CÓDIGO TUSS / SUS</strong><span id="detalheCodigo">-</span></div><div><strong class="block text-[10px] text-slate-400">MÉDICO AUXILIAR</strong><span id="detalheAuxiliar">-</span></div><div><strong class="block text-[10px] text-slate-400">INSTRUMENTADOR / ENFERMAGEM</strong><span id="detalheInstrumentador">-</span></div><div><strong class="block text-[10px] text-slate-400">BIÓPSIA</strong><span id="detalheBiopsia">-</span></div><div><strong class="block text-[10px] text-slate-400">ENCAMINHADO À UTI</strong><span id="detalheUti">-</span></div><div><strong class="block text-[10px] text-slate-400">HEMODERIVADOS</strong><span id="detalheHemoderivados">-</span></div><div class="col-span-2 sm:col-span-3"><strong class="block text-[10px] text-slate-400">OBSERVAÇÕES / INTERCORRÊNCIAS</strong><p id="detalheDescricao" class="mt-1 whitespace-pre-wrap text-slate-700">-</p></div></div></div>
 
@@ -3716,7 +3746,6 @@
                     <p id="detalheMotivoCancelamento" class="text-xs text-rose-900 font-medium mt-0.5">-</p>
                 </div>
 
->
             </div>
 
             <div class="print-document-footer">
