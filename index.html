@@ -1067,6 +1067,51 @@
           .print-signatures div{padding-top:6px!important;font-size:8pt!important}
           .print-footer-note{font-size:7.5pt!important}
 
+          /* Impressão: ocultar de forma inequívoca o cabeçalho interativo da tela */
+          #secDetalhesCirurgia > div > .detalhe-cirurgia-page-header{
+            display:none!important;visibility:hidden!important;
+            position:absolute!important;width:0!important;height:0!important;
+            overflow:hidden!important;margin:0!important;padding:0!important
+          }
+          /* Cabeçalho compacto, sem faixa colorida no título */
+          .print-document-title{
+            display:block!important;text-align:left!important;
+            padding:5px 0 7px!important;margin:0!important
+          }
+          .print-document-title h2{
+            display:block!important;background:transparent!important;
+            background-color:transparent!important;color:#174b3f!important;
+            text-align:left!important;font-size:11pt!important;
+            line-height:1.2!important;letter-spacing:.45px!important;
+            padding:0!important;margin:0!important;border:0!important;
+            box-shadow:none!important
+          }
+          .print-document-title p{
+            text-align:left!important;font-size:8pt!important;
+            line-height:1.2!important;margin:2px 0 0!important
+          }
+          .print-patient-line{
+            display:grid!important;grid-template-columns:minmax(0,1fr) minmax(32mm,auto)!important;
+            align-items:center!important;gap:5mm!important;
+            padding:6px 8px!important;margin:0!important;
+            border-radius:4px!important
+          }
+          .print-patient-item{
+            display:flex!important;flex-direction:column!important;
+            align-items:flex-start!important;gap:2px!important;
+            min-width:0!important
+          }
+          .print-patient-item span{
+            display:block!important;font-size:6.5pt!important;
+            line-height:1.1!important;letter-spacing:.35px!important;
+            color:#647b72!important;font-weight:700!important
+          }
+          .print-patient-item strong{
+            display:block!important;font-size:8.5pt!important;
+            line-height:1.2!important;color:#173f36!important;
+            text-transform:uppercase!important;overflow-wrap:anywhere!important
+          }
+
           /* Cabeçalho institucional e identificação única do paciente */
           .print-brand strong{
             font-size:8.5pt!important;letter-spacing:.35px!important;
@@ -3052,7 +3097,7 @@
                 <div><strong>COMPLEXO PEDIÁTRICO ARLINDA MARQUES</strong><span>CPAM · BLOCO CIRÚRGICO</span></div>
               </div>
               <div class="print-document-title"><h2>REGISTRO DE CIRURGIA</h2><p>Registro assistencial · Documento para conferência</p></div>
-              <div class="print-patient-line"><span>Paciente: <strong id="printPacienteNome">-</strong></span><span>Prontuário Bloco: <strong id="printPacienteProntuario">-</strong></span></div>
+              <div class="print-patient-line"><div class="print-patient-item"><span>NOME DO PACIENTE</span><strong id="printPacienteNome">-</strong></div><div class="print-patient-item"><span>PRONTUÁRIO BLOCO</span><strong id="printPacienteProntuario">-</strong></div></div>
             </div>
             <!-- Cabeçalho no mesmo padrão visual da edição da cirurgia -->
             <div class="cpam-sticky-context cpam-compact-page-header detalhe-cirurgia-page-header">
@@ -3094,7 +3139,6 @@
                         <i class="fa-solid fa-user"></i> Informações do Paciente
                     </h4>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <div><strong class="block text-slate-400 text-[10px]">NOME COMPLETO</strong> <span id="detalheNome" class="font-bold text-slate-800">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">CADASTRO AMBULATORIAL</strong> <span id="detalheProntuario" class="font-mono">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">BE VITAI DO PROCEDIMENTO</strong> <span id="detalheNbe" class="font-mono">-</span></div>
                         <div><strong class="block text-slate-400 text-[10px]">CNS (SUS)</strong> <span id="detalheCns">-</span></div>
