@@ -2929,6 +2929,30 @@
 
         
         
+        
+        /* Recuo interno: afastar o texto das bordas dos cards */
+        @media print{
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            padding:2.2mm 4.5mm 2.3mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao h4{
+            margin-bottom:1.4mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid{
+            padding:0 .8mm!important;
+            row-gap:1.2mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid>div{
+            padding:.45mm .35mm!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
+            padding:1.8mm 3.2mm!important;
+          }
+          #secDetalhesCirurgia #detalheBoxCancelamento{
+            padding:2.2mm 4.5mm!important;
+          }
+        }
+
         /* Respiro elegante entre os cards na impressão */
         @media print{
           #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
