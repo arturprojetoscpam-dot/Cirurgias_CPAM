@@ -2621,6 +2621,44 @@
           .print-signatures{gap:22px!important;margin:0 8px 8px!important}
         }
 
+
+        @media print{
+          /* Impressão sem moldura externa: mantém o documento limpo e institucional */
+          #secDetalhesCirurgia>div:first-child{
+            border:0!important;
+            outline:0!important;
+            box-shadow:none!important;
+            border-radius:0!important;
+          }
+          /* Emissão no rodapé do formulário, imediatamente antes das assinaturas */
+          #secDetalhesCirurgia .print-document-footer{
+            display:flex!important;
+            flex-direction:column!important;
+            align-items:stretch!important;
+            border:0!important;
+            border-top:0!important;
+            outline:0!important;
+            box-shadow:none!important;
+            margin-top:5mm!important;
+            padding:0 2mm!important;
+          }
+          #secDetalhesCirurgia .print-emission{
+            order:1!important;
+            display:block!important;
+            margin:0 0 7mm!important;
+            padding:0!important;
+            text-align:left!important;
+            font-size:7.5pt!important;
+            line-height:1.2!important;
+          }
+          #secDetalhesCirurgia .print-signatures{
+            order:2!important;
+            margin:0 8px 3mm!important;
+          }
+          #secDetalhesCirurgia .print-footer-note{
+            order:3!important;
+          }
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
