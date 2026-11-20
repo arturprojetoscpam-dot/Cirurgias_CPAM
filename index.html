@@ -2659,6 +2659,64 @@
             order:3!important;
           }
         }
+
+        @media print{
+          /* Retira os contornos dos cartões e da moldura externa na folha */
+          #secDetalhesCirurgia,
+          #secDetalhesCirurgia>div:first-child,
+          #secDetalhesCirurgia #detalheConteudoImpressao,
+          #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card,
+          #secDetalhesCirurgia #detalheBoxCancelamento{
+            border:0!important;
+            outline:0!important;
+            box-shadow:none!important;
+          }
+          #secDetalhesCirurgia>div:first-child{
+            background:transparent!important;
+            border-radius:0!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao{
+            padding:0 2mm!important;
+            margin-top:-2mm!important;
+          }
+          /* Cartões/seções mais baixos e com menos espaço vertical */
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            padding:0!important;
+            margin-top:0!important;
+            margin-bottom:1.2mm!important;
+            background:transparent!important;
+            border-radius:0!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento) h4{
+            margin:0 0 .6mm!important;
+            padding:0 0 .45mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao .grid{
+            row-gap:.35mm!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus{
+            margin-top:-1mm!important;
+            margin-bottom:1mm!important;
+          }
+          #secDetalhesCirurgia #detalheHeaderStatus .detalhe-info-card{
+            padding:.5mm 1.5mm!important;
+            background:transparent!important;
+          }
+          #secDetalhesCirurgia .print-document-header{
+            border:0!important;
+            outline:0!important;
+            box-shadow:none!important;
+            margin-top:-2mm!important;
+            margin-bottom:2mm!important;
+            padding-bottom:2mm!important;
+          }
+          #secDetalhesCirurgia .print-document-footer{
+            border:0!important;
+            outline:0!important;
+            box-shadow:none!important;
+            margin-top:2mm!important;
+          }
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
