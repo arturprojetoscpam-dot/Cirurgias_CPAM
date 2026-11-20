@@ -2927,6 +2927,20 @@
           }
         }
 
+        
+        
+        /* Respiro elegante entre os cards na impressão */
+        @media print{
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento){
+            margin-bottom:2.2mm!important;
+            padding-top:1.7mm!important;
+            padding-bottom:1.8mm!important;
+          }
+          #secDetalhesCirurgia #detalheConteudoImpressao>div:not(#detalheHeaderStatus):not(#detalheBoxCancelamento):last-child{
+            margin-bottom:0!important;
+          }
+        }
+
         /* Correção do cabeçalho e alinhamento do rodapé da impressão */
         @media print{
           #secDetalhesCirurgia .print-brand{
