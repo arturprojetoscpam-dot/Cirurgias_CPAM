@@ -3213,6 +3213,42 @@
         .cpam-home-card-soon .cpam-home-icon{background:#eef1ef;color:#829187}
         .cpam-home-card-soon .cpam-home-title{color:#64748b}
         .cpam-home-card-soon .cpam-home-action{color:#84918a}
+        /* Hub inicial: composição compacta e confortável em telas pequenas */
+        @media(max-width:700px){
+          #appShell main{padding:16px 12px!important}
+          #secInicio{gap:16px!important}
+          #secInicio>div:first-child{align-items:flex-start!important}
+          #secInicio>div:first-child>div{min-width:0!important}
+          #secInicio>div:first-child p:last-child{max-width:34rem;font-size:13px!important;line-height:1.5!important}
+          #secInicio>div:first-child h2{font-size:1.55rem!important;line-height:1.15!important}
+          #secInicio>.grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:10px!important;width:100%!important}
+          #secInicio .cpam-home-card{
+            display:grid!important;grid-template-columns:46px minmax(0,1fr)!important;
+            grid-template-rows:auto auto auto!important;grid-template-areas:"icon title" "icon description" "icon action"!important;
+            align-items:center!important;column-gap:13px!important;row-gap:3px!important;
+            width:100%!important;min-width:0!important;min-height:0!important;padding:13px!important;border-radius:14px!important;
+          }
+          #secInicio .cpam-home-icon{grid-area:icon!important;width:44px!important;height:44px!important;border-radius:12px!important;font-size:18px!important;align-self:center!important}
+          #secInicio .cpam-home-title{grid-area:title!important;margin:0!important;min-width:0!important;font-size:14px!important;line-height:1.25!important}
+          #secInicio .cpam-home-description{grid-area:description!important;min-width:0!important;flex:none!important;font-size:11px!important;line-height:1.4!important}
+          #secInicio .cpam-home-action{grid-area:action!important;width:100%!important;margin-top:5px!important;padding-top:7px!important;font-size:10px!important;line-height:1.2!important}
+          #secInicio .cpam-home-card:hover{transform:none!important}
+        }
+        @media(min-width:520px) and (max-width:700px){
+          #secInicio>.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+          #secInicio .cpam-home-card{display:flex!important;min-height:205px!important;align-items:flex-start!important;gap:9px!important;padding:16px!important}
+          #secInicio .cpam-home-icon{width:42px!important;height:42px!important}
+          #secInicio .cpam-home-title{font-size:15px!important}
+          #secInicio .cpam-home-description{font-size:12px!important}
+          #secInicio .cpam-home-action{margin-top:auto!important;padding-top:10px!important;font-size:11px!important}
+        }
+        @media(max-width:360px){
+          #appShell main{padding-left:9px!important;padding-right:9px!important}
+          #secInicio .cpam-home-card{grid-template-columns:40px minmax(0,1fr)!important;column-gap:10px!important;padding:11px!important}
+          #secInicio .cpam-home-icon{width:38px!important;height:38px!important;font-size:16px!important}
+          #secInicio .cpam-home-title{font-size:13px!important}
+          #secInicio .cpam-home-description{font-size:10px!important}
+        }
         @media print{#secInicio{display:none!important}}
         </style>
 </head>
