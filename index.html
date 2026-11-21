@@ -3115,6 +3115,33 @@
         #menuLateral .sidebar-footer-text #sidebarNomeUsuario{font-size:11px!important;line-height:1.2!important}
         #menuLateral .sidebar-footer-text #sidebarPerfilUsuario{font-size:9px!important;line-height:1.2!important}
         #menuLateral .sidebar-footer-text button{min-height:30px!important;padding:5px 7px!important;font-size:10px!important;white-space:nowrap}
+
+        /* Cabeçalho SaaS: branco, leve e com perfil compacto */
+        #appShell>header.cpam-main-header{background:#fff!important;border:0!important;border-bottom:1px solid #e9eef0!important;box-shadow:0 1px 3px rgba(15,23,42,.035)!important}
+        #appShell>header.cpam-main-header .header-inner{min-height:64px!important;padding-top:8px!important;padding-bottom:8px!important}
+        #appShell .header-brand-group{gap:11px!important}
+        #appShell .header-menu-trigger{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 36px;border:0;border-radius:10px;background:transparent;color:#64748b;font-size:17px;transition:background .15s,color .15s}
+        #appShell .header-menu-trigger:hover{background:#f1f5f9;color:#166344}
+        #appShell .header-brand-logo{width:auto;height:38px;max-width:105px;object-fit:contain;display:block}
+        #appShell .header-system-title{border-left:1px solid #e2e8f0;padding-left:12px}
+        #appShell .header-system-title h1{color:#1e293b!important;font-size:14px!important;font-weight:750!important}
+        #appShell .header-system-title p{color:#84918b!important;font-size:10px!important}
+        #appShell .header-quick-search{position:relative;display:flex;align-items:center;gap:9px;width:min(34vw,370px);min-width:190px;height:37px;padding:0 10px;border:1px solid #e8edf0;border-radius:11px;background:#f8fafb;transition:border-color .15s,background .15s,box-shadow .15s}
+        #appShell .header-quick-search:focus-within{background:#fff;border-color:#79b99a;box-shadow:0 0 0 3px rgba(22,101,65,.08)}
+        #appShell .header-quick-search>i{font-size:12px;color:#94a3b8}
+        #appShell .header-quick-search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#334155;font-size:11px}
+        #appShell .header-quick-search input::placeholder{color:#9aa6a0}
+        #appShell .header-quick-search kbd{flex:0 0 auto;padding:2px 5px;border:1px solid #e2e8f0;border-radius:5px;background:#fff;color:#94a3b8;font:10px ui-monospace,monospace}
+        #appShell .header-profile-trigger{display:flex;align-items:center;gap:9px;padding:5px 8px 5px 6px;border:1px solid transparent;border-radius:12px;background:#fff;color:#475569;transition:background .15s,border-color .15s,box-shadow .15s}
+        #appShell .header-profile-trigger:hover,#appShell .header-profile-trigger[aria-expanded="true"]{background:#f8faf9;border-color:#e7eee9;box-shadow:0 2px 8px rgba(15,45,30,.05)}
+        #appShell .header-avatar{width:34px!important;height:34px!important;flex:0 0 34px!important;border:1px solid #cfe5d6!important;background:#e8f4ec!important;color:#176344!important;font-size:11px!important}
+        #appShell .header-profile-first-name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:700;color:#334155}
+        #appShell .header-profile-chevron{font-size:10px;color:#94a3b8;transition:transform .15s}
+        #appShell .header-profile-trigger[aria-expanded="true"] .header-profile-chevron{transform:rotate(180deg)}
+        #appShell .header-profile-menu{position:absolute;top:calc(100% + 9px);right:0;z-index:80;width:245px;overflow:hidden;border:1px solid #e5ebe7;border-radius:14px;background:#fff;box-shadow:0 14px 35px rgba(15,23,42,.13)}
+        #appShell .header-profile-menu button{min-height:38px}
+        @media(max-width:700px){#appShell .header-inner{gap:8px!important;padding-left:10px!important;padding-right:10px!important}#appShell .header-brand-group{gap:7px!important}#appShell .header-brand-logo{height:32px;max-width:76px}#appShell .header-system-title{padding-left:8px}#appShell .header-system-title h1{font-size:12px!important}#appShell .header-system-title p{font-size:9px!important}#appShell .header-quick-search{width:36px;min-width:36px;height:36px;padding:0;justify-content:center;border-color:transparent;background:transparent}#appShell .header-quick-search>i{font-size:15px}#appShell .header-quick-search input,#appShell .header-quick-search kbd{display:none}#appShell .header-profile-first-name{display:none}#appShell .header-profile-trigger{gap:3px;padding:3px}#appShell .header-profile-chevron{margin:0 3px}}
+        @media(max-width:390px){#appShell .header-brand-logo{display:none}#appShell .header-system-title{border-left:0;padding-left:0}}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -3190,30 +3217,21 @@
     <!-- Cabeçalho Principal -->
     <div id="appShell" class="hidden">
     <header class="cpam-main-header sticky top-0 z-30">
-        <div class="header-inner w-full px-4 sm:px-6 lg:px-8 py-3.5 flex justify-between items-center">
-            <div class="header-brand-group flex items-center gap-3">
-                <button type="button" class="header-logo-button" onclick="alternarSidebarPeloLogo()" title="Abrir Barra Lateral" aria-label="Abrir Barra Lateral">
-                    <i class="fa-solid fa-bars header-menu-icon" aria-hidden="true"></i><img src="/logo-cpam.png" alt="Logo CPAM" title="Abrir Barra Lateral">
-                </button>
-                <div class="header-system-title">
-                    <h1 class="text-lg font-bold tracking-tight leading-none">Bloco Cirúrgico</h1>
-                    <p class="text-xs font-medium">Registro de Cirurgias CPAM</p>
-                </div>
+        <div class="header-inner w-full px-4 sm:px-6 lg:px-8 flex min-h-16 items-center justify-between gap-4">
+            <div class="header-brand-group flex min-w-0 items-center gap-3">
+                <button type="button" class="header-menu-trigger" onclick="alternarSidebarPeloLogo()" title="Abrir menu principal" aria-label="Abrir menu principal"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+                <img class="header-brand-logo" src="/logo-cpam.png" alt="Complexo Pediátrico Arlinda Marques">
+                <div class="header-system-title min-w-0"><h1 class="text-sm font-bold tracking-tight leading-tight">Bloco Cirúrgico</h1><p class="text-[11px] font-medium">Registro de Cirurgias CPAM</p></div>
             </div>
-            <div class="header-actions ml-auto flex items-center justify-end gap-3">
-                <div class="header-user-group">
-                    <div class="header-avatar" aria-label="Iniciais do usuário">AA</div>
-                    <div class="header-profile-copy">
-                        <p id="usuarioEmail" class="header-profile-name"></p>
-                        <div class="header-profile-meta">
-                            <span id="usuarioPerfil" class="header-profile-role"></span>
-                            <p id="usuarioEmailSecundario" class="header-profile-email"></p>
-                        </div>
+            <div class="header-quick-search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="buscaRapidaGlobal" type="search" placeholder="Buscar paciente ou prontuário..." aria-label="Busca rápida de pacientes"><kbd>Ctrl K</kbd></div>
+            <div class="header-actions ml-auto flex items-center justify-end">
+                <div id="headerProfileWrap" class="relative">
+                    <button id="headerProfileButton" type="button" onclick="alternarMenuPerfil()" class="header-profile-trigger" aria-haspopup="menu" aria-expanded="false" aria-controls="headerProfileMenu"><span id="headerAvatar" class="header-avatar" aria-hidden="true">CP</span><span id="headerProfileFirstName" class="header-profile-first-name">Usuário</span><i class="fa-solid fa-chevron-down header-profile-chevron" aria-hidden="true"></i></button>
+                    <div id="headerProfileMenu" class="header-profile-menu hidden" role="menu">
+                        <div class="border-b border-slate-100 px-4 py-3"><p id="usuarioEmail" class="text-sm font-bold text-slate-800"></p><p id="usuarioPerfil" class="mt-0.5 text-xs text-slate-500"></p><p id="usuarioEmailSecundario" class="mt-1 break-all text-[11px] text-slate-400"></p></div>
+                        <button id="btnUsuarios" type="button" onclick="alternarPainelUsuarios();fecharMenuPerfil();" class="hidden flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs font-semibold text-slate-700 hover:bg-slate-50" role="menuitem"><i class="fa-solid fa-users w-4 text-center"></i>Gerenciar usuários</button>
+                        <button type="button" onclick="sair()" class="flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs font-semibold text-rose-700 hover:bg-rose-50" role="menuitem"><i class="fa-solid fa-right-from-bracket w-4 text-center"></i>Sair do sistema</button>
                     </div>
-                </div>
-                <div class="header-action-buttons flex items-center gap-2">
-                    <button id="btnUsuarios" onclick="alternarPainelUsuarios()" class="hidden header-users-button"><i class="fa-solid fa-users mr-1"></i>Usuários</button>
-                    <button onclick="sair()" class="header-logout-button"><i class="fa-solid fa-right-from-bracket mr-1"></i>Sair</button>
                 </div>
             </div>
         </div>
@@ -3900,8 +3918,11 @@
                 usuarioAtual=usuario;perfilAtual=perfil;
                 if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/agendamentos-eletivos',true);
                 document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
-                document.getElementById('usuarioEmail').textContent=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email;
+                const nomeExibicao=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
+                document.getElementById('usuarioEmail').textContent=nomeExibicao;
                 document.getElementById('usuarioEmailSecundario').textContent=usuario.email||perfil.email||'';
+                document.getElementById('headerProfileFirstName').textContent=nomeExibicao.trim().split(/\s+/).slice(0,2).join(' ');
+                document.getElementById('headerAvatar').textContent=nomeExibicao.trim().split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]).join('').toUpperCase()||'CP';
                 document.getElementById('sidebarNomeUsuario').textContent=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
                 document.getElementById('sidebarPerfilUsuario').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
                 document.getElementById('usuarioPerfil').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
@@ -4970,6 +4991,26 @@
             const resumo=document.getElementById('agendaResumoDia');if(resumo)resumo.textContent=selecionada.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
             const labelProgramacao=document.getElementById('agendaDataSelecionadaLabel');if(labelProgramacao)labelProgramacao.textContent='Data selecionada: '+dataLegivel;
         }
+        function alternarMenuPerfil(){
+            const menu=document.getElementById('headerProfileMenu'),botao=document.getElementById('headerProfileButton');if(!menu||!botao)return;
+            const abrir=menu.classList.contains('hidden');menu.classList.toggle('hidden',!abrir);botao.setAttribute('aria-expanded',abrir?'true':'false');
+        }
+        function fecharMenuPerfil(){
+            const menu=document.getElementById('headerProfileMenu'),botao=document.getElementById('headerProfileButton');if(menu)menu.classList.add('hidden');if(botao)botao.setAttribute('aria-expanded','false');
+        }
+        function executarBuscaRapida(){
+            const campo=document.getElementById('buscaRapidaGlobal'),termo=campo?.value?.trim();if(!termo)return;
+            fecharMenuPerfil();navegarSistema('pesquisa');
+            setTimeout(()=>{const destino=document.getElementById('buscaListaPacientes');if(destino){destino.value=termo;pesquisarListaPacientes();destino.focus();}},80);
+        }
+        (function configurarCabecalhoModerno(){
+            document.addEventListener('click',evento=>{const area=document.getElementById('headerProfileWrap');if(area&&!area.contains(evento.target))fecharMenuPerfil();});
+            document.addEventListener('keydown',evento=>{
+                if((evento.ctrlKey||evento.metaKey)&&evento.key.toLowerCase()==='k'){evento.preventDefault();const campo=document.getElementById('buscaRapidaGlobal');if(campo){campo.focus();campo.select();}}
+                if(evento.key==='Escape')fecharMenuPerfil();
+            });
+            const busca=document.getElementById('buscaRapidaGlobal');if(busca)busca.addEventListener('keydown',evento=>{if(evento.key==='Enter'){evento.preventDefault();executarBuscaRapida();}});
+        })();
         function navegarSistema(destino,atualizarHistorico=true){
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
             const podeAdministrar=perfilAtual&&perfilAtual.role==='administrador';
