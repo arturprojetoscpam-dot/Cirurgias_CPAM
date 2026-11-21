@@ -3142,6 +3142,23 @@
         #appShell .header-profile-menu button{min-height:38px}
         @media(max-width:700px){#appShell .header-inner{gap:8px!important;padding-left:10px!important;padding-right:10px!important}#appShell .header-brand-group{gap:7px!important}#appShell .header-brand-logo{height:32px;max-width:76px}#appShell .header-system-title{padding-left:8px}#appShell .header-system-title h1{font-size:12px!important}#appShell .header-system-title p{font-size:9px!important}#appShell .header-quick-search{width:36px;min-width:36px;height:36px;padding:0;justify-content:center;border-color:transparent;background:transparent}#appShell .header-quick-search>i{font-size:15px}#appShell .header-quick-search input,#appShell .header-quick-search kbd{display:none}#appShell .header-profile-first-name{display:none}#appShell .header-profile-trigger{gap:3px;padding:3px}#appShell .header-profile-chevron{margin:0 3px}}
         @media(max-width:390px){#appShell .header-brand-logo{display:none}#appShell .header-system-title{border-left:0;padding-left:0}}
+
+        /* Correção definitiva do botão sair: prevalece sobre estilos globais de hover */
+        #appShell #headerProfileMenu button[onclick="sair()"],
+        #appShell #headerProfileMenu button[onclick="sair()"]:link,
+        #appShell #headerProfileMenu button[onclick="sair()"]:visited{
+          background-color:#FEF2F2!important;color:#DC2626!important;
+          border:1px solid #FECACA!important;box-shadow:none!important;
+        }
+        #appShell #headerProfileMenu button[onclick="sair()"]:hover,
+        #appShell #headerProfileMenu button[onclick="sair()"]:focus-visible,
+        #appShell #headerProfileMenu button[onclick="sair()"]:active{
+          background-color:#FEE2E2!important;color:#B91C1C!important;
+          border-color:#FCA5A5!important;box-shadow:none!important;
+        }
+        #appShell #headerProfileMenu .header-profile-menu-actions{
+          display:flex!important;flex-direction:column!important;gap:12px!important;padding:12px!important;
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -3630,7 +3647,7 @@
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-emerald-100 px-4 py-4 sm:px-5">
     <div><p class="text-[10px] font-bold uppercase tracking-[.16em] text-emerald-700">Calendário cirúrgico</p><h3 id="agendaMesAno" class="mt-1 text-lg font-extrabold text-slate-800">Novembro de 2026</h3><p id="agendaIntervalo" class="mt-1 text-xs text-slate-500">Selecione uma data para consultar a programação</p></div>
     <div class="flex flex-wrap items-center gap-2">
-      <div class="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm"><button type="button" id="agendaModoSemana" onclick="alterarModoAgenda('semanal')" class="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Semana</button><button type="button" id="agendaModoMes" onclick="alterarModoAgenda('mensal')" class="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Mês</button></div>
+      <div class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5 shadow-sm"><button type="button" id="agendaModoSemana" onclick="alterarModoAgenda('semanal')" class="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white">Semana</button><button type="button" id="agendaModoMes" onclick="alterarModoAgenda('mensal')" class="rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50">Mês</button></div>
       <div class="flex items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm"><button type="button" onclick="navegarPeriodoAgenda(-1)" class="rounded-lg p-2 text-slate-600 hover:bg-emerald-50 hover:text-emerald-800" aria-label="Período anterior"><i class="fa-solid fa-chevron-left"></i></button><button type="button" onclick="irHojeAgenda()" class="rounded-lg px-2 py-2 text-xs font-semibold text-slate-600 hover:bg-emerald-50">Hoje</button><button type="button" onclick="navegarPeriodoAgenda(1)" class="rounded-lg p-2 text-slate-600 hover:bg-emerald-50 hover:text-emerald-800" aria-label="Próximo período"><i class="fa-solid fa-chevron-right"></i></button></div>
     </div>
   </div>
