@@ -3905,7 +3905,9 @@
                 document.getElementById('navMedicos').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navPesquisa').classList.remove('hidden');
                 document.getElementById('navNovoPaciente').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
-                document.getElementById('navCancelamentos').classList.remove('hidden');document.getElementById('navDashboards').classList.remove('hidden');
+                // navCancelamentos não faz parte do menu atual; validar elementos opcionais evita interromper a sessão.
+                document.getElementById('navCancelamentos')?.classList.remove('hidden');
+                document.getElementById('navDashboards')?.classList.remove('hidden');
                 document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
                 document.getElementById('secCadastroPaciente').classList.add('hidden');document.getElementById('secFormulario').classList.add('hidden');
                 atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);resolverRotaAtual();
