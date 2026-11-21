@@ -3201,7 +3201,20 @@
           #agendaSemanaCards .agenda-dia-card{min-height:68px!important;padding-left:0!important;padding-right:0!important}
           #agendaSemanaCards .agenda-dia-card .agenda-dia-numero{font-size:16px!important}
         }
-</style>
+/* Hub inicial de módulos CPAM */
+        .cpam-home-card{display:flex;min-height:250px;flex-direction:column;align-items:flex-start;gap:12px;border:1px solid #dce7df;border-radius:18px;background:#fff;padding:22px;text-decoration:none;color:inherit;transition:border-color .18s ease,background-color .18s ease,transform .18s ease}
+        .cpam-home-card:hover{border-color:#9bbda5;background:#fbfefb;transform:translateY(-2px)}
+        .cpam-home-card:focus-visible{outline:3px solid #a7cbb0;outline-offset:3px}
+        .cpam-home-icon{display:flex;width:48px;height:48px;align-items:center;justify-content:center;border-radius:14px;background:#e8f1e9;color:#286342;font-size:20px}
+        .cpam-home-title{margin-top:5px;font-size:17px;font-weight:800;letter-spacing:-.02em;color:#1e3428}
+        .cpam-home-description{flex:1 1 auto;font-size:13px;line-height:1.6;color:#64748b}
+        .cpam-home-action{display:flex;width:100%;align-items:center;justify-content:space-between;border-top:1px solid #edf2ee;padding-top:14px;font-size:12px;font-weight:800;color:#286342}
+        .cpam-home-card-soon{background:#f8faf9;border-style:dashed;cursor:not-allowed}
+        .cpam-home-card-soon .cpam-home-icon{background:#eef1ef;color:#829187}
+        .cpam-home-card-soon .cpam-home-title{color:#64748b}
+        .cpam-home-card-soon .cpam-home-action{color:#84918a}
+        @media print{#secInicio{display:none!important}}
+        </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
@@ -3351,6 +3364,39 @@
             </div>
         </aside>
         <main class="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 space-y-6">
+
+        <section id="secInicio" class="space-y-6">
+  <div class="flex flex-wrap items-end justify-between gap-3">
+    <div><p class="text-[11px] font-bold uppercase tracking-[.18em] text-emerald-700">Bloco Cirúrgico · CPAM</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-800 sm:text-3xl">Acesso rápido</h2><p class="mt-2 text-sm text-slate-500">Selecione o módulo desejado para iniciar sua atividade no sistema.</p></div>
+  </div>
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <a href="/pacientes" onclick="event.preventDefault();navegarSistema('pesquisa')" class="cpam-home-card group">
+      <span class="cpam-home-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <span class="cpam-home-title">Pesquisar Pacientes</span>
+      <span class="cpam-home-description">Localize pacientes, consulte seus dados e acesse o histórico de cirurgias.</span>
+      <span class="cpam-home-action">Abrir módulo <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+    </a>
+    <a href="/pacientes/novo" onclick="event.preventDefault();navegarSistema('novoPaciente')" class="cpam-home-card group">
+      <span class="cpam-home-icon"><i class="fa-solid fa-user-plus"></i></span>
+      <span class="cpam-home-title">Novo Paciente</span>
+      <span class="cpam-home-description">Inicie um cadastro e consulte os dados do paciente no VITAI.</span>
+      <span class="cpam-home-action">Abrir módulo <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+    </a>
+    <a href="/agendamentos-eletivos" onclick="event.preventDefault();navegarSistema('agendamentos')" class="cpam-home-card group">
+      <span class="cpam-home-icon"><i class="fa-solid fa-calendar-check"></i></span>
+      <span class="cpam-home-title">Cirurgias Eletivas</span>
+      <span class="cpam-home-description">Acompanhe a programação cirúrgica e as respostas do Bloco.</span>
+      <span class="cpam-home-action">Abrir módulo <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+    </a>
+    <div class="cpam-home-card cpam-home-card-soon" aria-disabled="true">
+      <span class="cpam-home-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+      <span class="cpam-home-title">Regular Cirurgia</span>
+      <span class="cpam-home-description">Área da Regulação para cadastrar novos agendamentos cirúrgicos.</span>
+      <span class="cpam-home-action"><span>Em desenvolvimento</span><i class="fa-solid fa-lock"></i></span>
+    </div>
+  </div>
+</section>
+
 
         <!-- RESUMO DE PACIENTES -->
         <section id="homePatientSummary" class="mb-2"><div class="inline-flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm">
@@ -3977,7 +4023,7 @@
                 if(error)throw error;
                 if(!perfil||!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Acesso suspenso. Procure o administrador.');return;}
                 usuarioAtual=usuario;perfilAtual=perfil;
-                if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/agendamentos-eletivos',true);
+                if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/inicio',true);
                 document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
                 const nomeExibicao=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
                 document.getElementById('usuarioEmail').textContent=nomeExibicao;
@@ -4958,8 +5004,8 @@
         }
         function resolverRotaAtual(){
             const caminho=caminhoAtual();
-            if(caminho==='/login'){
-                if(perfilAtual){definirRota('/agendamentos-eletivos',true);navegarSistema('agendamentos',false);}
+            if(caminho==='/login'||caminho==='/'){
+                if(perfilAtual){definirRota('/inicio',true);navegarSistema('inicio',false);}
                 else mostrarLogin(false);
                 return;
             }
@@ -4996,7 +5042,7 @@
                 })();
                 return;
             }
-            const rotasDiretas={'/agendamentos-eletivos':'agendamentos','/cancelamentos':'cancelamentos','/dashboards':'dashboards','/auditoria':'auditoria','/usuarios':'usuarios','/profissionais':'medicos'};
+            const rotasDiretas={'/inicio':'inicio','/agendamentos-eletivos':'agendamentos','/cancelamentos':'cancelamentos','/dashboards':'dashboards','/auditoria':'auditoria','/usuarios':'usuarios','/profissionais':'medicos'};
             if(rotasDiretas[caminho]){
                 if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}
                 const destino=rotasDiretas[caminho];
@@ -5008,7 +5054,7 @@
                 }
                 navegarSistema(destino,false);return;
             }
-            if(perfilAtual){definirRota('/agendamentos-eletivos',true);navegarSistema('agendamentos',false);}
+            if(perfilAtual){definirRota('/inicio',true);navegarSistema('inicio',false);}
             else{definirRota('/login',true);mostrarLogin(false);}
         }
         window.addEventListener('popstate',function(){resolverRotaAtual();});
@@ -5092,12 +5138,14 @@
             if(['auditoria','usuarios'].includes(destino)&&!podeAdministrar){exibirToast('Acesso restrito ao perfil Administrador.','erro');return;}
             if(destino==='medicos'&&!podeEditar){exibirToast('Seu perfil não permite acessar os profissionais.','erro');return;}
             if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pacientes',false);
-            const rotasDestino={'agendamentos':'/agendamentos-eletivos','cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios','medicos':'/profissionais'};
+            if(destino==='novoPaciente'&&atualizarHistorico)definirRota('/pacientes/novo',false);
+            const rotasDestino={'inicio':'/inicio','agendamentos':'/agendamentos-eletivos','cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios','medicos':'/profissionais'};
             if(atualizarHistorico&&rotasDestino[destino])definirRota(rotasDestino[destino],false);
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
-            ['secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-            if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');inicializarAgendaEletiva();}
+            ['secInicio','secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+            if(destino==='inicio'){document.getElementById('secInicio').classList.remove('hidden');}
+            else if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');inicializarAgendaEletiva();}
             else if(destino==='registro'){document.getElementById('secFormulario').classList.remove('hidden');}
             else if(destino==='medicos'){document.getElementById('secProfissionais').classList.remove('hidden');carregarProfissionais();}
             else if(destino==='pesquisa'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];carregarPacientes();}
