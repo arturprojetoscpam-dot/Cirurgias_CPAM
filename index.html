@@ -4091,7 +4091,7 @@
                 }catch(error){exibirToast('Não foi possível carregar o paciente: '+error.message,'erro');return;}
             }else{if(atualizarRota)atualizarRotaPaciente(null);pacienteHistoricoAtual=null;document.getElementById('tituloModalPaciente').textContent='Novo Cadastro';document.getElementById('subtituloModalPaciente').textContent='(Cadastro de paciente)';document.getElementById('pacienteDadosContexto').textContent=' (Paciente: Novo paciente - Nº Gerado ao Salvar)';await carregarHistoricoPacienteModal(null);}
             window.scrollTo({top:0,behavior:'auto'});
-            if(!id){const campoBe=document.getElementById('timedPacienteBe');if(campoBe)campoBe.focus({preventScroll:true});}
+            if(!id){void verificarStatusVITAI(true);const campoBe=document.getElementById('timedPacienteBe');if(campoBe)campoBe.focus({preventScroll:true});}
             else{const campoNome=document.getElementById('paciente_nome');if(campoNome)campoNome.focus({preventScroll:true});}
         }
         function fecharModalPaciente(limparRota=true){
