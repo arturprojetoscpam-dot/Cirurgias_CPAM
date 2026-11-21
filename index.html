@@ -3159,6 +3159,48 @@
         #appShell #headerProfileMenu .header-profile-menu-actions{
           display:flex!important;flex-direction:column!important;gap:12px!important;padding:12px!important;
         }
+
+        /* Ajustes mobile: busca rápida expansível e semana em sete colunas */
+        @media(max-width:700px){
+          #appShell>header.cpam-main-header .header-inner{position:relative!important;overflow:visible!important}
+          #appShell>header.cpam-main-header .header-quick-search{
+            flex:0 0 36px!important;width:36px!important;min-width:36px!important;
+            margin:0!important;height:36px!important;padding:0!important;
+            display:flex!important;align-items:center!important;justify-content:center!important;
+            border:1px solid transparent!important;border-radius:10px!important;
+            background:transparent!important;z-index:91!important;
+          }
+          #appShell>header.cpam-main-header .header-quick-search>i{font-size:16px!important}
+          #appShell>header.cpam-main-header .header-quick-search input,
+          #appShell>header.cpam-main-header .header-quick-search kbd{display:none!important}
+          #appShell>header.cpam-main-header .header-quick-search.mobile-search-open{
+            position:absolute!important;top:calc(100% + 7px)!important;left:10px!important;right:10px!important;
+            width:auto!important;min-width:0!important;height:44px!important;margin:0!important;
+            padding:0 12px!important;justify-content:flex-start!important;gap:10px!important;
+            border:1px solid #cbded2!important;border-radius:12px!important;
+            background:#fff!important;box-shadow:0 8px 24px rgba(15,45,30,.14)!important;
+          }
+          #appShell>header.cpam-main-header .header-quick-search.mobile-search-open input{
+            display:block!important;flex:1 1 auto!important;width:100%!important;min-width:0!important;
+            height:100%!important;font-size:14px!important;
+          }
+          #appShell>header.cpam-main-header .header-quick-search.mobile-search-open kbd{display:none!important}
+          #appShell>header.cpam-main-header .header-quick-search.mobile-search-open>i{font-size:15px!important}
+          #agendaSemanaCards{grid-template-columns:repeat(7,minmax(0,1fr))!important;gap:4px!important;padding:10px 8px!important}
+          #agendaSemanaCards .agenda-dia-card{
+            min-width:0!important;min-height:72px!important;height:auto!important;
+            padding:5px 1px!important;border-radius:9px!important;
+          }
+          #agendaSemanaCards .agenda-dia-card .agenda-dia-numero{font-size:17px!important;line-height:1.05!important}
+          #agendaSemanaCards .agenda-dia-card .agenda-dia-status{font-size:8px!important}
+          #agendaSemanaCards .agenda-dia-card .agenda-dia-total{font-size:9px!important}
+          #agendaSemanaCards .agenda-dia-card .text-\[9px\]{font-size:8px!important;letter-spacing:0!important}
+        }
+        @media(max-width:380px){
+          #agendaSemanaCards{gap:3px!important;padding-left:6px!important;padding-right:6px!important}
+          #agendaSemanaCards .agenda-dia-card{min-height:68px!important;padding-left:0!important;padding-right:0!important}
+          #agendaSemanaCards .agenda-dia-card .agenda-dia-numero{font-size:16px!important}
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -4987,7 +5029,7 @@
             document.getElementById('agendaModoSemana').className=semanal?'rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white':'rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50';
             document.getElementById('agendaModoMes').className=!semanal?'rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white':'rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50';
             document.getElementById('agendaLegendaMensal').classList.toggle('hidden',semanal);
-            container.className=semanal?'grid grid-cols-2 gap-2 p-3 sm:grid-cols-4 sm:px-4 xl:grid-cols-7':'grid grid-cols-7 gap-1 p-2 sm:gap-1.5 sm:p-4';
+            container.className=semanal?'grid grid-cols-7 gap-1 p-2 sm:gap-2 sm:p-4':'grid grid-cols-7 gap-1 p-2 sm:gap-1.5 sm:p-4';
             container.innerHTML='';
             let datas=[];
             if(semanal){const inicio=new Date(selecionada);inicio.setDate(selecionada.getDate()-selecionada.getDay());for(let i=0;i<7;i++){const d=new Date(inicio);d.setDate(inicio.getDate()+i);datas.push(d);}const fim=datas[6];document.getElementById('agendaIntervalo').textContent='Semana de '+datas[0].toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' a '+fim.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
@@ -5023,12 +5065,26 @@
             setTimeout(()=>{const destino=document.getElementById('buscaListaPacientes');if(destino){destino.value=termo;pesquisarListaPacientes();destino.focus();}},80);
         }
         (function configurarCabecalhoModerno(){
-            document.addEventListener('click',evento=>{const area=document.getElementById('headerProfileWrap');if(area&&!area.contains(evento.target))fecharMenuPerfil();});
-            document.addEventListener('keydown',evento=>{
-                if((evento.ctrlKey||evento.metaKey)&&evento.key.toLowerCase()==='k'){evento.preventDefault();const campo=document.getElementById('buscaRapidaGlobal');if(campo){campo.focus();campo.select();}}
-                if(evento.key==='Escape')fecharMenuPerfil();
+            const areaPerfil=document.getElementById('headerProfileWrap');
+            const busca=document.getElementById('buscaRapidaGlobal');
+            const caixaBusca=busca?.closest('.header-quick-search');
+            document.addEventListener('click',evento=>{
+                if(areaPerfil&&!areaPerfil.contains(evento.target))fecharMenuPerfil();
+                if(caixaBusca&&!caixaBusca.contains(evento.target))caixaBusca.classList.remove('mobile-search-open');
             });
-            const busca=document.getElementById('buscaRapidaGlobal');if(busca)busca.addEventListener('keydown',evento=>{if(evento.key==='Enter'){evento.preventDefault();executarBuscaRapida();}});
+            if(caixaBusca&&busca){
+                caixaBusca.addEventListener('click',()=>{
+                    if(window.matchMedia('(max-width: 700px)').matches){
+                        caixaBusca.classList.add('mobile-search-open');
+                        busca.focus();
+                    }
+                });
+            }
+            document.addEventListener('keydown',evento=>{
+                if((evento.ctrlKey||evento.metaKey)&&evento.key.toLowerCase()==='k'){evento.preventDefault();if(caixaBusca&&window.matchMedia('(max-width: 700px)').matches)caixaBusca.classList.add('mobile-search-open');if(busca){busca.focus();busca.select();}}
+                if(evento.key==='Escape'){fecharMenuPerfil();caixaBusca?.classList.remove('mobile-search-open');}
+            });
+            if(busca)busca.addEventListener('keydown',evento=>{if(evento.key==='Enter'){evento.preventDefault();executarBuscaRapida();}});
         })();
         function navegarSistema(destino,atualizarHistorico=true){
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
