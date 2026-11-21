@@ -5023,7 +5023,7 @@
         function atualizarSemanaAgendaEletiva(){
             const campo=document.getElementById('filtroDataAgendaEletiva'),container=document.getElementById('agendaSemanaCards');if(!campo||!container)return;
             const selecionada=obterDataAgendaSelecionada(),valor=dataLocalISOAgenda(selecionada),hojeISO=dataLocalISOAgenda(new Date());
-            const nomesDias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],mesAno=selecionada.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+            const nomesDias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],nomesDiasSemana=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],mesAno=selecionada.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
             document.getElementById('agendaMesAno').textContent=mesAno.charAt(0).toLocaleUpperCase('pt-BR')+mesAno.slice(1);
             const semanal=agendaModoVisualizacao==='semanal';
             document.getElementById('agendaModoSemana').className=semanal?'rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white':'rounded-lg px-3 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50';
@@ -5032,7 +5032,7 @@
             container.className=semanal?'grid grid-cols-7 gap-1 p-2 sm:gap-2 sm:p-4':'grid grid-cols-7 gap-1 p-2 sm:gap-1.5 sm:p-4';
             container.innerHTML='';
             let datas=[];
-            if(semanal){const inicio=new Date(selecionada);inicio.setDate(selecionada.getDate()-selecionada.getDay());for(let i=0;i<7;i++){const d=new Date(inicio);d.setDate(inicio.getDate()+i);datas.push(d);}const fim=datas[6];document.getElementById('agendaIntervalo').textContent='Semana de '+datas[0].toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' a '+fim.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
+            if(semanal){const inicio=new Date(selecionada);inicio.setDate(selecionada.getDate()-((selecionada.getDay()+6)%7));for(let i=0;i<7;i++){const d=new Date(inicio);d.setDate(inicio.getDate()+i);datas.push(d);}const fim=datas[6];document.getElementById('agendaIntervalo').textContent='Semana de '+datas[0].toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' a '+fim.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
             else{const primeiro=new Date(selecionada.getFullYear(),selecionada.getMonth(),1,12),inicio=new Date(primeiro);inicio.setDate(1-primeiro.getDay());for(let i=0;i<42;i++){const d=new Date(inicio);d.setDate(inicio.getDate()+i);datas.push(d);}document.getElementById('agendaIntervalo').textContent='Visão mensal · '+mesAno;}
             datas.forEach((dia,i)=>{
                 const iso=dataLocalISOAgenda(dia),ativo=iso===valor,ehHoje=iso===hojeISO,mesAtual=dia.getMonth()===selecionada.getMonth();
@@ -5042,7 +5042,7 @@
                 botao.className='agenda-dia-card relative flex min-h-[66px] min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-1.5 text-center transition-colors duration-200 '+(ativo?'border-emerald-800 bg-emerald-700 text-white shadow-sm':ehHoje?'border-sky-600 bg-sky-600 text-white shadow-sm':'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50')+(!semanal&&!mesAtual&&!ehHoje?' opacity-40':'');
                 botao.setAttribute('aria-pressed',ativo?'true':'false');
                 botao.setAttribute('aria-label',dia.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'})+(ehHoje?', hoje':'')+'. Resposta do Bloco: '+(percentual===null?'não disponível':percentual+' por cento'));
-                const rotuloDia=ehHoje?'<span class="text-[9px] font-extrabold uppercase tracking-wider text-white">HOJE</span>':'<span class="text-[9px] font-semibold uppercase tracking-wide '+(ativo?'text-white/85':'text-slate-500')+'">'+(semanal?nomesDias[i]:nomesDias[dia.getDay()])+'</span>';
+                const rotuloDia=ehHoje?'<span class="text-[9px] font-extrabold uppercase tracking-wider text-white">HOJE</span>':'<span class="text-[9px] font-semibold uppercase tracking-wide '+(ativo?'text-white/85':'text-slate-500')+'">'+(semanal?nomesDiasSemana[i]:nomesDias[dia.getDay()])+'</span>';
                 const corTexto=ativo||ehHoje?'text-white':'text-slate-800';
                 const corPercentual=ativo||ehHoje?'text-white/80':'text-slate-400';
                 botao.innerHTML='<div class="flex min-h-[12px] items-center justify-center">'+rotuloDia+'</div><div class="mt-0.5 text-xl font-bold leading-none tabular-nums '+corTexto+'">'+String(dia.getDate()).padStart(2,'0')+'</div><div class="mt-1 text-[9px] font-medium leading-none tabular-nums '+corPercentual+'">'+(percentual===null?'—':percentual+'%')+'</div>';
