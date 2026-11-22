@@ -3318,7 +3318,37 @@
           #secInicio .cpam-home-card,#secInicio .cpam-home-action>i{transition:none!important}
         }
         @media print{#secInicio{display:none!important}}
-        </style>
+                /* Acabamento exclusivo da tela Novo Cadastro: cabeçalho conectado e bordas contínuas. */
+        #secCadastroPaciente>div.w-full.overflow-clip{
+          border-radius:24px!important;
+          overflow:clip!important;
+          background:#fff!important;
+          border:1px solid #191A23!important;
+          box-shadow:0 5px 0 #191A23!important;
+        }
+        #secCadastroPaciente .cpam-paciente-top-header{
+          padding:14px 16px 12px!important;
+          background:#f8fafc!important;
+          border:0!important;
+          border-bottom:1px solid #e2e8f0!important;
+          border-radius:0!important;
+          box-shadow:none!important;
+        }
+        #secCadastroPaciente .cpam-paciente-top-header .cpam-page-heading{margin:0!important}
+        #secCadastroPaciente #formModalPaciente{padding-top:14px!important}
+        #secCadastroPaciente #painelConsultaTimedPaciente{
+          overflow:hidden!important;
+          border:1px solid #bfdbfe!important;
+          border-radius:14px!important;
+          box-shadow:0 2px 7px rgba(30,64,175,.09)!important;
+          background:#eff6ff!important;
+        }
+        @media(max-width:639px){
+          #secCadastroPaciente .cpam-paciente-top-header{padding:12px 16px 10px!important}
+          #secCadastroPaciente #formModalPaciente{padding-top:12px!important}
+        }
+
+</style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
@@ -3726,18 +3756,18 @@
 
     <!-- PÁGINA DEDICADA DE CADASTRO E EDIÇÃO DO PACIENTE -->
     <section id="secCadastroPaciente" class="hidden w-full space-y-4" aria-labelledby="tituloModalPaciente">
-      <div class="w-full rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="w-full overflow-clip rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div class="cpam-compact-page-header cpam-paciente-top-header">
           <div class="cpam-page-heading">
             <h2 id="tituloModalPaciente">Novo Cadastro</h2>
             <p id="subtituloModalPaciente">(Cadastro de paciente)</p>
           </div>
         </div>
-        <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" class="p-4 sm:p-7">
+        <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" onkeydown="navegarCamposPacienteEnter(event)" class="p-4 sm:p-7">
           
           <section class="space-y-4">
             <div class="cpam-paciente-dados-sticky flex items-center justify-between gap-3 border-b border-slate-200 pb-2"><div class="flex min-w-0 items-center gap-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente <span id="pacienteDadosContexto" class="ml-1 text-xs font-semibold normal-case tracking-normal text-slate-500">(Paciente: Novo paciente - Nº Gerado ao Salvar)</span></h3></div><button type="button" onclick="fecharModalPaciente()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button></div>
-            <div id="painelConsultaTimedPaciente" class="mb-4 rounded-xl border border-blue-200 bg-blue-50/70 p-4 shadow-sm">
+            <div id="painelConsultaTimedPaciente" class="mb-4 overflow-hidden rounded-xl border border-blue-200 bg-blue-50/70 p-4 shadow-sm">
               <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-start sm:gap-6">
                 <div class="flex min-w-0 flex-col items-start">
                   <span class="inline-flex h-11 min-h-[44px] items-center rounded-lg border border-blue-200 bg-blue-100 px-3 font-sans text-xl font-extrabold uppercase tracking-tight text-blue-950 shadow-sm">VITAI - TIMED</span>
@@ -4256,6 +4286,27 @@
             document.querySelectorAll('#menuLateral [data-nav]').forEach(function(btn){const ativo=btn.getAttribute('data-nav')==='pesquisa';btn.classList.toggle('nav-ativo',ativo);btn.setAttribute('aria-current',ativo?'page':'false');});
             window.scrollTo({top:0,behavior:'auto'});
         }
+        function navegarCamposPacienteEnter(evento){
+            if(evento.key!=='Enter'||evento.shiftKey)return;
+            const alvo=evento.target;
+            if(alvo instanceof HTMLElement&&alvo.tagName==='BUTTON')return;
+            if(!(alvo instanceof HTMLElement)||!['INPUT','SELECT'].includes(alvo.tagName))return;
+            const formulario=evento.currentTarget;
+            if(!(formulario instanceof HTMLFormElement))return;
+            evento.preventDefault();
+            const elementos=Array.from(formulario.querySelectorAll('input:not([type="hidden"]),select,textarea,button'))
+                .filter(function(el){
+                    if(el.disabled||el.tabIndex<0)return false;
+                    if(!el.getClientRects().length)return false;
+                    const estilo=window.getComputedStyle(el);
+                    return estilo.visibility!=='hidden'&&estilo.display!=='none'&&!el.closest('[hidden],.hidden');
+                });
+            const indice=elementos.indexOf(alvo);
+            if(indice<0)return;
+            const proximo=elementos[indice+1];
+            if(proximo)proximo.focus();
+        }
+
         async function salvarPacienteModal(evento){
             evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
             const eraEdicao=!!pacienteModalAtual;const cpfDigitado=lerCampo('paciente_cpf').replace(/\D/g,'');if(cpfDigitado&&cpfDigitado.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}const nome=lerCampo('paciente_nome');if(!nome){exibirToast('Informe o nome completo do paciente.','erro');return;}
