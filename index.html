@@ -3348,6 +3348,21 @@
           #secCadastroPaciente #formModalPaciente{padding-top:12px!important}
         }
 
+
+        /* Botões de cancelar/voltar: fora da sequência Enter-Tab e com destaque vermelho suave. */
+        #secCadastroPaciente .cpam-header-back,
+        #secCadastroPaciente #formModalPaciente button[onclick="confirmarFecharModalPaciente()"]{
+          background:#fff1f2!important;
+          color:#be123c!important;
+          border:1px solid #fecdd3!important;
+          box-shadow:none!important;
+        }
+        #secCadastroPaciente .cpam-header-back:hover,
+        #secCadastroPaciente #formModalPaciente button[onclick="confirmarFecharModalPaciente()"]:hover{
+          background:#ffe4e6!important;
+          color:#9f1239!important;
+          border-color:#fda4af!important;
+        }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -4300,7 +4315,7 @@
             evento.preventDefault();
             const elementos=Array.from(formulario.querySelectorAll('input:not([type="hidden"]),select,textarea,button'))
                 .filter(function(el){
-                    if(el.disabled||el.tabIndex<0||el.id==='btnTimedConsultar'||el.classList.contains('cpam-header-back'))return false;
+                    if(el.disabled||el.tabIndex<0||el.matches('button[onclick="confirmarFecharModalPaciente()"]'))return false;
                     if(!el.getClientRects().length)return false;
                     const estilo=window.getComputedStyle(el);
                     return estilo.visibility!=='hidden'&&estilo.display!=='none'&&!el.closest('[hidden],.hidden');
