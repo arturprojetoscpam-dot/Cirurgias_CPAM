@@ -3766,7 +3766,7 @@
         <form id="formModalPaciente" onsubmit="salvarPacienteModal(event)" onkeydown="navegarCamposPacienteEnter(event)" class="p-4 sm:p-7">
           
           <section class="space-y-4">
-            <div class="cpam-paciente-dados-sticky flex items-center justify-between gap-3 border-b border-slate-200 pb-2"><div class="flex min-w-0 items-center gap-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente <span id="pacienteDadosContexto" class="ml-1 text-xs font-semibold normal-case tracking-normal text-slate-500">(Paciente: Novo paciente - Nº Gerado ao Salvar)</span></h3></div><button type="button" onclick="fecharModalPaciente()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button></div>
+            <div class="cpam-paciente-dados-sticky flex items-center justify-between gap-3 border-b border-slate-200 pb-2"><div class="flex min-w-0 items-center gap-2"><i class="fa-solid fa-user-injured text-teal-700"></i><h3 class="text-sm font-bold text-slate-800">Dados do Paciente <span id="pacienteDadosContexto" class="ml-1 text-xs font-semibold normal-case tracking-normal text-slate-500">(Paciente: Novo paciente - Nº Gerado ao Salvar)</span></h3></div><button type="button" onclick="confirmarFecharModalPaciente()" class="cpam-header-back"><i class="fa-solid fa-arrow-left mr-1"></i>Voltar</button></div>
             <div id="painelConsultaTimedPaciente" class="mb-4 overflow-hidden rounded-xl border border-blue-200 bg-blue-50/70 p-4 shadow-sm">
               <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-start sm:gap-6">
                 <div class="flex min-w-0 flex-col items-start">
@@ -3817,7 +3817,7 @@
           </section>
 
           <div class="mt-7 flex flex-col-reverse gap-2 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
-            <button type="button" onclick="fecharModalPaciente()" class="rounded-xl border border-slate-300 px-5 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancelar / Voltar à pesquisa</button>
+            <button type="button" onclick="confirmarFecharModalPaciente()" class="rounded-xl border border-slate-300 px-5 py-3 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancelar / Voltar à pesquisa</button>
             <button id="btnSalvarPacienteModal" type="submit" class="rounded-xl bg-emerald-700 px-6 py-3 text-xs font-bold text-white shadow-sm hover:bg-emerald-800 disabled:opacity-60"><i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cadastro</button>
           </div>
         </form>
@@ -4274,6 +4274,10 @@
             if(!id){void verificarStatusVITAI(true);const campoBe=document.getElementById('timedPacienteBe');if(campoBe)campoBe.focus({preventScroll:true});}
             else{const campoNome=document.getElementById('paciente_nome');if(campoNome)campoNome.focus({preventScroll:true});}
         }
+        function confirmarFecharModalPaciente(){
+            if(!confirm('Deseja realmente cancelar e sair do cadastro? As alterações que ainda não foram salvas serão perdidas.'))return;
+            fecharModalPaciente();
+        }
         function fecharModalPaciente(limparRota=true){
             document.getElementById('secCadastroPaciente').classList.add('hidden');
             if(telaAnteriorCadastroPaciente==='historico'&&pacienteHistoricoAtual){
@@ -4296,7 +4300,7 @@
             evento.preventDefault();
             const elementos=Array.from(formulario.querySelectorAll('input:not([type="hidden"]),select,textarea,button'))
                 .filter(function(el){
-                    if(el.disabled||el.tabIndex<0)return false;
+                    if(el.disabled||el.tabIndex<0||el.id==='btnTimedConsultar'||el.classList.contains('cpam-header-back'))return false;
                     if(!el.getClientRects().length)return false;
                     const estilo=window.getComputedStyle(el);
                     return estilo.visibility!=='hidden'&&estilo.display!=='none'&&!el.closest('[hidden],.hidden');
@@ -4310,6 +4314,7 @@
         async function salvarPacienteModal(evento){
             evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
             const eraEdicao=!!pacienteModalAtual;const cpfDigitado=lerCampo('paciente_cpf').replace(/\D/g,'');if(cpfDigitado&&cpfDigitado.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}const nome=lerCampo('paciente_nome');if(!nome){exibirToast('Informe o nome completo do paciente.','erro');return;}
+            if(!confirm(eraEdicao?'Deseja realmente salvar as alterações deste paciente?':'Deseja realmente salvar o cadastro deste paciente?'))return;
             if(!eraEdicao){
                 try{
                     const {data:possiveis,error:erroBusca}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento').ilike('nome_paciente',nome.trim()).limit(5);
