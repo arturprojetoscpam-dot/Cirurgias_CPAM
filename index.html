@@ -3363,6 +3363,21 @@
           color:#9f1239!important;
           border-color:#fda4af!important;
         }
+
+        /* Diálogos padronizados do CPAM. */
+        .cpam-dialog-backdrop{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(15,32,25,.42);backdrop-filter:blur(4px);animation:cpamDialogFade .16s ease-out}
+        .cpam-dialog-card{width:min(100%,460px);overflow:hidden;border:1px solid #e2eae5;border-radius:20px;background:#fff;box-shadow:0 24px 70px rgba(15,45,30,.22);animation:cpamDialogRise .2s ease-out}
+        .cpam-dialog-icon{display:flex;width:48px;height:48px;flex:0 0 48px;align-items:center;justify-content:center;border-radius:15px;background:#e8f3ec;color:#236342;font-size:19px}
+        .cpam-dialog-icon.attention{background:#fff6df;color:#a16207}.cpam-dialog-icon.danger{background:#fff0f1;color:#be123c}
+        .cpam-dialog-details{max-height:190px;overflow:auto;border:1px solid #e8eee9;border-radius:12px;background:#f8faf9;padding:11px 13px;color:#475569;font-size:12px;line-height:1.65;white-space:pre-line}
+        .cpam-dialog-actions{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #edf1ee;background:#fbfcfb;padding:15px 20px}
+        .cpam-dialog-btn{min-height:40px;border-radius:10px;padding:0 16px;font-size:12px;font-weight:700;transition:background .15s,border-color .15s,transform .15s}
+        .cpam-dialog-btn:active{transform:scale(.98)}.cpam-dialog-cancel{border:1px solid #dce5df;background:#fff;color:#475569}.cpam-dialog-cancel:hover{background:#f1f5f2}
+        .cpam-dialog-confirm{border:1px solid #1d5b3e;background:#1d5b3e;color:#fff}.cpam-dialog-confirm:hover{background:#174b33}
+        .cpam-dialog-confirm.danger{border-color:#be123c;background:#be123c}.cpam-dialog-confirm.danger:hover{background:#9f1239}
+        @keyframes cpamDialogFade{from{opacity:0}to{opacity:1}}@keyframes cpamDialogRise{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+        @media(max-width:480px){.cpam-dialog-backdrop{align-items:flex-end;padding:12px}.cpam-dialog-card{border-radius:18px}.cpam-dialog-actions{padding:13px 15px}.cpam-dialog-btn{flex:1}}
+        @media(prefers-reduced-motion:reduce){.cpam-dialog-backdrop,.cpam-dialog-card{animation:none}}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -4289,8 +4304,37 @@
             if(!id){void verificarStatusVITAI(true);const campoBe=document.getElementById('timedPacienteBe');if(campoBe)campoBe.focus({preventScroll:true});}
             else{const campoNome=document.getElementById('paciente_nome');if(campoNome)campoNome.focus({preventScroll:true});}
         }
-        function confirmarFecharModalPaciente(){
-            if(!confirm('Deseja realmente cancelar e sair do cadastro? As alterações que ainda não foram salvas serão perdidas.'))return;
+        function confirmarDialogo(opcoes){
+            const cfg=Object.assign({titulo:'Confirmação',mensagem:'Deseja continuar?',detalhes:'',tipo:'confirmacao',textoConfirmar:'Confirmar',textoCancelar:'Voltar'},opcoes||{});
+            return new Promise(function(resolve){
+                const anterior=document.activeElement,overlay=document.createElement('div');
+                const tipo=cfg.tipo==='perigo'?'danger':cfg.tipo==='atencao'?'attention':'';
+                const icone=tipo==='danger'?'fa-triangle-exclamation':tipo==='attention'?'fa-circle-exclamation':'fa-circle-question';
+                overlay.className='cpam-dialog-backdrop';
+                const card=document.createElement('section');card.className='cpam-dialog-card';card.setAttribute('role','alertdialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-labelledby','cpamDialogTitle');card.setAttribute('aria-describedby','cpamDialogMessage');
+                const topo=document.createElement('div');topo.className='flex gap-4 p-5 sm:p-6';
+                const simbolo=document.createElement('div');simbolo.className='cpam-dialog-icon '+tipo;simbolo.innerHTML='<i class="fa-solid '+icone+'"></i>';simbolo.setAttribute('aria-hidden','true');
+                const conteudo=document.createElement('div');conteudo.className='min-w-0 flex-1';
+                const titulo=document.createElement('h2');titulo.id='cpamDialogTitle';titulo.className='text-base font-bold tracking-tight text-slate-900';titulo.textContent=cfg.titulo;
+                const mensagem=document.createElement('p');mensagem.id='cpamDialogMessage';mensagem.className='mt-2 text-sm leading-relaxed text-slate-600';mensagem.textContent=cfg.mensagem;
+                conteudo.appendChild(titulo);conteudo.appendChild(mensagem);
+                if(cfg.detalhes){const detalhes=document.createElement('div');detalhes.className='cpam-dialog-details mt-3';detalhes.textContent=cfg.detalhes;conteudo.appendChild(detalhes);}
+                topo.appendChild(simbolo);topo.appendChild(conteudo);
+                const acoes=document.createElement('div');acoes.className='cpam-dialog-actions';
+                const cancelar=document.createElement('button');cancelar.type='button';cancelar.className='cpam-dialog-btn cpam-dialog-cancel';cancelar.textContent=cfg.textoCancelar;
+                const confirmar=document.createElement('button');confirmar.type='button';confirmar.className='cpam-dialog-btn cpam-dialog-confirm '+(tipo==='danger'?'danger':'');confirmar.textContent=cfg.textoConfirmar;
+                acoes.appendChild(cancelar);acoes.appendChild(confirmar);card.appendChild(topo);card.appendChild(acoes);overlay.appendChild(card);document.body.appendChild(overlay);
+                let finalizado=false;
+                function concluir(valor){if(finalizado)return;finalizado=true;document.removeEventListener('keydown',tecla);overlay.remove();if(anterior&&typeof anterior.focus==='function')anterior.focus({preventScroll:true});resolve(valor);}
+                function tecla(evento){if(evento.key==='Escape'){evento.preventDefault();concluir(false);}else if(evento.key==='Tab'){const itens=[cancelar,confirmar],idx=itens.indexOf(document.activeElement);if(evento.shiftKey&&idx===0){evento.preventDefault();confirmar.focus();}else if(!evento.shiftKey&&idx===1){evento.preventDefault();cancelar.focus();}}}
+                cancelar.addEventListener('click',function(){concluir(false);});confirmar.addEventListener('click',function(){concluir(true);});
+                overlay.addEventListener('click',function(evento){if(evento.target===overlay)concluir(false);});
+                document.addEventListener('keydown',tecla);confirmar.focus();
+            });
+        }
+        async function confirmarFecharModalPaciente(){
+            const confirmou=await confirmarDialogo({titulo:'Sair do cadastro?',mensagem:'Deseja realmente cancelar e sair desta tela?',detalhes:'As informações que ainda não foram salvas serão perdidas.',tipo:'perigo',textoConfirmar:'Sim, sair',textoCancelar:'Continuar editando'});
+            if(!confirmou)return;
             fecharModalPaciente();
         }
         function fecharModalPaciente(limparRota=true){
@@ -4329,14 +4373,14 @@
         async function salvarPacienteModal(evento){
             evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
             const eraEdicao=!!pacienteModalAtual;const cpfDigitado=lerCampo('paciente_cpf').replace(/\D/g,'');if(cpfDigitado&&cpfDigitado.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}const nome=lerCampo('paciente_nome');if(!nome){exibirToast('Informe o nome completo do paciente.','erro');return;}
-            if(!confirm(eraEdicao?'Deseja realmente salvar as alterações deste paciente?':'Deseja realmente salvar o cadastro deste paciente?'))return;
+            const confirmarSalvamento=await confirmarDialogo({titulo:eraEdicao?'Salvar alterações?':'Confirmar cadastro?',mensagem:eraEdicao?'Deseja salvar as alterações realizadas neste paciente?':'Deseja concluir o cadastro deste paciente?',detalhes:'Confira os dados antes de continuar.',tipo:'confirmacao',textoConfirmar:eraEdicao?'Salvar alterações':'Cadastrar paciente'});if(!confirmarSalvamento)return;
             if(!eraEdicao){
                 try{
                     const {data:possiveis,error:erroBusca}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento').ilike('nome_paciente',nome.trim()).limit(5);
                     if(erroBusca)throw erroBusca;
                     if(possiveis&&possiveis.length){
-                        const resumo=possiveis.map(p=>'• '+p.nome_paciente+' — prontuário '+formatarCodigoPaciente(p.codigo_paciente)+' — nascimento '+formatarData(p.data_nascimento)).join('\n');
-                        if(!confirm('ATENÇÃO: já existe(m) cadastro(s) com este mesmo nome:\n\n'+resumo+'\n\nConfira se não é a mesma pessoa. Deseja realmente cadastrar outro paciente com esse nome?'))return;
+                        const resumo=possiveis.map(p=>p.nome_paciente+' — prontuário '+formatarCodigoPaciente(p.codigo_paciente)+' — nascimento '+formatarData(p.data_nascimento)).join('\n');
+                        const continuarMesmoNome=await confirmarDialogo({titulo:'Possível cadastro existente',mensagem:'Encontramos paciente(s) com o mesmo nome informado.',detalhes:resumo+'\n\nConfira os dados para evitar um cadastro duplicado.',tipo:'atencao',textoConfirmar:'Não é a mesma pessoa',textoCancelar:'Revisar cadastro'});if(!continuarMesmoNome)return;
                     }
                 }catch(error){console.error(error);exibirToast('Não foi possível verificar duplicidade do nome. Tente novamente antes de salvar.','erro');return;}
             }
@@ -4466,7 +4510,7 @@
         function abrirModalProfissional(id){if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;const form=document.getElementById('formProfissional');form.reset();document.getElementById('profissional_id').value='';document.getElementById('tituloModalProfissional').textContent=id?'Editar profissional':'Novo profissional';if(id){const p=profissionaisCache.find(x=>x.id===id);if(!p)return;preencherCampo('profissional_id',p.id);preencherCampo('prof_nome',p.nome);preencherCampo('prof_grupo',p.grupo);preencherCampo('prof_crm',p.crm);preencherCampo('prof_especialidade',p.especialidade);preencherCampo('prof_sigla',p.sigla);preencherCampo('prof_nome_abreviado',p.nome_abreviado);preencherCampo('prof_cbo',p.cbo);}document.getElementById('secProfissionais').classList.add('hidden');document.getElementById('secCadastroProfissional').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});}
         function fecharModalProfissional(){document.getElementById('secCadastroProfissional').classList.add('hidden');document.getElementById('secProfissionais').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});}
         async function salvarProfissionalModal(evento){evento.preventDefault();if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;const id=lerCampo('profissional_id'),nome=lerCampo('prof_nome').trim();if(!nome){exibirToast('Informe o nome do profissional.','erro');return;}const payload={nome:nome,grupo:lerCampo('prof_grupo'),crm:lerCampo('prof_crm').trim()||null,especialidade:lerCampo('prof_especialidade').trim()||null,sigla:lerCampo('prof_sigla').trim()||null,nome_abreviado:lerCampo('prof_nome_abreviado').trim()||null,cbo:lerCampo('prof_cbo').trim()||null,updated_at:new Date().toISOString()};const botao=document.getElementById('btnSalvarProfissional');botao.disabled=true;botao.textContent='Salvando...';try{let resposta;if(id){resposta=await supabaseClient.from('profissionais').update(payload).eq('id',id);}else{payload.ativo=true;payload.origem='CADASTRO_MANUAL';resposta=await supabaseClient.from('profissionais').insert([payload]);}if(resposta.error)throw resposta.error;fecharModalProfissional();exibirToast(id?'Profissional atualizado.':'Profissional cadastrado.','sucesso');await carregarProfissionais();}catch(error){exibirToast('Não foi possível salvar o profissional: '+error.message,'erro');}finally{botao.disabled=false;botao.textContent='Salvar profissional';}}
-        async function alterarStatusProfissional(id,ativo){const p=profissionaisCache.find(x=>x.id===id);if(!p)return;if(!confirm((ativo?'Reativar':'Desativar')+' '+p.nome+'?'))return;const {error}=await supabaseClient.from('profissionais').update({ativo:ativo,updated_at:new Date().toISOString()}).eq('id',id);if(error){exibirToast('Não foi possível alterar a situação: '+error.message,'erro');return;}exibirToast('Situação do profissional atualizada.','sucesso');await carregarProfissionais();}
+        async function alterarStatusProfissional(id,ativo){const p=profissionaisCache.find(x=>x.id===id);if(!p)return;const confirmou=await confirmarDialogo({titulo:ativo?'Reativar profissional?':'Desativar profissional?',mensagem:(ativo?'Deseja reativar ':'Deseja desativar ')+p.nome+'?',tipo:ativo?'confirmacao':'perigo',textoConfirmar:ativo?'Reativar':'Desativar'});if(!confirmou)return;const {error}=await supabaseClient.from('profissionais').update({ativo:ativo,updated_at:new Date().toISOString()}).eq('id',id);if(error){exibirToast('Não foi possível alterar a situação: '+error.message,'erro');return;}exibirToast('Situação do profissional atualizada.','sucesso');await carregarProfissionais();}
         function ocultarResultadosProfissionais(){Object.values(CONFIG_PROFISSIONAIS_CIRURGIA).forEach(cfg=>{const e=document.getElementById(cfg.painel);if(e)e.classList.add('hidden');});}
         function buscarProfissionaisCampo(campo){const cfg=CONFIG_PROFISSIONAIS_CIRURGIA[campo];if(!cfg)return;const input=document.getElementById(campo),hidden=document.getElementById(campo+'_profissional_id');if(hidden)hidden.value='';if(cfg.registro)document.getElementById(cfg.registro).value='';const termo=(input.value||'').trim(),painel=document.getElementById(cfg.painel);if(timersProfissionais[campo])clearTimeout(timersProfissionais[campo]);if(termo.length<2){painel.classList.add('hidden');return;}timersProfissionais[campo]=setTimeout(async()=>{const busca=termo.replace(/[%,_(),]/g,' ').trim();if(busca.length<2){painel.classList.add('hidden');return;}painel.innerHTML='<div class="p-3 text-xs text-slate-500">Pesquisando profissionais...</div>';painel.classList.remove('hidden');const {data,error}=await supabaseClient.from('profissionais').select('id,nome,crm,especialidade,sigla,grupo').eq('ativo',true).eq('grupo',cfg.grupo).or('nome.ilike.%'+busca+'%,crm.ilike.%'+busca+'%').order('nome',{ascending:true}).limit(12);if(error){painel.innerHTML='<div class="p-3 text-xs text-rose-600">Erro ao pesquisar profissionais.</div>';return;}profissionaisBusca[campo]=data||[];if(!data?.length){painel.innerHTML='<div class="p-3 text-xs text-slate-500">Nenhum '+rotuloGrupoProfissional(cfg.grupo).toLocaleLowerCase('pt-BR')+' ativo encontrado. Você pode manter o preenchimento manual.</div>';return;}painel.innerHTML=data.map((p,i)=>'<button type="button" onclick="selecionarProfissionalCampo(\''+campo+'\','+i+')" class="block w-full border-b border-slate-100 px-3 py-2.5 text-left hover:bg-teal-50"><span class="block text-xs font-bold text-slate-800">'+escaparHtml(p.nome)+'</span><span class="block text-[10px] text-slate-500">'+(p.crm?'CRM / Registro '+escaparHtml(p.crm)+' · ':'')+escaparHtml(p.especialidade||rotuloGrupoProfissional(p.grupo))+'</span></button>').join('');},250);}
         function selecionarProfissionalCampo(campo,indice){const cfg=CONFIG_PROFISSIONAIS_CIRURGIA[campo],p=(profissionaisBusca[campo]||[])[indice];if(!cfg||!p)return;document.getElementById(campo).value=p.nome;document.getElementById(campo+'_profissional_id').value=p.id;if(cfg.registro)document.getElementById(cfg.registro).value=p.crm||'';ocultarResultadosProfissionais();}
