@@ -4269,7 +4269,7 @@
                 const {data:perfil,error}=await supabaseClient.from('user_profiles').select('user_id,email,full_name,nickname,role,active').eq('user_id',usuario.id).single();
                 if(error)throw error;
                 if(!perfil)throw new Error('Perfil de usuário não encontrado.');
-                if(!perfil.nickname&&usuario.app_metadata?.provider==='google'){mostrarConfiguracaoNicknameGoogle(usuario);return;}
+                if(!perfil.nickname&&(usuario.app_metadata?.provider==='google'||usuario.identities?.some(function(identidade){return identidade.provider==='google';}))){mostrarConfiguracaoNicknameGoogle(usuario);return;}
                 if(!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Sua solicitação de acesso foi recebida e aguarda aprovação da Administração.',true);return;}
                 usuarioAtual=usuario;perfilAtual=perfil;
                 if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/inicio',true);
@@ -4360,7 +4360,12 @@
                 });
                 if(error){
                     const msg=String(error.message||'').toLowerCase();
-                    if(error.code==='23505'||msg.includes('duplicate key')||msg.includes('nickname'))mostrarMensagemAuth('Este nickname já está em uso. Escolha outro.');
+                    let nicknameJaExiste=error.code==='23505'||msg.includes('duplicate key')||msg.includes('nickname');
+                    if(!nicknameJaExiste){
+                        const {data:checagem}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'check',nickname:nickname}});
+                        nicknameJaExiste=checagem?.available===false;
+                    }
+                    if(nicknameJaExiste)mostrarMensagemAuth('Este nickname já está em uso. Escolha outro.');
                     else if(msg.includes('already registered')||msg.includes('already been registered'))mostrarMensagemAuth('Este e-mail já possui cadastro. Tente entrar ou recuperar sua senha.');
                     else mostrarMensagemAuth('Não foi possível concluir o cadastro. Confira os dados e tente novamente.');
                     return;
@@ -4402,7 +4407,8 @@
                 const {error}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'set',nickname:nickname}});
                 if(error){
                     const msg=String(error.message||'').toLowerCase();
-                    mostrarMensagemAuth(msg.includes('nickname')||error.code==='23505'?'Este nickname já está em uso. Escolha outro.':'Não foi possível salvar o nickname. Tente novamente.');
+                    const status=error.context?.status;
+                    mostrarMensagemAuth(status===409||msg.includes('nickname')||error.code==='23505'?'Este nickname já está em uso. Escolha outro.':'Não foi possível salvar o nickname. Tente novamente.');
                     return;
                 }
                 const {data:perfil,error:erroPerfil}=await supabaseClient.from('user_profiles').select('active,nickname').eq('user_id',usuarioGoogleAguardandoNickname.id).single();
