@@ -637,6 +637,19 @@ async function searchSisreg(identifier: string, cookie: string) {
     resultTree = await findCadwebPage(result.url || action, mergeCookies([cookie], setCookies(result.headers)), headers);
     etapasMs.buscaFramesMs = Math.round(performance.now() - etapaInicio);
     candidatePages = [paginaResposta, ...resultTree.pages];
+    const errorPage = candidatePages.find((p) => {
+      try { return new URL(p.url).pathname.toLowerCase().endsWith("/sisreg_erro"); }
+      catch { return false; }
+    });
+    if (errorPage) {
+      console.error("sisreg-direct: SISREG_ERROR_PAGE_DIAGNOSTICS", JSON.stringify({
+        resultStatus: result.status,
+        resultContentType: result.headers.get("content-type") || "",
+        resultUrlPath: (() => { try { return new URL(result.url || action).pathname; } catch { return ""; } })(),
+        candidates: candidatePages.map((p) => safeCadwebDiagnostics(p.html, p.url)).slice(0, 8),
+      }));
+      throw new Error("SISREG_NAVIGATION_ERROR");
+    }
     const resultPage = candidatePages.find((p) => /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(p.html))) ||
       candidatePages.find((p) => /nome\s*(?:do\s*)?paciente|data de nascimento|cart[aã]o nacional de sa[uú]de/i.test(stripHtml(p.html))) ||
       candidatePages[0];
@@ -770,15 +783,27 @@ async function handle(req: Request) {
         tempoLoginMs += Math.round(performance.now() - etapaAcessoInicio);
       }
       let result;
-      try { result = await searchSisreg(identifier, cookie); }
-      catch (error) {
-        if (!(error instanceof Error) || error.message !== "SESSION_EXPIRED") throw error;
+      try {
+        result = await searchSisreg(identifier, cookie);
+      } catch (error) {
+        const recoverable = error instanceof Error &&
+          (error.message === "SESSION_EXPIRED" || error.message === "SISREG_NAVIGATION_ERROR");
+        if (!recoverable) throw error;
+        // Se o SISREG devolveu a página interna de erro, renova a autenticação
+        // e repete a consulta uma única vez. Não tenta interpretar essa página como paciente.
         etapaAcessoInicio = performance.now();
         cookie = await loginSisreg(credentials.usuario, credentials.senha);
         tempoLoginMs += Math.round(performance.now() - etapaAcessoInicio);
         reused = false;
         storedSession = null;
-        result = await searchSisreg(identifier, cookie);
+        try {
+          result = await searchSisreg(identifier, cookie);
+        } catch (retryError) {
+          if (retryError instanceof Error && retryError.message === "SISREG_NAVIGATION_ERROR") {
+            throw new Error("O SISREG apresentou uma falha interna ao abrir o CADWEB. A sessão foi renovada e a consulta foi repetida uma vez, mas o próprio SISREG continuou retornando a página de erro. Tente novamente em instantes.");
+          }
+          throw retryError;
+        }
       }
       etapasAcessoMs.loginSISREGMs = tempoLoginMs;
       etapaAcessoInicio = performance.now();
