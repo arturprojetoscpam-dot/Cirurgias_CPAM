@@ -5840,6 +5840,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                     definirRota('/pacientes',true);navegarSistema('pesquisa',false);return;
                 }
                 if(destino==='regularCirurgia'&&!['administrador','regulacao','coordenacao'].includes(perfilAtual.role)){definirRota('/inicio',true);navegarSistema('inicio',false);return;}
+                if(destino==='gastro'&&!acessoGastroAtual){definirRota('/inicio',true);navegarSistema('inicio',false);return;}
                 if(destino==='medicos'&&!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){
                     definirRota('/pacientes',true);navegarSistema('pesquisa',false);return;
                 }
@@ -6015,7 +6016,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         async function atualizarAcessoGastro(){
             acessoGastroAtual=false;profissionalGastroAtual=null;
             if(!usuarioAtual||!perfilAtual){document.getElementById('navGastro')?.classList.add('hidden');return;}
-            const rolesComAcesso=['administrador','coordenacao','regulacao','bloco','cadastro'];
+            const rolesComAcesso=['administrador','coordenacao','regulacao'];
             if(rolesComAcesso.includes(perfilAtual.role))acessoGastroAtual=true;
             else{
                 try{
