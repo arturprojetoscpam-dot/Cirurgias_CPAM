@@ -310,16 +310,20 @@ function extractPatient(html: string, requested: string) {
       const proxima = tabela[r + 1] || [];
       for (let c = 0; c < linha.length; c++) {
         const rotulo = normalizeLabel(linha[c]).replace(/:$/, "").trim();
-        if (c + 1 < linha.length && linha[c + 1]) {
-          pares.push({ label: rotulo, value: linha[c + 1] });
-        }
-        // O CADWEB frequentemente apresenta os rótulos em uma linha e
-        // os respectivos valores na linha imediatamente abaixo, na mesma coluna.
+        // No CADWEB, rótulos e valores ficam em linhas alternadas. Quando
+        // reconhecemos um rótulo, a célula correspondente da próxima linha
+        // tem prioridade. Não associar o rótulo à próxima coluna da mesma linha:
+        // em campos lado a lado isso confundia "Nome" com "Nome Social" e
+        // "Data de Nascimento" com "Tipo Sanguíneo".
         if (rotulosConhecidos.has(rotulo) && proxima[c]) {
           const valor = proxima[c].trim();
-          if (valor && normalizeLabel(valor) !== rotulo) {
+          if (valor && !rotulosConhecidos.has(normalizeLabel(valor).replace(/:$/, ""))) {
             pares.push({ label: rotulo, value: valor });
           }
+          continue;
+        }
+        if (c + 1 < linha.length && linha[c + 1]) {
+          pares.push({ label: rotulo, value: linha[c + 1] });
         }
       }
     }
