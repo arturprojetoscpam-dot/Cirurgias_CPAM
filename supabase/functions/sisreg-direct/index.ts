@@ -710,12 +710,15 @@ async function handle(req: Request) {
           : null;
       };
 
-      let cookie = await getSession(userId);
+      const storedSession = await getSession(userId);
+      let cookie = storedSession?.cookie || null;
       if (cookie) {
         try {
           const validCookie = await validarCookie(cookie);
           if (validCookie) {
-            await saveSession(userId, validCookie);
+            // Reaproveita a sessão existente e só persiste se os cookies mudaram
+            // ou se chegou o intervalo de renovação periódica.
+            await persistSessionAfterSearch(userId, validCookie, storedSession);
             return json(req, { configured: true, connected: true, sessionReused: true });
           }
         } catch (error) {
