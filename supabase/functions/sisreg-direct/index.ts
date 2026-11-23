@@ -279,39 +279,125 @@ function extractPatient(html: string, requested: string) {
     identificadorConsultado: requested,
   };
 }
+type SisregPage = { url: string; html: string };
+
+function extractPageReferences(html: string, baseUrl: string) {
+  const refs: Array<{ url: string; priority: number }> = [];
+  const add = (raw: string, priority: number) => {
+    if (!raw || /^(javascript:|#|mailto:)/i.test(raw.trim())) return;
+    try {
+      const url = new URL(decodeEntities(raw.trim()), baseUrl);
+      if (url.hostname !== new URL(SISREG_BASE_URL).hostname) return;
+      refs.push({ url: url.toString(), priority });
+    } catch {}
+  };
+  const frameRe = /<(?:iframe|frame)\b([^>]*)>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = frameRe.exec(html)) !== null) {
+    const src = htmlAttributes(match[1]).src;
+    if (src) add(src, 0);
+  }
+  const linkRe = /<a\b([^>]*)>([\s\S]*?)<\/a\s*>/gi;
+  while ((match = linkRe.exec(html)) !== null) {
+    const attrs = htmlAttributes(match[1]);
+    const label = normalizeLabel(stripHtml(match[2]) + " " + (attrs.title || "") + " " + (attrs.alt || "") + " " + (attrs.onclick || ""));
+    if (/\bcns\b/.test(label) || /cns/i.test(attrs.href || "")) add(attrs.href || "", 1);
+  }
+  return refs.sort((a, b) => a.priority - b.priority);
+}
+
+async function findCadwebPage(startUrl: string, cookie: string, headers: Record<string, string>) {
+  const queue = [startUrl];
+  const visited = new Set<string>();
+  const pages: SisregPage[] = [];
+  while (queue.length && visited.size < 30) {
+    const url = queue.shift()!;
+    if (visited.has(url)) continue;
+    visited.add(url);
+    let response: Response;
+    try { response = await sisregFetch(url, { headers: { ...headers, "Cookie": cookie } }); }
+    catch { continue; }
+    if (loginFormVisible(await response.clone().text()) || response.status === 401 || response.status === 403) {
+      throw new Error("SESSION_EXPIRED");
+    }
+    if (!response.ok) continue;
+    const html = decode(await response.arrayBuffer());
+    pages.push({ url: response.url || url, html });
+    if (/<input\b[^>]*\bname\s*=\s*["']nu_cns["']/i.test(html)) {
+      return { page: pages[pages.length - 1], pages, cookies: setCookies(response.headers) };
+    }
+    for (const ref of extractPageReferences(html, response.url || url)) {
+      if (!visited.has(ref.url) && !queue.includes(ref.url)) queue.push(ref.url);
+    }
+  }
+  return { page: null as SisregPage | null, pages, cookies: [] as string[] };
+}
+
 async function searchSisreg(identifier: string, cookie: string) {
   const started = performance.now();
-  const headers = { "User-Agent": USER_AGENT, "Accept": "text/html,application/xhtml+xml,*/*", "Cookie": cookie, "Referer": SISREG_LOGIN_URL };
-  const page = await sisregFetch(SISREG_CADWEB_URL, { headers });
-  const pageHtml = decode(await page.arrayBuffer());
-  if (loginFormVisible(pageHtml) || page.status === 401 || page.status === 403) throw new Error("SESSION_EXPIRED");
-  if (!page.ok) throw new Error("Não foi possível abrir a consulta de pacientes do SISREG (HTTP " + page.status + ").");
-  const formMatch = pageHtml.match(/<form\b([^>]*)>([\s\S]*?)<\/form>/i);
-  if (!formMatch) throw new Error("O SISREG não apresentou o formulário de consulta esperado.");
-  const attrs = formMatch[1], formInner = formMatch[2];
-  const actionMatch = attrs.match(/\baction\s*=\s*["']([^"']*)["']/i);
-  let action = actionMatch?.[1] ? new URL(decodeEntities(actionMatch[1]), SISREG_CADWEB_URL).toString() : SISREG_CADWEB_URL;
+  const headers = {
+    "User-Agent": USER_AGENT,
+    "Accept": "text/html,application/xhtml+xml,*/*",
+    "Cookie": cookie,
+    "Referer": SISREG_LOGIN_URL,
+  };
+
+  // O SISREG monta a consulta por páginas e frames. Começamos na página inicial
+  // autenticada e percorremos os documentos acessíveis até encontrar nu_cns,
+  // em vez de presumir que cadweb50?standalone=1 já contém o formulário.
+  const navigation = await findCadwebPage(SISREG_LOGIN_URL, cookie, headers);
+  if (!navigation.page) {
+    const hasCadwebTitle = navigation.pages.some((p) => /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(p.html)));
+    throw new Error(hasCadwebTitle
+      ? "O SISREG abriu a área CADWEB, mas o campo de pesquisa não foi localizado nas páginas e frames consultados."
+      : "O SISREG autenticou, mas a opção CNS e o formulário de pesquisa não foram encontrados nas páginas e frames disponíveis.");
+  }
+
+  const page = navigation.page;
+  const formMatch = page.html.match(/<form\b([^>]*)>([\s\S]*?)<\/form>/i);
+  if (!formMatch) throw new Error("A página do SISREG contém o campo CNS, mas não apresentou o formulário correspondente.");
+  const attrs = htmlAttributes(formMatch[1]), formInner = formMatch[2];
+  let action = attrs.action ? new URL(attrs.action, page.url).toString() : page.url;
   if (action.startsWith("http://")) action = action.replace(/^http:/i, "https:");
+
   const params = new URLSearchParams();
-  const inputRegex = /<input\b([^>]*)>/gi; let input: RegExpExecArray | null;
+  const inputRegex = /<input\b([^>]*)>/gi;
+  let input: RegExpExecArray | null;
   while ((input = inputRegex.exec(formInner)) !== null) {
-    const a = input[1], name = a.match(/\bname\s*=\s*["']([^"']+)["']/i)?.[1];
-    if (!name) continue;
-    const type = a.match(/\btype\s*=\s*["']([^"']+)["']/i)?.[1]?.toLowerCase() || "text";
-    const value = a.match(/\bvalue\s*=\s*["']([^"']*)["']/i)?.[1] || "";
-    if (type === "hidden" || type === "submit") params.set(name, decodeEntities(value));
+    const a = htmlAttributes(input[1]);
+    if (!a.name) continue;
+    const type = (a.type || "text").toLowerCase();
+    if (type === "hidden" || type === "submit") params.set(a.name, a.value || "");
   }
   params.set("nu_cns", identifier);
   params.set("btn_pesquisar", "Pesquisar");
+
   const result = await sisregFetch(action, {
     method: "POST",
-    headers: { ...headers, "Content-Type": "application/x-www-form-urlencoded", "Origin": SISREG_BASE_URL },
+    headers: {
+      ...headers,
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Origin": SISREG_BASE_URL,
+      "Referer": page.url,
+    },
     body: params,
   });
   const resultHtml = decode(await result.arrayBuffer());
   if (loginFormVisible(resultHtml) || result.status === 401 || result.status === 403) throw new Error("SESSION_EXPIRED");
   if (!result.ok) throw new Error("A pesquisa SISREG respondeu com erro HTTP " + result.status + ".");
-  return { paciente: extractPatient(resultHtml, identifier), cookie: mergeCookies([cookie], setCookies(page.headers), setCookies(result.headers)), elapsedMs: Math.round(performance.now() - started) };
+
+  // O resultado também pode estar em um frame diferente do formulário.
+  const resultTree = await findCadwebPage(result.url || action, mergeCookies([cookie], setCookies(result.headers)), headers);
+  const candidatePages = [ { url: result.url || action, html: resultHtml }, ...resultTree.pages ];
+  const resultPage = candidatePages.find((p) => /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(p.html))) ||
+    candidatePages.find((p) => /nome\s*(?:do\s*)?paciente|data de nascimento|cart[aã]o nacional de sa[uú]de/i.test(stripHtml(p.html))) ||
+    candidatePages[0];
+
+  return {
+    paciente: extractPatient(resultPage.html, identifier),
+    cookie: mergeCookies([cookie], navigation.cookies, setCookies(result.headers), resultTree.cookies),
+    elapsedMs: Math.round(performance.now() - started),
+  };
 }
 async function handle(req: Request) {
   const headers = corsHeaders(req);
