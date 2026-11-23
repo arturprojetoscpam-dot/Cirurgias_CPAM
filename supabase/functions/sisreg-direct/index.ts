@@ -215,7 +215,13 @@ function extractCadwebJson(html: string) {
     if (linhas.length) tabelas.push(linhas);
   }
   const titulo = stripHtml((html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i) || [,""])[1]);
-  const texto = stripHtml(html.replace(/<\/(tr|p|div|li|br|h[1-6])\s*>/gi, "\n").replace(/<br\s*\/?>/gi, "\n"));
+  const texto = decodeEntities(html
+    .replace(/<script\\b[\\s\\S]*?<\\/script>/gi, " ")
+    .replace(/<style\\b[\\s\\S]*?<\\/style>/gi, " ")
+    .replace(/<br\\s*\\/?\\s*>/gi, "\\n")
+    .replace(/<\\/(?:tr|p|div|li|h[1-6])\\s*>/gi, "\\n")
+    .replace(/<[^>]+>/g, " "))
+    .split("\\n").map((line) => line.replace(/\\s+/g, " ").trim()).filter(Boolean).join("\\n");
   return { titulo, campos, tabelas, texto };
 }
 function extractPatient(html: string, requested: string) {
