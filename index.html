@@ -5614,7 +5614,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         function inicializarFormularioRegular(){
             const data=document.getElementById('regularDataPrevista');if(data&&!data.value)data.value=new Date().toISOString().slice(0,10);
             const busca=document.getElementById('regularBuscaPaciente');if(busca&&!busca.dataset.bound){busca.dataset.bound='1';busca.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();buscarPacienteRegular();}});}
-            const cpf=document.getElementById('regularCPF');if(cpf&&!cpf.dataset.bound){cpf.dataset.bound='1';cpf.addEventListener('input',()=>{const v=cpf.value.replace(/\\D/g,'').slice(0,11);cpf.value=v.length===11?v.replace(/(\\d{3})(\\d{3})(\\d{3})(\\d{2})/,'$1.$2.$3-$4'):v;});}
+            const cpf=document.getElementById('regularCPF');if(cpf&&!cpf.dataset.bound){cpf.dataset.bound='1';cpf.addEventListener('input',()=>{const v=cpf.value.replace(/\D/g,'').slice(0,11);cpf.value=v.length===11?v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4'):v;});}
         }
         function limparPacienteRegular(){
             regularPacienteAtual=null;
@@ -5625,7 +5625,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         function selecionarPacienteRegular(p){
             regularPacienteAtual=p;
             document.getElementById('regularNomePaciente').value=p.nome_paciente||'';
-            document.getElementById('regularNascimento').value=p.data_nascimento&&/^\\d{4}-\\d{2}-\\d{2}$/.test(p.data_nascimento)?p.data_nascimento:(p.data_nascimento&&/^\\d{2}\\/\\d{2}\\/\\d{4}$/.test(p.data_nascimento)?p.data_nascimento.split('/').reverse().join('-'):'');
+            document.getElementById('regularNascimento').value=p.data_nascimento&&/^\d{4}-\d{2}-\d{2}$/.test(p.data_nascimento)?p.data_nascimento:(p.data_nascimento&&/^\d{2}\/\d{2}\/\d{4}$/.test(p.data_nascimento)?p.data_nascimento.split('/').reverse().join('-'):'');
             document.getElementById('regularCPF').value=p.cpf||'';document.getElementById('regularCNS').value=p.cns||'';
             document.getElementById('regularProntuarioAmb').value=p.numero_cadastro_ambulatorio||'';
             document.getElementById('regularNomeMae').value=p.nome_mae||'';document.getElementById('regularTelefone').value=p.telefone||'';
@@ -5637,7 +5637,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         async function buscarPacienteRegular(){
             const termo=document.getElementById('regularBuscaPaciente').value.trim(),tipo=document.getElementById('regularTipoBusca').value;
             if(!termo){exibirToast('Informe o identificador para pesquisar o paciente.','erro');return;}
-            const valor=tipo==='cpf'||tipo==='cns'?termo.replace(/\\D/g,''):termo;
+            const valor=tipo==='cpf'||tipo==='cns'?termo.replace(/\D/g,''):termo;
             if(tipo==='cpf'&&valor.length!==11){exibirToast('Informe um CPF com 11 números.','erro');return;}
             if(tipo==='cns'&&valor.length!==15){exibirToast('Confira o número do Cartão SUS (CNS).','erro');return;}
             const box=document.getElementById('regularResultadosPaciente');box.classList.remove('hidden');box.textContent='Pesquisando paciente...';
@@ -5660,7 +5660,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         }
         async function salvarAgendamentoRegular(evento){
             evento.preventDefault();if(!perfilAtual||!['administrador','regulacao'].includes(perfilAtual.role)){exibirToast('Apenas a Regulação pode cadastrar agendamentos nesta tela.','erro');return;}
-            const nome=document.getElementById('regularNomePaciente').value.trim(),amb=document.getElementById('regularProntuarioAmb').value.trim(),cpf=document.getElementById('regularCPF').value.replace(/\\D/g,''),cns=document.getElementById('regularCNS').value.replace(/\\D/g,''),codigo=document.getElementById('regularProcedimentoCodigo').value,procedimento=document.getElementById('regularProcedimentoNome').value,data=document.getElementById('regularDataPrevista').value;
+            const nome=document.getElementById('regularNomePaciente').value.trim(),amb=document.getElementById('regularProntuarioAmb').value.trim(),cpf=document.getElementById('regularCPF').value.replace(/\D/g,''),cns=document.getElementById('regularCNS').value.replace(/\D/g,''),codigo=document.getElementById('regularProcedimentoCodigo').value,procedimento=document.getElementById('regularProcedimentoNome').value,data=document.getElementById('regularDataPrevista').value;
             if(!nome||!amb||!procedimento||!codigo||!data){exibirToast('Preencha nome, prontuário ambulatorial, procedimento e data prevista.','erro');return;}
             if(!regularPacienteAtual&&!cpf&&!cns){exibirToast('Para cadastrar um novo paciente, informe CPF ou Cartão SUS (CNS).','erro');return;}
             if(cpf&&cpf.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}
