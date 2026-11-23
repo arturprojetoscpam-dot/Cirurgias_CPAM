@@ -294,10 +294,33 @@ function extractPatient(html: string, requested: string) {
   for (const item of dados.campos) {
     if (item.campo && item.valor) pares.push({ label: normalizeLabel(item.campo), value: item.valor });
   }
+  const rotulosConhecidos = new Set([
+    "nome", "nome completo", "nome do paciente", "nome social", "apelido",
+    "nome da mae", "nome do pai", "mae", "pai", "filiacao materna",
+    "data de nascimento", "nascimento", "dt nascimento", "sexo", "raca",
+    "cpf", "numero cpf", "cns", "cartao sus", "cartao nacional de saude",
+    "numero cns", "tipo sanguineo", "nacionalidade", "municipio de nascimento",
+    "tipo logradouro", "logradouro", "complemento", "numero", "bairro", "cep",
+    "pais de residencia", "municipio de residencia", "email", "e mail",
+    "ddd", "telefone", "tipo telefone",
+  ]);
   for (const tabela of dados.tabelas) {
-    for (const linha of tabela) {
-      for (let i = 0; i + 1 < linha.length; i++) {
-        if (linha[i] && linha[i + 1]) pares.push({ label: normalizeLabel(linha[i]), value: linha[i + 1] });
+    for (let r = 0; r < tabela.length; r++) {
+      const linha = tabela[r];
+      const proxima = tabela[r + 1] || [];
+      for (let c = 0; c < linha.length; c++) {
+        const rotulo = normalizeLabel(linha[c]).replace(/:$/, "").trim();
+        if (c + 1 < linha.length && linha[c + 1]) {
+          pares.push({ label: rotulo, value: linha[c + 1] });
+        }
+        // O CADWEB frequentemente apresenta os rótulos em uma linha e
+        // os respectivos valores na linha imediatamente abaixo, na mesma coluna.
+        if (rotulosConhecidos.has(rotulo) && proxima[c]) {
+          const valor = proxima[c].trim();
+          if (valor && normalizeLabel(valor) !== rotulo) {
+            pares.push({ label: rotulo, value: valor });
+          }
+        }
       }
     }
   }
