@@ -2,6 +2,7 @@ const SISREG_BASE_URL = "https://sisregiii.saude.gov.br";
 const SISREG_LOGIN_URL = SISREG_BASE_URL + "/cgi-bin/index";
 const SISREG_CADWEB_URL = SISREG_BASE_URL + "/cgi-bin/cadweb50?standalone=1";
 const SESSION_IDLE_MS = 15 * 60 * 1000;
+const SESSION_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 const FETCH_TIMEOUT_MS = 20000;
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY") || Deno.env.get("SUPABASE_PUBLISHABLE_KEY") || "";
@@ -153,7 +154,31 @@ async function getSession(userId: string) {
   const row = rows[0], now = Date.now(), expiry = Date.parse(row.expires_at), lastActivity = Date.parse(row.last_activity_at);
   if (!Number.isFinite(expiry) || !Number.isFinite(lastActivity) || expiry <= now || now - lastActivity > SESSION_IDLE_MS) return null;
   const value = await decrypt(row.nonce, row.encrypted_payload) as { cookie: string };
-  return value.cookie || null;
+  return value.cookie ? { cookie: value.cookie, lastActivityAt: lastActivity } : null;
+}
+async function persistSessionAfterSearch(userId: string, cookie: string, previous: { cookie: string; lastActivityAt: number } | null) {
+  const started = performance.now();
+  const now = new Date(), expiresAt = new Date(now.getTime() + SESSION_IDLE_MS);
+  if (previous && previous.cookie === cookie) {
+    if (now.getTime() - previous.lastActivityAt < SESSION_REFRESH_INTERVAL_MS) {
+      return { totalMs: Math.round(performance.now() - started), encryptionMs: 0, databaseMs: 0, persisted: false, reason: "sessao_inalterada" };
+    }
+    const databaseStarted = performance.now();
+    await dbRequest("sisreg_sessions?user_id=eq." + encodeURIComponent(userId), {
+      method: "PATCH", headers: { "Prefer": "return=minimal" },
+      body: JSON.stringify({ expires_at: expiresAt.toISOString(), last_activity_at: now.toISOString(), updated_at: now.toISOString() }),
+    });
+    return { totalMs: Math.round(performance.now() - started), encryptionMs: 0, databaseMs: Math.round(performance.now() - databaseStarted), persisted: true, reason: "renovacao_periodica" };
+  }
+  const encryptionStarted = performance.now();
+  const encrypted = await encrypt({ cookie });
+  const encryptionMs = Math.round(performance.now() - encryptionStarted);
+  const databaseStarted = performance.now();
+  await dbRequest("sisreg_sessions?on_conflict=user_id", {
+    method: "POST", headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
+    body: JSON.stringify({ user_id: userId, nonce: encrypted.nonce, encrypted_payload: encrypted.ciphertext, expires_at: expiresAt.toISOString(), last_activity_at: now.toISOString(), updated_at: now.toISOString() }),
+  });
+  return { totalMs: Math.round(performance.now() - started), encryptionMs, databaseMs: Math.round(performance.now() - databaseStarted), persisted: true, reason: previous ? "cookie_alterado" : "nova_sessao" };
 }
 function decodeEntities(value: string) {
   const named: Record<string, string> = {
@@ -732,7 +757,8 @@ async function handle(req: Request) {
       etapasAcessoMs.carregarCredenciaisMs = Math.round(performance.now() - etapaAcessoInicio);
       if (!credentials) return json(req, { error: "Configure seu acesso SISREG antes de consultar pacientes." }, 409);
       etapaAcessoInicio = performance.now();
-      let cookie = await getSession(userId), reused = Boolean(cookie);
+      let storedSession = await getSession(userId);
+      let cookie = storedSession?.cookie || null, reused = Boolean(cookie);
       etapasAcessoMs.recuperarSessaoMs = Math.round(performance.now() - etapaAcessoInicio);
       let tempoLoginMs = 0;
       if (!cookie) {
@@ -748,17 +774,22 @@ async function handle(req: Request) {
         cookie = await loginSisreg(credentials.usuario, credentials.senha);
         tempoLoginMs += Math.round(performance.now() - etapaAcessoInicio);
         reused = false;
+        storedSession = null;
         result = await searchSisreg(identifier, cookie);
       }
       etapasAcessoMs.loginSISREGMs = tempoLoginMs;
       etapaAcessoInicio = performance.now();
-      await saveSession(userId, result.cookie);
-      etapasAcessoMs.salvarSessaoMs = Math.round(performance.now() - etapaAcessoInicio);
+      const persistenciaSessao = await persistSessionAfterSearch(userId, result.cookie, reused ? storedSession : null);
+      etapasAcessoMs.salvarSessaoMs = persistenciaSessao.totalMs;
+      etapasAcessoMs.criptografarSessaoMs = persistenciaSessao.encryptionMs;
+      etapasAcessoMs.gravarSessaoMs = persistenciaSessao.databaseMs;
       etapasAcessoMs.pesquisaCADWEBTotalMs = result.elapsedMs;
       etapasAcessoMs.totalBackendMs = Math.round(performance.now() - requestStarted);
       console.info("sisreg-direct: ACCESS_TIMINGS", JSON.stringify({
         ...etapasAcessoMs,
         sessaoReutilizada: reused,
+        sessaoPersistida: persistenciaSessao.persisted,
+        motivoPersistenciaSessao: persistenciaSessao.reason,
         paginasFramesResultado: result.paginasFramesResultado,
       }));
       return json(req, { paciente: result.paciente, sessaoReutilizada: reused, tempoConsultaMs: result.elapsedMs, tempoTotalBackendMs: etapasAcessoMs.totalBackendMs, etapasMs: { ...etapasAcessoMs, ...result.etapasMs }, paginasFramesResultado: result.paginasFramesResultado });
