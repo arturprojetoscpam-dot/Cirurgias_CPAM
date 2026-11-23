@@ -5469,6 +5469,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast(motivoInfo.id===16?'Descreva o motivo manualmente ao selecionar “Outro”.':'Informe o motivo do cancelamento.','erro');document.getElementById(motivoInfo.id===16?'Mot_Cancelam_outro':'Mot_Cancelam').focus();return;}
             if(situacao==='CANCELADA'&&!responsabilidade){exibirToast('Informe se o cancelamento foi responsabilidade do paciente ou extra-paciente.','erro');document.getElementById('responsabilidade_cancelamento').focus();return;}
             if(modoEdicaoPaciente){exibirToast('Salve ou cancele a edição dos dados do paciente antes de gravar a cirurgia.','erro');return;}if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
+            if(pacienteSelecionado&&!pacienteSelecionado.data_nascimento){exibirToast('Este paciente não possui data de nascimento cadastrada. Atualize o cadastro antes de registrar a cirurgia.','erro');return;}
             const nascimentoCirurgia=pacienteSelecionado?.data_nascimento||document.getElementById('Data_Nascimento').value;
             const dataCirurgia=document.getElementById('Data_da_Cirurgia').value;
             const idadeCirurgia=idadeNaData(nascimentoCirurgia,dataCirurgia);
