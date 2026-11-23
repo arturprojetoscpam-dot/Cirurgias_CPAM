@@ -4000,8 +4000,8 @@
           <div class="overflow-hidden rounded-xl border border-black border-b-4 border-b-[#191A23] bg-[#ECFDF5] p-4 shadow-none sm:p-5">
             <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-5">
               <div class="flex min-w-0 flex-col items-start">
-                <span class="inline-flex h-9 min-h-[36px] items-center rounded-lg border border-emerald-900 bg-emerald-800 px-3 font-sans text-base font-extrabold uppercase tracking-tight text-white shadow-sm">SISREG III</span><span class="mt-1 h-1 w-full rounded-full bg-[#FACC15]" aria-hidden="true"></span>
-                <div id="sisregStatusIntegracao" class="mt-3 flex items-center gap-2 text-sm font-extrabold text-rose-700" role="status" aria-live="polite"><span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span><span>Verificando conexão</span></div>
+                <span class="inline-flex h-11 min-h-[44px] box-border items-center rounded-lg border border-emerald-900 border-b-[3px] border-b-[#FACC15] bg-emerald-800 px-3 font-sans text-base font-extrabold uppercase tracking-tight text-white shadow-sm">SISREG III</span>
+                <div id="sisregStatusIntegracao" class="mt-3 inline-flex min-h-[28px] items-center gap-2 text-sm font-extrabold text-amber-700" role="status" aria-live="polite"><i class="fa-solid fa-rotate fa-spin" aria-hidden="true"></i><span>Verificando conexão</span></div>
               </div>
               <button type="button" onclick="abrirModalSISREG()" class="h-11 min-h-[44px] w-full rounded-lg border border-emerald-300 bg-white px-4 py-0 text-[11px] font-bold text-emerald-950 shadow-sm hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-key mr-1"></i>Configurar / trocar sessão</button>
             </div>
@@ -4991,8 +4991,15 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             sisregEstado=estado;
             const el=document.getElementById('sisregStatusIntegracao');
             if(!el)return;
-            const cfg={verificando:['Verificando conexão','bg-amber-100 text-amber-800'],conectado:['Conectado','bg-emerald-100 text-emerald-800'],aguardando:['Login automático na próxima consulta','bg-blue-100 text-blue-800'],desconectado:['Não configurado','bg-slate-100 text-slate-600'],erro:['Falha na conexão','bg-rose-100 text-rose-800']}[estado]||['Não configurado','bg-slate-100 text-slate-600'];
-            el.textContent=(estado==='conectado'?'● CONECTADO':cfg[0]);el.className='mt-2 inline-flex items-center rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide '+cfg[1];
+            const cfg={
+                verificando:{texto:'Verificando conexão',icone:'fa-rotate fa-spin',classe:'text-amber-700'},
+                conectado:{texto:'Conectado',icone:'fa-check',classe:'text-emerald-800'},
+                aguardando:{texto:'Desconectado · login automático na próxima consulta',icone:'fa-xmark',classe:'text-rose-700'},
+                desconectado:{texto:'Desconectado',icone:'fa-xmark',classe:'text-rose-700'},
+                erro:{texto:'Desconectado',icone:'fa-xmark',classe:'text-rose-700'}
+            }[estado]||{texto:'Desconectado',icone:'fa-xmark',classe:'text-rose-700'};
+            el.className='mt-3 inline-flex min-h-[28px] items-center gap-2 text-sm font-extrabold '+cfg.classe;
+            el.innerHTML='<i class="fa-solid '+cfg.icone+'" aria-hidden="true"></i><span>'+cfg.texto+'</span>';
         }
         function abrirModalSISREG(){
             document.getElementById('sisregUsuario').value='';document.getElementById('sisregSenha').value='';
@@ -5001,11 +5008,19 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         }
         function fecharModalSISREG(){document.getElementById('modalConfigSISREG')?.classList.add('hidden');document.getElementById('formConfigSISREG')?.reset();}
         async function verificarStatusSISREG(silencioso=true){
-            if(!usuarioAtual||sisregVerificacaoEmAndamento)return;
+            if(sisregVerificacaoEmAndamento)return;
+            if(!usuarioAtual){sisregConfigurado=false;atualizarBadgeSISREG('desconectado');return;}
             sisregVerificacaoEmAndamento=true;atualizarBadgeSISREG('verificando');
-            try{const r=await chamarRelaySISREG('status');sisregConfigurado=!!r.configured;atualizarBadgeSISREG(!sisregConfigurado?'desconectado':(r.connected?'conectado':'aguardando'));if(!silencioso)exibirToast(r.connected?'Conexão SISREG pronta para uso.':(r.configured?'Acesso salvo. O login será refeito automaticamente na próxima consulta.':'Configure seu acesso SISREG para habilitar a consulta.'),r.configured?'sucesso':'info');}
-            catch(e){atualizarBadgeSISREG('erro');if(!silencioso)exibirToast(e.message,'erro');else console.warn('Status SISREG:',e.message);}
-            finally{sisregVerificacaoEmAndamento=false;}
+            try{
+                const r=await chamarRelaySISREG('status');
+                sisregConfigurado=!!r.configured;
+                atualizarBadgeSISREG(!sisregConfigurado?'desconectado':(r.connected?'conectado':'aguardando'));
+                if(!silencioso)exibirToast(r.connected?'Conexão SISREG pronta para uso.':(r.configured?'Acesso salvo. O login será refeito automaticamente na próxima consulta.':'Configure seu acesso SISREG para habilitar a consulta.'),r.connected?'sucesso':'info');
+            }catch(e){
+                sisregConfigurado=false;
+                atualizarBadgeSISREG('desconectado');
+                if(!silencioso)exibirToast(e.message,'erro');else console.warn('Status SISREG:',e.message);
+            }finally{sisregVerificacaoEmAndamento=false;}
         }
         async function salvarCredenciaisSISREG(evento){
             evento.preventDefault();const usuario=timedTexto(document.getElementById('sisregUsuario').value),senha=document.getElementById('sisregSenha').value;
