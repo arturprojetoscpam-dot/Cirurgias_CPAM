@@ -437,17 +437,44 @@ async function searchSisreg(identifier: string, cookie: string) {
   let action = attrs.action ? new URL(attrs.action, page.url).toString() : page.url;
   if (action.startsWith("http://")) action = action.replace(/^http:/i, "https:");
 
+  // pesquisarPaciente() define etapa=DETALHAR e chama frm.submit().
+  // Como o botão é type=button, ele não integra os parâmetros enviados.
+  // Reproduzimos os controles bem-sucedidos do formulário, como o navegador.
   const params = new URLSearchParams();
+  const addControl = (name: string, value: string) => {
+    if (name) params.append(name, value);
+  };
   const inputRegex = /<input\b([^>]*)>/gi;
   let input: RegExpExecArray | null;
   while ((input = inputRegex.exec(formInner)) !== null) {
     const a = htmlAttributes(input[1]);
-    if (!a.name) continue;
+    if (!a.name || a.disabled) continue;
     const type = (a.type || "text").toLowerCase();
-    if (type === "hidden" || type === "submit") params.set(a.name, a.value || "");
+    if (["button", "submit", "reset", "file", "image"].includes(type)) continue;
+    if ((type === "checkbox" || type === "radio") && !/\bchecked\b/i.test(input[1])) continue;
+    addControl(a.name, a.value || "");
+  }
+  const textareaRegex = /<textarea\b([^>]*)>([\s\S]*?)<\/textarea\s*>/gi;
+  let textarea: RegExpExecArray | null;
+  while ((textarea = textareaRegex.exec(formInner)) !== null) {
+    const a = htmlAttributes(textarea[1]);
+    if (a.name && !a.disabled) addControl(a.name, decodeEntities(textarea[2].replace(/<[^>]*>/g, "")));
+  }
+  const selectRegex = /<select\b([^>]*)>([\s\S]*?)<\/select\s*>/gi;
+  let select: RegExpExecArray | null;
+  while ((select = selectRegex.exec(formInner)) !== null) {
+    const a = htmlAttributes(select[1]);
+    if (!a.name || a.disabled) continue;
+    const options = [...select[2].matchAll(/<option\b([^>]*)>([\s\S]*?)<\/option\s*>/gi)];
+    const chosen = options.filter((o) => /\bselected\b/i.test(o[1]));
+    const values = chosen.length ? chosen : options.slice(0, 1);
+    for (const option of values) {
+      const oa = htmlAttributes(option[1]);
+      addControl(a.name, oa.value ?? stripHtml(option[2]));
+    }
   }
   params.set("nu_cns", identifier);
-  params.set("btn_pesquisar", "Pesquisar");
+  params.set("etapa", "DETALHAR");
 
   const result = await sisregFetch(action, {
     method: "POST",
