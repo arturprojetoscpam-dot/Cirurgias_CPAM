@@ -4000,10 +4000,10 @@
           <div class="overflow-hidden rounded-xl border border-emerald-200 bg-[#ECFDF5] p-4 shadow-none sm:p-5">
             <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-4">
               <div class="flex w-full min-w-0 flex-col items-start sm:w-[190px] sm:flex-none">
-                <span class="inline-flex h-[44px] min-h-[44px] box-border items-center rounded-lg border border-black bg-emerald-800 p-px shadow-none"><span class="inline-flex h-[40px] box-border items-center rounded-[6px] border-b-4 border-b-[#FACC15] px-4 font-sans text-xl font-extrabold uppercase tracking-tight text-white">SISREG III</span></span>
+                <span class="inline-flex h-[44px] min-h-[44px] box-border items-center rounded-[9px] border-[1px] border-black bg-emerald-800 p-[2px] shadow-none"><span class="inline-flex h-[38px] box-border items-center rounded-[6px] border-b-4 border-b-[#FACC15] px-4 font-sans text-xl font-extrabold uppercase tracking-tight text-white">SISREG III</span></span>
                 <div id="sisregStatusIntegracao" class="mt-4 flex min-h-[24px] w-full min-w-0 items-start gap-2 text-sm font-extrabold text-amber-700" role="status" aria-live="polite"><span id="sisregStatusDot" class="mt-1 h-2.5 w-2.5 flex-none rounded-full bg-amber-500"></span><span class="min-w-0 whitespace-normal break-words">VERIFICANDO CONEXÃO</span></div>
               </div>
-              <button type="button" onclick="abrirModalSISREG()" class="h-[44px] min-h-[44px] box-border w-full rounded-lg border border-emerald-300 bg-white px-4 py-0 text-[11px] font-bold text-emerald-950 shadow-sm hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-key mr-1"></i>Configurar / trocar sessão</button>
+              <button type="button" onclick="abrirModalSISREG()" class="h-[44px] min-h-[44px] box-border w-full flex-none rounded-lg border border-emerald-300 bg-white px-4 py-0 text-[11px] font-bold text-emerald-950 shadow-sm hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-key mr-1"></i>Configurar / trocar sessão</button>
             </div>
             <div class="mt-3 border-t border-emerald-200/80 pt-3"><button type="button" onclick="verificarStatusSISREG(false)" class="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2.5 text-left text-[10px] font-semibold text-emerald-900 hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-rotate mr-1"></i>Verificar conexão</button>
             </div>
@@ -4998,7 +4998,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 desconectado:{texto:'DESCONECTADO',classe:'text-rose-700',ponto:'bg-rose-600'},
                 erro:{texto:'DESCONECTADO',classe:'text-rose-700',ponto:'bg-rose-600'}
             }[estado]||{texto:'DESCONECTADO',classe:'text-rose-700',ponto:'bg-rose-600'};
-            el.className='mt-4 flex min-h-[24px] items-center gap-2 text-sm font-extrabold '+cfg.classe;
+            el.className='mt-4 flex min-h-[24px] w-full min-w-0 items-start gap-2 text-sm font-extrabold '+cfg.classe;
             if(dot)dot.className='h-2.5 w-2.5 flex-none rounded-full '+cfg.ponto;
             const texto=el.querySelector('span:last-child');
             if(texto)texto.textContent=cfg.texto;
