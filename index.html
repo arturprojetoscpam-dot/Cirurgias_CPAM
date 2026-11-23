@@ -3528,6 +3528,7 @@
           </form>
         </div>
         <p id="authMensagem" role="status" aria-live="polite" class="hidden login-message"></p>
+        <button id="authReenviarConfirmacao" type="button" onclick="reenviarConfirmacaoCadastro()" class="hidden mt-2 text-sm font-semibold text-emerald-800 underline underline-offset-2">Reenviar e-mail de confirmação</button>
       </div>
       <footer class="login-panel-footer"><span><i class="fa-solid fa-headset"></i> Suporte: Administração do sistema</span><span>CPAM · Tecnologia da Informação</span></footer>
     </main>
@@ -4244,7 +4245,10 @@
             // O listener fica responsável apenas por recuperação de senha e logout.
             supabaseClient.auth.onAuthStateChange(function(evento){
                 if(evento==='PASSWORD_RECOVERY'){mostrarNovaSenha();return;}
-                if(evento==='SIGNED_OUT')mostrarLogin();
+                if(evento==='SIGNED_OUT'){
+                    const telaAuth=document.getElementById('authScreen');
+                    if(telaAuth&&telaAuth.classList.contains('hidden'))mostrarLogin();
+                }
             });
             const {data,error}=await supabaseClient.auth.getSession();
             if(error){mostrarLogin();mostrarMensagemAuth(error.message);return;}
@@ -4255,7 +4259,27 @@
             const el=document.getElementById('authMensagem');el.textContent=mensagem;
             el.className='mt-4 rounded-xl p-3 text-xs '+(sucesso?'bg-emerald-50 text-emerald-700':'bg-rose-50 text-rose-700');el.classList.remove('hidden');
         }
-        function ocultarMensagemAuth(){const el=document.getElementById('authMensagem');el.textContent='';el.classList.add('hidden');}
+        function ocultarMensagemAuth(){
+            const el=document.getElementById('authMensagem');el.textContent='';el.classList.add('hidden');
+            document.getElementById('authReenviarConfirmacao')?.classList.add('hidden');
+        }
+        async function reenviarConfirmacaoCadastro(){
+            const email=document.getElementById('loginEmail').value.trim();
+            if(!email){mostrarMensagemAuth('Informe o e-mail cadastrado para reenviarmos a confirmação.');return;}
+            const botao=document.getElementById('authReenviarConfirmacao');
+            botao.disabled=true;botao.textContent='Enviando...';
+            try{
+                const {error}=await supabaseClient.auth.resend({type:'signup',email:email,options:{emailRedirectTo:window.location.origin+'/login'}});
+                if(error)throw error;
+                mostrarMensagemAuth('Enviamos um novo link de confirmação. Verifique sua caixa de entrada e também o spam.',true);
+            }catch(error){
+                console.error('Erro ao reenviar confirmação de e-mail:',error);
+                mostrarMensagemAuth('Não foi possível reenviar agora. Aguarde um pouco e tente novamente.');
+                botao.classList.remove('hidden');
+            }finally{
+                botao.disabled=false;botao.textContent='Reenviar e-mail de confirmação';
+            }
+        }
         function mostrarLogin(atualizarHistorico=true){
             usuarioAtual=null;perfilAtual=null;todosRegistros=[];registrosFiltrados=[];
             if(atualizarHistorico)definirRota('/login',true);
@@ -4436,11 +4460,33 @@
             evento.preventDefault();
             if(!loginEnviadoPorClique)return;
             loginEnviadoPorClique=false;
-            ocultarMensagemAuth();const botao=document.getElementById('btnEntrar');botao.disabled=true;botao.textContent='Autenticando...';
-            const {data,error}=await supabaseClient.auth.signInWithPassword({email:document.getElementById('loginEmail').value.trim(),password:document.getElementById('loginSenha').value});
-            botao.disabled=false;botao.textContent='Entrar';
-            if(error){mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');return;}
-            if(data.user)await ativarSessao(data.user);
+            ocultarMensagemAuth();
+            const botao=document.getElementById('btnEntrar');
+            botao.disabled=true;botao.textContent='Autenticando...';
+            try{
+                const {data,error}=await supabaseClient.auth.signInWithPassword({
+                    email:document.getElementById('loginEmail').value.trim(),
+                    password:document.getElementById('loginSenha').value
+                });
+                if(error){
+                    console.error('Falha na autenticação:',error);
+                    if(error.code==='email_not_confirmed'){
+                        mostrarMensagemAuth('Seu e-mail ainda não foi confirmado. Confirme pelo link enviado quando você criou sua conta. Depois da confirmação, o sistema verificará se seu acesso já foi autorizado pela Administração.');
+                        document.getElementById('authReenviarConfirmacao').classList.remove('hidden');
+                    }else if(error.code==='invalid_credentials'){
+                        mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');
+                    }else{
+                        mostrarMensagemAuth('Não foi possível concluir o login neste momento. Tente novamente ou procure a Administração do sistema.');
+                    }
+                    return;
+                }
+                if(data.user)await ativarSessao(data.user);
+            }catch(error){
+                console.error('Erro inesperado no login:',error);
+                mostrarMensagemAuth('Ocorreu um erro ao tentar entrar. Tente novamente.');
+            }finally{
+                botao.disabled=false;botao.textContent='Entrar';
+            }
         }
         async function solicitarRecuperacao(){
             ocultarMensagemAuth();const email=document.getElementById('loginEmail').value.trim();
