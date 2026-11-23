@@ -4345,6 +4345,15 @@
             </div>
             <div id="gastroListaAtendimentos"><div class="p-8 text-center text-sm text-slate-500">Abra o módulo para carregar a agenda.</div></div>
           </section>
+          <section id="gastroAdminVinculos" class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-none">
+            <div class="border-b border-slate-200 p-4"><p class="text-[10px] font-extrabold uppercase tracking-wide text-emerald-800">Administração</p><h3 class="mt-1 text-sm font-extrabold text-slate-900">Vincular médico ao usuário CPAM</h3><p class="mt-1 text-xs text-slate-500">Associe a conta de acesso ao cadastro profissional. O médico verá somente os atendimentos vinculados ao seu perfil profissional.</p></div>
+            <form id="formGastroVinculo" onsubmit="gastroSalvarVinculo(event)" class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+              <div><label for="gastroVinculoUsuario" class="mb-1 block text-xs font-bold text-slate-700">Usuário CPAM</label><select id="gastroVinculoUsuario" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Carregando usuários...</option></select></div>
+              <div><label for="gastroVinculoMedico" class="mb-1 block text-xs font-bold text-slate-700">Médico cadastrado</label><select id="gastroVinculoMedico" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Selecione o profissional</option></select></div>
+              <button id="btnGastroSalvarVinculo" type="submit" class="min-h-11 rounded-xl bg-[#123C32] px-4 text-xs font-extrabold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-link mr-2"></i>Vincular médico</button>
+            </form>
+            <div id="gastroListaVinculos" class="border-t border-slate-100"><p class="p-4 text-xs text-slate-500">Carregando vínculos...</p></div>
+          </section>
           <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><div class="flex items-start gap-3"><i class="fa-solid fa-circle-info mt-0.5 text-lg text-emerald-800"></i><div><p class="text-xs font-bold text-slate-800">Próxima etapa do módulo</p><p class="mt-1 text-xs leading-relaxed text-slate-600">O atendimento direto de urgência e internação será conectado à consulta BE da integração VITAI existente. Os documentos clínicos (laudo, evolução, receituário, atestado, APAC e biópsias) serão construídos sobre esta base, com assinatura individual e adendos.</p></div></div></div>
         </section>
 
@@ -4362,7 +4371,7 @@
         let timedLocalResultado=null,vitaiConfigurado=false,vitaiEstado='desconhecido',vitaiVerificacaoEmAndamento=false;
         let pacienteModalAtual=null,cirurgiaModalAtual=null,telaAnteriorCirurgia='historico',telaAnteriorDetalhes='historico',cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,loginEnviadoPorClique=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
-        let acessoGastroAtual=false, profissionalGastroAtual=null, gastroAtendimentosCache=[], gastroProfissionaisCache=[], gastroPacienteSelecionado=null;
+        let acessoGastroAtual=false, profissionalGastroAtual=null, gastroAtendimentosCache=[], gastroProfissionaisCache=[], gastroPacienteSelecionado=null, gastroUsuariosCache=[], gastroVinculosCache=[];
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta',regulacao:'Regulação',bloco:'Bloco Cirúrgico'};
 
         window.addEventListener('DOMContentLoaded',async function(){
@@ -6060,6 +6069,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 document.getElementById('btnGastroNovoEncaminhamento')?.classList.toggle('hidden',!podeCriar);
                 document.getElementById('gastroFormRegulacao')?.classList.toggle('hidden',!podeCriar||document.getElementById('gastroFormRegulacao').dataset.aberto!=='1');
                 gastroRenderizarLista();
+                if(perfilAtual.role==='administrador')await gastroCarregarVinculos();
             }catch(error){
                 console.error('Erro ao carregar Gastroenterologia:',error);
                 if(lista)lista.innerHTML='<div class="p-6 text-center text-sm font-semibold text-rose-700">Não foi possível carregar a Gastroenterologia: '+escaparHtml(error.message||'erro inesperado')+'</div>';
@@ -6130,7 +6140,6 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             }
         }
         function gastroSelecionarPaciente(id){
-            const p=undefined;
             const botao=Array.from(document.querySelectorAll('#gastroResultadoPaciente button')).find(b=>b.getAttribute('onclick')?.includes(id));
             if(!botao)return;
             gastroPacienteSelecionado=id;
@@ -6172,6 +6181,64 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             }catch(error){
                 console.error(error);exibirToast('Não foi possível registrar o encaminhamento: '+(error.message||'erro inesperado'),'erro');
             }finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-paper-plane mr-2"></i>Confirmar encaminhamento';}
+        }
+
+
+        async function gastroCarregarVinculos(){
+            const area=document.getElementById('gastroAdminVinculos');
+            if(!area||perfilAtual?.role!=='administrador')return;
+            area.classList.remove('hidden');
+            const [usuarios,vinculos]=await Promise.all([
+                supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active').eq('active',true).order('full_name'),
+                supabaseClient.from('gastro_profissional_acessos').select('id,user_id,profissional_id,ativo,criado_em').order('criado_em',{ascending:false})
+            ]);
+            if(usuarios.error)throw usuarios.error;
+            if(vinculos.error)throw vinculos.error;
+            gastroUsuariosCache=usuarios.data||[];
+            gastroVinculosCache=vinculos.data||[];
+            const usuarioSelect=document.getElementById('gastroVinculoUsuario');
+            if(usuarioSelect){
+                const vinculados=new Set(gastroVinculosCache.filter(v=>v.ativo).map(v=>v.user_id));
+                usuarioSelect.innerHTML='<option value="">Selecione o usuário do sistema</option>'+gastroUsuariosCache.filter(u=>!vinculados.has(u.user_id)).map(u=>'<option value="'+u.user_id+'">'+escaparHtml(u.full_name||u.email)+' · '+escaparHtml(u.role)+'</option>').join('');
+            }
+            const medicoSelect=document.getElementById('gastroVinculoMedico');
+            if(medicoSelect)medicoSelect.innerHTML='<option value="">Selecione o profissional</option>'+gastroProfissionaisCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</option>').join('');
+            const lista=document.getElementById('gastroListaVinculos');
+            if(lista){
+                if(!gastroVinculosCache.length){lista.innerHTML='<p class="p-4 text-xs text-slate-500">Nenhum médico vinculado a usuário do sistema ainda.</p>';return;}
+                const usuariosMap=new Map(gastroUsuariosCache.map(u=>[u.user_id,u]));
+                const medicosMap=new Map(gastroProfissionaisCache.map(p=>[p.id,p]));
+                lista.innerHTML='<div class="overflow-x-auto"><table class="w-full min-w-[620px] text-left text-xs"><thead class="bg-slate-50 text-[10px] uppercase text-slate-500"><tr><th class="px-3 py-2">Usuário CPAM</th><th class="px-3 py-2">Profissional</th><th class="px-3 py-2">Acesso</th><th class="px-3 py-2 text-right">Ação</th></tr></thead><tbody class="divide-y divide-slate-100">'+gastroVinculosCache.map(v=>{
+                    const u=usuariosMap.get(v.user_id)||{},p=medicosMap.get(v.profissional_id)||{};
+                    return '<tr><td class="px-3 py-3"><strong>'+escaparHtml(u.full_name||u.email||'Usuário não localizado')+'</strong><span class="block mt-1 text-[10px] text-slate-500">'+escaparHtml(u.email||'')+'</span></td><td class="px-3 py-3">'+escaparHtml(p.nome||'Profissional não localizado')+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</td><td class="px-3 py-3"><span class="rounded-full border px-2 py-1 text-[10px] font-bold '+(v.ativo?'border-emerald-200 bg-emerald-50 text-emerald-800':'border-slate-200 bg-slate-100 text-slate-600')+'">'+(v.ativo?'Ativo':'Inativo')+'</span></td><td class="px-3 py-3 text-right"><button type="button" onclick="gastroAlternarVinculo(\''+v.id+'\','+(v.ativo?'false':'true')+')" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-[10px] font-bold text-slate-700 hover:bg-slate-50">'+(v.ativo?'Desativar':'Reativar')+'</button></td></tr>';
+                }).join('')+'</tbody></table></div>';
+            }
+        }
+        async function gastroSalvarVinculo(evento){
+            evento.preventDefault();
+            if(perfilAtual?.role!=='administrador')return;
+            const userId=document.getElementById('gastroVinculoUsuario').value;
+            const profissionalId=document.getElementById('gastroVinculoMedico').value;
+            if(!userId||!profissionalId){exibirToast('Selecione o usuário e o profissional para criar o vínculo.','erro');return;}
+            const botao=document.getElementById('btnGastroSalvarVinculo');
+            botao.disabled=true;botao.textContent='Salvando...';
+            try{
+                const {error}=await supabaseClient.from('gastro_profissional_acessos').insert({user_id:userId,profissional_id:profissionalId});
+                if(error)throw error;
+                exibirToast('Vínculo médico criado. O usuário já pode acessar sua fila de Gastroenterologia.','sucesso');
+                document.getElementById('formGastroVinculo').reset();
+                await gastroCarregarVinculos();
+            }catch(error){exibirToast('Não foi possível criar o vínculo: '+(error.message||'erro inesperado'),'erro');}
+            finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-link mr-2"></i>Vincular médico';}
+        }
+        async function gastroAlternarVinculo(id,ativo){
+            if(perfilAtual?.role!=='administrador')return;
+            try{
+                const {error}=await supabaseClient.from('gastro_profissional_acessos').update({ativo:ativo}).eq('id',id);
+                if(error)throw error;
+                exibirToast(ativo?'Acesso médico reativado.':'Acesso médico desativado.','sucesso');
+                await gastroCarregarVinculos();
+            }catch(error){exibirToast('Não foi possível atualizar o vínculo: '+(error.message||'erro inesperado'),'erro');}
         }
 
         function navegarSistema(destino,atualizarHistorico=true){
