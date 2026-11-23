@@ -161,36 +161,115 @@ function decodeEntities(value: string) {
 function stripHtml(value: string) {
   return decodeEntities(value.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
 }
+function normalizeLabel(value: string) {
+  return decodeEntities(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR").replace(/[^a-z0-9]+/g, " ").trim();
+}
+function htmlAttributes(source: string) {
+  const attrs: Record<string, string> = {};
+  const re = /([^\s=/>]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(source)) !== null) attrs[match[1].toLowerCase()] = decodeEntities(match[2] ?? match[3] ?? match[4] ?? "");
+  return attrs;
+}
+// Replica a captura estruturada do content.js: campos, tabelas e texto da tela CADWEB.
+function extractCadwebJson(html: string) {
+  const campos: Array<{ campo: string; valor: string }> = [];
+  const labelsByFor = new Map<string, string>();
+  const labelRe = /<label\b([^>]*)>([\s\S]*?)<\/label>/gi;
+  let labelMatch: RegExpExecArray | null;
+  while ((labelMatch = labelRe.exec(html)) !== null) {
+    const attrs = htmlAttributes(labelMatch[1]);
+    const label = stripHtml(labelMatch[2]);
+    if (attrs.for && label) labelsByFor.set(attrs.for, label);
+  }
+  const inputRe = /<(input|select|textarea)\b([^>]*)>(?:([\s\S]*?)<\/\1\s*>)?/gi;
+  let inputMatch: RegExpExecArray | null;
+  while ((inputMatch = inputRe.exec(html)) !== null) {
+    const tag = inputMatch[1].toLowerCase(), attrs = htmlAttributes(inputMatch[2]);
+    const type = (attrs.type || "text").toLowerCase();
+    if (type === "password" || type === "hidden") continue;
+    let rotulo = (attrs.id && labelsByFor.get(attrs.id)) || attrs.name || attrs.id || attrs["aria-label"] || "";
+    let valor = attrs.value || "";
+    if (tag === "textarea") valor = stripHtml(inputMatch[3] || "");
+    if (tag === "select") {
+      const options = inputMatch[3] || "";
+      const selected = options.match(/<option\b([^>]*)>([\s\S]*?)<\/option>/i);
+      if (selected) valor = stripHtml(selected[2]);
+    }
+    if (rotulo || valor) campos.push({ campo: rotulo, valor: decodeEntities(valor).trim() });
+  }
+  const tabelas: string[][][] = [];
+  const tableRe = /<table\b[^>]*>([\s\S]*?)<\/table\s*>/gi;
+  let tableMatch: RegExpExecArray | null;
+  while ((tableMatch = tableRe.exec(html)) !== null) {
+    const linhas: string[][] = [];
+    const rowRe = /<tr\b[^>]*>([\s\S]*?)<\/tr\s*>/gi;
+    let rowMatch: RegExpExecArray | null;
+    while ((rowMatch = rowRe.exec(tableMatch[1])) !== null) {
+      const celulas: string[] = [];
+      const cellRe = /<(?:th|td)\b[^>]*>([\s\S]*?)<\/(?:th|td)\s*>/gi;
+      let cellMatch: RegExpExecArray | null;
+      while ((cellMatch = cellRe.exec(rowMatch[1])) !== null) celulas.push(stripHtml(cellMatch[1]));
+      if (celulas.some(Boolean)) linhas.push(celulas);
+    }
+    if (linhas.length) tabelas.push(linhas);
+  }
+  const titulo = stripHtml((html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i) || [,""])[1]);
+  const texto = stripHtml(html.replace(/<\/(tr|p|div|li|br|h[1-6])\s*>/gi, "\n").replace(/<br\s*\/?>/gi, "\n"));
+  return { titulo, campos, tabelas, texto };
+}
 function extractPatient(html: string, requested: string) {
-  const fields: Record<string, string> = {};
-  const rows = html.match(/<tr\b[^>]*>[\s\S]*?<\/tr>/gi) || [];
-  for (const row of rows) {
-    const cells = row.match(/<(?:th|td)\b[^>]*>[\s\S]*?<\/(?:th|td)>/gi) || [];
-    if (cells.length >= 2) {
-      const label = stripHtml(cells[0]).replace(/[:\s]+$/, "").toLocaleLowerCase("pt-BR");
-      const value = stripHtml(cells.slice(1).join(" "));
-      if (label && value && label.length < 90 && value.length < 300) fields[label] = value;
+  const dados = extractCadwebJson(html);
+  const pares: Array<{ label: string; value: string }> = [];
+  for (const item of dados.campos) {
+    if (item.campo && item.valor) pares.push({ label: normalizeLabel(item.campo), value: item.valor });
+  }
+  for (const tabela of dados.tabelas) {
+    for (const linha of tabela) {
+      for (let i = 0; i + 1 < linha.length; i++) {
+        if (linha[i] && linha[i + 1]) pares.push({ label: normalizeLabel(linha[i]), value: linha[i + 1] });
+      }
     }
   }
-  const text = stripHtml(html);
-  const pick = (patterns: RegExp[]) => {
-    for (const [label, value] of Object.entries(fields)) if (patterns.some((p) => p.test(label)) && value) return value;
-    const match = text.match(new RegExp("(?:^|\\s)(?:" + patterns.map((p) => p.source).join("|") + ")\\s*:?\\s*([^]{1,100}?)(?=\\s{2,}|$)", "i"));
-    return match?.[1]?.trim() || "";
+  const aliases: Record<string, string[]> = {
+    nome: ["nome", "nome completo", "nome do paciente", "paciente"],
+    nascimento: ["data de nascimento", "nascimento", "dt nascimento"],
+    cpf: ["cpf", "numero cpf"],
+    cns: ["cns", "cartao sus", "cartao nacional de saude", "numero cns"],
+    mae: ["nome da mae", "mae", "filiacao materna"],
   };
-  const nome = pick([/nome(?: completo)?(?: do paciente)?/i]);
+  const pick = (key: string) => {
+    const names = aliases[key];
+    for (const alias of names) {
+      const found = pares.find((p) => p.label === alias || p.label.startsWith(alias + " "));
+      if (found?.value) return found.value.trim();
+    }
+    // Fallback para rótulos e valores dispostos em linhas separadas na tela CADWEB.
+    const lines = dados.texto.split(/\n+/).map((v) => v.trim()).filter(Boolean);
+    for (let i = 0; i < lines.length; i++) {
+      const line = normalizeLabel(lines[i]).replace(/:$/, "");
+      if (names.some((alias) => line === alias || line.startsWith(alias + " "))) {
+        const inline = lines[i].split(/[:：]/).slice(1).join(":").trim();
+        if (inline) return inline;
+        if (lines[i + 1]) return lines[i + 1].trim();
+      }
+    }
+    return "";
+  };
+  const nome = pick("nome");
+  const textNorm = normalizeLabel(dados.texto);
   if (!nome) {
-    if (/nenhum registro|não encontrado|nao encontrado|sem resultado/i.test(text)) throw new Error("Nenhum cadastro foi localizado no SISREG para o identificador informado.");
-    throw new Error("O SISREG respondeu, mas não foi possível identificar com segurança os campos do paciente.");
+    if (/nenhum registro|nao encontrado|sem resultado/.test(textNorm)) throw new Error("Nenhum cadastro foi localizado no SISREG para o identificador informado.");
+    throw new Error("O SISREG respondeu, mas a captura estruturada da tela CADWEB não encontrou o campo Nome. A resposta foi preservada para diagnóstico sem expor dados do paciente.");
   }
+  const digitos = (value: string) => value.replace(/\D/g, "");
   return {
     nome,
-    nascimento: pick([/data de nascimento|nascimento/i]),
-    cpf: (pick([/cpf/i]).replace(/\D/g, "").match(/\d{11}/)?.[0] || ""),
-    cns: (pick([/cns|cart[aã]o nacional de sa[uú]de|cart[aã]o sus/i]).replace(/\D/g, "").match(/\d{15}/)?.[0] || ""),
-    mae: pick([/nome da m[aã]e|m[aã]e/i]),
-    campos: fields,
-    trecho: text.slice(0, 1200),
+    nascimento: pick("nascimento"),
+    cpf: digitos(pick("cpf")).match(/\d{11}/)?.[0] || (requested.length === 11 ? requested : ""),
+    cns: digitos(pick("cns")).match(/\d{15}/)?.[0] || (requested.length === 15 ? requested : ""),
+    mae: pick("mae"),
+    campos: pares.reduce((acc, item) => { if (item.label && item.value) acc[item.label] = item.value; return acc; }, {} as Record<string, string>),
     identificadorConsultado: requested,
   };
 }
