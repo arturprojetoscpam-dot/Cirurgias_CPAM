@@ -156,7 +156,32 @@ async function getSession(userId: string) {
   return value.cookie || null;
 }
 function decodeEntities(value: string) {
-  return value.replace(/&nbsp;/gi, " ").replace(/&amp;/gi, "&").replace(/&quot;/gi, '"').replace(/&#39;|&apos;/gi, "'").replace(/&lt;/gi, "<").replace(/&gt;/gi, ">").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)));
+  const named: Record<string, string> = {
+    amp: "&", quot: '"', apos: "'", nbsp: " ", lt: "<", gt: ">",
+    aacute: "á", acirc: "â", atilde: "ã", agrave: "à", auml: "ä",
+    eacute: "é", ecirc: "ê", egrave: "è", euml: "ë",
+    iacute: "í", icirc: "î", igrave: "ì", iuml: "ï",
+    oacute: "ó", ocirc: "ô", otilde: "õ", ograve: "ò", ouml: "ö",
+    uacute: "ú", ucirc: "û", ugrave: "ù", uuml: "ü",
+    ccedil: "ç", yacute: "ý", ordm: "º", ordf: "ª",
+    ndash: "–", mdash: "—", bull: "•", hellip: "…",
+  };
+  let decoded = value;
+  // O CADWEB pode devolver entidades numéricas hexadecimais e conteúdo duplamente codificado.
+  for (let pass = 0; pass < 3; pass++) {
+    const next = decoded.replace(/&(#x[0-9a-f]+|#\\d+|[a-z][a-z0-9]+);/gi, (entity, code) => {
+      if (code[0] === "#") {
+        const hex = code[1]?.toLowerCase() === "x";
+        const point = Number.parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10);
+        try { return Number.isFinite(point) && point > 0 && point <= 0x10ffff ? String.fromCodePoint(point) : entity; }
+        catch { return entity; }
+      }
+      return named[code.toLowerCase()] ?? entity;
+    });
+    if (next === decoded) break;
+    decoded = next;
+  }
+  return decoded;
 }
 function stripHtml(value: string) {
   return decodeEntities(value.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
