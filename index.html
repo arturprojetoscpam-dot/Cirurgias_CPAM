@@ -3458,8 +3458,8 @@
           <div class="login-status"><span class="login-status-dot"></span><span>Acesso protegido · Somente usuários autorizados</span></div>
           <form id="formLogin" onsubmit="entrar(event)" class="login-form">
             <div class="login-field">
-              <label for="loginEmail">E-mail institucional</label>
-              <div class="login-input-wrap"><i class="fa-regular fa-user"></i><input id="loginEmail" type="email" required autocomplete="username" placeholder="seu.email@instituicao.gov.br"></div>
+              <label for="loginEmail">E-mail</label>
+              <div class="login-input-wrap"><i class="fa-regular fa-user"></i><input id="loginEmail" type="email" required autocomplete="username" placeholder="seu.email@gmail.com"></div>
             </div>
             <div class="login-field">
               <label for="loginSenha">Senha</label>
@@ -3479,23 +3479,17 @@
           <h2 class="login-title">Criar sua conta</h2>
           <p class="login-subtitle">Informe seus dados para solicitar acesso ao sistema.</p>
           <form id="formCadastro" onsubmit="cadastrarUsuario(event)" class="login-form">
-            <div class="login-field">
-              <label for="cadastroEmail">E-mail institucional</label>
-              <div class="login-input-wrap"><i class="fa-regular fa-envelope"></i><input id="cadastroEmail" type="email" required autocomplete="email" placeholder="seu.email@instituicao.gov.br"></div>
-            </div>
+            <div class="login-field"><label for="cadastroNome">Nome completo</label><div class="login-input-wrap"><i class="fa-regular fa-user"></i><input id="cadastroNome" type="text" required maxlength="120" autocomplete="name" placeholder="Digite seu nome completo"></div></div>
+            <div class="login-field"><label for="cadastroCpf">CPF</label><div class="login-input-wrap"><i class="fa-regular fa-id-card"></i><input id="cadastroCpf" type="text" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" oninput="formatarCPFUsuario(this)"></div></div>
+            <div class="login-field"><label for="cadastroFuncao">Função no Arlinda</label><div class="login-input-wrap"><i class="fa-solid fa-briefcase"></i><input id="cadastroFuncao" type="text" required maxlength="120" autocomplete="organization-title" placeholder="Informe sua função na instituição"></div></div>
+            <div class="login-field"><label for="cadastroEmail">E-mail</label><div class="login-input-wrap"><i class="fa-regular fa-envelope"></i><input id="cadastroEmail" type="email" required autocomplete="email" placeholder="seu.email@gmail.com"></div></div>
             <div class="login-field">
               <label for="cadastroNickname">Nome de usuário (nickname)</label>
               <div class="login-input-wrap"><i class="fa-regular fa-user"></i><input id="cadastroNickname" type="text" required maxlength="40" autocomplete="nickname" placeholder="Escolha como deseja ser identificado" onblur="verificarNicknameCadastro()"></div>
               <p id="cadastroNicknameStatus" class="login-field-hint" aria-live="polite">Esse nome será exclusivo e aparecerá na sua identificação.</p>
             </div>
-            <div class="login-field">
-              <label for="cadastroSenha">Senha (8 caracteres)</label>
-              <div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="cadastroSenha" type="password" required minlength="8" maxlength="8" autocomplete="new-password" placeholder="Digite exatamente 8 caracteres"><button type="button" onclick="alternarVisibilidadeSenha('cadastroSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div>
-            </div>
-            <div class="login-field">
-              <label for="cadastroConfirmaSenha">Confirmação de senha</label>
-              <div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="cadastroConfirmaSenha" type="password" required minlength="8" maxlength="8" autocomplete="new-password" placeholder="Repita sua senha"><button type="button" onclick="alternarVisibilidadeSenha('cadastroConfirmaSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div>
-            </div>
+            <div class="login-field"><label for="cadastroSenha">Senha (mínimo de 8 caracteres)</label><div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="cadastroSenha" type="password" required minlength="8" autocomplete="new-password" placeholder="Crie uma senha com pelo menos 8 caracteres"><button type="button" onclick="alternarVisibilidadeSenha('cadastroSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div></div>
+            <div class="login-field"><label for="cadastroConfirmaSenha">Confirmação de senha</label><div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="cadastroConfirmaSenha" type="password" required minlength="8" autocomplete="new-password" placeholder="Digite novamente sua senha"><button type="button" onclick="alternarVisibilidadeSenha('cadastroConfirmaSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div></div>
             <button id="btnCadastrar" type="submit" class="login-submit"><span>CRIAR CONTA</span><i class="fa-solid fa-arrow-right"></i></button>
           </form>
           <div class="login-auth-divider"><span>ou</span></div>
@@ -3673,7 +3667,7 @@
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-2"><div><label for="prof_nome_abreviado" class="mb-1 block text-xs font-semibold text-slate-700">Nome abreviado</label><input id="prof_nome_abreviado" maxlength="120" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"></div><div><label for="prof_cbo" class="mb-1 block text-xs font-semibold text-slate-700">CBO</label><input id="prof_cbo" maxlength="20" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm"></div></div>
               <div class="flex flex-col-reverse gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end"><button type="button" onclick="fecharModalProfissional()" class="rounded-lg border border-slate-300 px-4 py-2.5 text-xs font-semibold text-slate-700">Cancelar</button><button id="btnSalvarProfissional" type="submit" class="rounded-lg bg-teal-700 px-5 py-2.5 text-xs font-bold text-white">Salvar profissional</button></div>
             </form></div></section>
-<section id="secAdmin" class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-user-shield mr-2 text-teal-700"></i>Gestão de usuários</h2><p class="mt-1 text-xs text-slate-500">Altere perfis e suspenda acessos. Convide novas contas pelo Supabase Auth.</p></div><a href="https://supabase.com/dashboard/project/uazilxyspnycvntxcxzu/auth/users" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-teal-200 px-3 py-2 text-xs font-semibold text-teal-800">Convidar usuário <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a></div><div class="mt-4 overflow-x-auto"><table class="w-full text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">E-mail</th><th class="p-3">Nome</th><th class="p-3">Perfil</th><th class="p-3">Acesso</th><th class="p-3">Ação</th></tr></thead><tbody id="gridUsuarios" class="divide-y divide-slate-100"><tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr></tbody></table></div><p class="mt-3 text-[10px] text-slate-400">Novas contas recebem inicialmente o perfil Consulta.</p></section>
+<section id="secAdmin" class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-user-shield mr-2 text-teal-700"></i>Gestão de usuários</h2><p class="mt-1 text-xs text-slate-500">Altere perfis e suspenda acessos. Convide novas contas pelo Supabase Auth.</p></div><a href="https://supabase.com/dashboard/project/uazilxyspnycvntxcxzu/auth/users" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-teal-200 px-3 py-2 text-xs font-semibold text-teal-800">Convidar usuário <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a></div><div class="mt-4 overflow-x-auto"><table class="w-full min-w-[1050px] text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">E-mail</th><th class="p-3">Nome</th><th class="p-3">CPF</th><th class="p-3">Função no Arlinda</th><th class="p-3">Perfil</th><th class="p-3">Acesso</th><th class="p-3">Ação</th></tr></thead><tbody id="gridUsuarios" class="divide-y divide-slate-100"><tr><td colspan="7" class="p-4 text-center text-slate-400">Carregando...</td></tr></tbody></table></div><p class="mt-3 text-[10px] text-slate-400">Novas contas recebem inicialmente o perfil Consulta.</p></section>
 
 
         <!-- FORMULÁRIO COMPLETO DE CADASTRO -->
@@ -4357,16 +4351,33 @@
             status.className='login-field-hint '+(disponivel?'available':'unavailable');
             return disponivel;
         }
+        function formatarCPFUsuario(campo){
+            const numeros=campo.value.replace(/\\D/g,'').slice(0,11);
+            campo.value=numeros.replace(/(\\d{3})(\\d)/,'$1.$2').replace(/(\\d{3})(\\d)/,'$1.$2').replace(/(\\d{3})(\\d{1,2})$/,'$1-$2');
+        }
+        function validarCPFUsuario(valor){
+            const cpf=String(valor||'').replace(/\\D/g,'');
+            if(cpf.length!==11||/^(\\d)\\1{10}$/.test(cpf))return false;
+            let soma=0;for(let i=0;i<9;i++)soma+=Number(cpf[i])*(10-i);
+            let digito=(soma*10)%11;if(digito===10)digito=0;if(digito!==Number(cpf[9]))return false;
+            soma=0;for(let i=0;i<10;i++)soma+=Number(cpf[i])*(11-i);
+            digito=(soma*10)%11;if(digito===10)digito=0;
+            return digito===Number(cpf[10]);
+        }
         async function cadastrarUsuario(evento){
             evento.preventDefault();
             ocultarMensagemAuth();
+            const nome=document.getElementById('cadastroNome').value.trim().replace(/\\s+/g,' ');
+            const cpf=document.getElementById('cadastroCpf').value.replace(/\\D/g,'');
+            const funcao=document.getElementById('cadastroFuncao').value.trim().replace(/\\s+/g,' ');
             const email=document.getElementById('cadastroEmail').value.trim().toLowerCase();
             const nickname=document.getElementById('cadastroNickname').value.trim().replace(/\\s+/g,' ');
             const senha=document.getElementById('cadastroSenha').value;
             const confirmacao=document.getElementById('cadastroConfirmaSenha').value;
-            if(!email||!nickname){mostrarMensagemAuth('Preencha o e-mail institucional e o nickname.');return;}
+            if(!nome||!cpf||!funcao||!email||!nickname){mostrarMensagemAuth('Preencha todos os campos do cadastro.');return;}
+            if(!validarCPFUsuario(cpf)){mostrarMensagemAuth('Informe um CPF válido.');return;}
             if(nickname.length>40){mostrarMensagemAuth('O nickname deve ter no máximo 40 caracteres.');return;}
-            if(senha.length!==8){mostrarMensagemAuth('A senha deve ter exatamente 8 caracteres.');return;}
+            if(senha.length<8){mostrarMensagemAuth('A senha deve ter pelo menos 8 caracteres.');return;}
             if(senha!==confirmacao){mostrarMensagemAuth('A confirmação precisa ser idêntica à senha.');return;}
             const botao=document.getElementById('btnCadastrar');botao.disabled=true;
             botao.innerHTML='<span>VERIFICANDO...</span><i class="fa-solid fa-spinner fa-spin"></i>';
@@ -4378,7 +4389,7 @@
                     email:email,
                     password:senha,
                     options:{
-                        data:{nickname:nickname,full_name:nickname,signup_source:'cpam_public'},
+                        data:{nickname:nickname,full_name:nome,cpf:cpf,institutional_function:funcao,signup_source:'cpam_public'},
                         emailRedirectTo:window.location.origin+'/login'
                     }
                 });
@@ -4389,7 +4400,7 @@
                         const {data:checagem}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'check',nickname:nickname}});
                         nicknameJaExiste=checagem?.available===false;
                     }
-                    if(nicknameJaExiste)mostrarMensagemAuth('Este nickname já está em uso. Escolha outro.');
+                    if(nicknameJaExiste)mostrarMensagemAuth('Este nome de usuário já está em uso. Escolha outro.');
                     else if(msg.includes('already registered')||msg.includes('already been registered'))mostrarMensagemAuth('Este e-mail já possui cadastro. Tente entrar ou recuperar sua senha.');
                     else mostrarMensagemAuth('Não foi possível concluir o cadastro. Confira os dados e tente novamente.');
                     return;
@@ -4401,7 +4412,7 @@
             }catch(error){
                 console.error(error);
                 const msg=String(error.message||'').toLowerCase();
-                mostrarMensagemAuth(msg.includes('duplicate')||msg.includes('nickname')?'Este nickname já está em uso. Escolha outro.':'Ocorreu um erro ao criar a conta. Tente novamente.');
+                mostrarMensagemAuth(msg.includes('duplicate')||msg.includes('nickname')?'Este nome de usuário já está em uso. Escolha outro.':'Ocorreu um erro ao criar a conta. Tente novamente.');
             }finally{
                 botao.disabled=false;botao.innerHTML='<span>CRIAR CONTA</span><i class="fa-solid fa-arrow-right"></i>';
             }
@@ -5659,16 +5670,18 @@
         async function carregarUsuarios(){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
             const corpo=document.getElementById('gridUsuarios');
-            corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-slate-400">Carregando...</td></tr>';
-            const {data,error}=await supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active,created_at').order('created_at',{ascending:true});
-            if(error){corpo.innerHTML='<tr><td colspan="5" class="p-4 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent=error.message;return;}
+            corpo.innerHTML='<tr><td colspan="7" class="p-4 text-center text-slate-400">Carregando...</td></tr>';
+            const {data,error}=await supabaseClient.from('user_profiles').select('user_id,email,full_name,nickname,cpf,institutional_function,role,active,created_at').order('created_at',{ascending:true});
+            if(error){corpo.innerHTML='<tr><td colspan="7" class="p-4 text-center text-rose-600"></td></tr>';corpo.querySelector('td').textContent=error.message;return;}
             corpo.innerHTML=(data||[]).map(function(p){
                 const opts=Object.keys(ROTULOS_PERFIL).map(function(role){return '<option value="'+role+'"'+(p.role===role?' selected':'')+'>'+ROTULOS_PERFIL[role]+'</option>';}).join('');
-                return '<tr><td class="p-3 font-medium">'+escaparHtml(p.email)+'</td><td class="p-3"><input id="nome-usuario-'+p.user_id+'" value="'+escaparHtml(p.full_name||'')+'" placeholder="Nome de exibição" class="w-40 rounded-lg border border-slate-300 p-2 text-xs" maxlength="120"></td>'+
+                return '<tr><td class="p-3 font-medium">'+escaparHtml(p.email)+'</td><td class="p-3"><input id="nome-usuario-'+p.user_id+'" value="'+escaparHtml(p.full_name||'')+'" placeholder="Nome completo" class="w-40 rounded-lg border border-slate-300 p-2 text-xs" maxlength="120"></td>'+
+                    '<td class="p-3"><input id="cpf-usuario-'+p.user_id+'" value="'+escaparHtml(p.cpf||'')+'" placeholder="CPF" inputmode="numeric" class="w-32 rounded-lg border border-slate-300 p-2 text-xs" maxlength="14"></td>'+
+                    '<td class="p-3"><input id="funcao-usuario-'+p.user_id+'" value="'+escaparHtml(p.institutional_function||'')+'" placeholder="Função no Arlinda" class="w-40 rounded-lg border border-slate-300 p-2 text-xs" maxlength="120"></td>'+
                     '<td class="p-3"><select id="role-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs">'+opts+'</select></td>'+
                     '<td class="p-3"><select id="active-'+p.user_id+'" class="rounded-lg border border-slate-300 p-2 text-xs"><option value="true"'+(p.active?' selected':'')+'>Ativo</option><option value="false"'+(!p.active?' selected':'')+'>Suspenso</option></select></td>'+
-                    '<td class="p-3"><button onclick="salvarPerfilUsuario(\''+p.user_id+'\')" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white">Salvar</button></td></tr>';
-            }).join('')||'<tr><td colspan="5" class="p-4 text-center text-slate-400">Nenhum usuário cadastrado.</td></tr>';
+                    '<td class="p-3"><button onclick="salvarPerfilUsuario(\\''+p.user_id+'\\')" class="rounded-lg bg-teal-700 px-3 py-2 text-xs font-semibold text-white">Salvar</button></td></tr>';
+            }).join('')||'<tr><td colspan="7" class="p-4 text-center text-slate-400">Nenhum usuário cadastrado.</td></tr>';
         }
         function alternarAuditoria(){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
@@ -5700,7 +5713,7 @@
             if(botao){botao.disabled=true;botao.textContent='Salvando...';}
             try{
                 const {error}=await supabaseClient.from('user_profiles')
-                    .update({role:role,active:active,full_name:full_name||null})
+                    .update({role:role,active:active,full_name:full_name||null,cpf:(document.getElementById('cpf-usuario-'+id).value||'').replace(/\\D/g,'')||null,institutional_function:document.getElementById('funcao-usuario-'+id).value.trim()||null})
                     .eq('user_id',id);
                 if(error)throw error;
                 exibirToast(active?'Usuário ativado e alterações salvas.':'Alterações do usuário salvas.','sucesso');
