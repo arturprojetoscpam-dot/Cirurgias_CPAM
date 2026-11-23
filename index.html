@@ -3515,8 +3515,8 @@
           <h2 class="login-title">Criar nova senha</h2>
           <p class="login-subtitle">Defina uma nova senha para continuar com segurança.</p>
           <form onsubmit="salvarNovaSenha(event)" class="login-form login-new-password">
-            <div class="login-field"><label for="novaSenha">Nova senha</label><div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="novaSenha" type="password" minlength="10" required autocomplete="new-password" placeholder="Mínimo de 10 caracteres"><button type="button" onclick="alternarVisibilidadeSenha('novaSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div></div>
-            <div class="login-field"><label for="confirmaNovaSenha">Confirme a nova senha</label><div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="confirmaNovaSenha" type="password" minlength="10" required autocomplete="new-password" placeholder="Digite novamente"><button type="button" onclick="alternarVisibilidadeSenha('confirmaNovaSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div></div>
+            <div class="login-field"><label for="novaSenha">Nova senha</label><div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="novaSenha" type="password" minlength="8" required autocomplete="new-password" placeholder="Mínimo de 8 caracteres"><button type="button" onclick="alternarVisibilidadeSenha('novaSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div></div>
+            <div class="login-field"><label for="confirmaNovaSenha">Confirme a nova senha</label><div class="login-input-wrap"><i class="fa-solid fa-key"></i><input id="confirmaNovaSenha" type="password" minlength="8" required autocomplete="new-password" placeholder="Digite novamente"><button type="button" onclick="alternarVisibilidadeSenha('confirmaNovaSenha',this)" class="login-eye" aria-label="Mostrar ou ocultar senha"><i class="fa-solid fa-eye"></i></button></div></div>
             <button type="submit" class="login-submit"><span>SALVAR NOVA SENHA</span><i class="fa-solid fa-check"></i></button>
           </form>
         </div>
@@ -4472,7 +4472,7 @@
         }
         async function salvarNovaSenha(evento){
             evento.preventDefault();const senha=document.getElementById('novaSenha').value,confirmacao=document.getElementById('confirmaNovaSenha').value;
-            if(senha.length<10){mostrarMensagemAuth('A senha deve ter pelo menos 10 caracteres.');return;}
+            if(senha.length<8){mostrarMensagemAuth('A senha deve ter pelo menos 8 caracteres.');return;}
             if(senha!==confirmacao){mostrarMensagemAuth('As senhas não são iguais.');return;}
             const {error}=await supabaseClient.auth.updateUser({password:senha});
             if(error){mostrarMensagemAuth('Não foi possível atualizar a senha: '+error.message);return;}
