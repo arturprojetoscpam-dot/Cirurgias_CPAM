@@ -4274,12 +4274,12 @@
                 usuarioAtual=usuario;perfilAtual=perfil;
                 if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/inicio',true);
                 document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
-                const nomeExibicao=perfil.nickname||perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
+                const nomeExibicao=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
                 document.getElementById('usuarioEmail').textContent=nomeExibicao;
                 document.getElementById('usuarioEmailSecundario').textContent=usuario.email||perfil.email||'';
                 document.getElementById('headerProfileFirstName').textContent=nomeExibicao.trim().split(/\s+/).slice(0,2).join(' ');
                 document.getElementById('headerAvatar').textContent=nomeExibicao.trim().split(/\s+/).filter(Boolean).slice(0,2).map(p=>p[0]).join('').toUpperCase()||'CP';
-                document.getElementById('sidebarNomeUsuario').textContent=perfil.nickname||perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
+                document.getElementById('sidebarNomeUsuario').textContent=perfil.full_name||usuario.user_metadata?.full_name||usuario.email||perfil.email||'Usuário';
                 document.getElementById('sidebarPerfilUsuario').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
                 document.getElementById('usuarioPerfil').textContent=ROTULOS_PERFIL[perfil.role]||'Sem perfil';
                 document.getElementById('btnUsuarios').classList.toggle('hidden',perfil.role!=='administrador');
