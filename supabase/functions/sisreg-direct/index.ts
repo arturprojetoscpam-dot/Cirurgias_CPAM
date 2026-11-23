@@ -168,7 +168,7 @@ function decodeEntities(value: string) {
   };
   let decoded = value;
   for (let pass = 0; pass < 3; pass++) {
-    const next = decoded.replace(/&(#x[0-9a-f]+|#\\d+|[a-z][a-z0-9]+);/gi, (entity, code) => {
+    const next = decoded.replace(/&(#x[0-9a-f]+|#\d+|[a-z][a-z0-9]+);/gi, (entity, code) => {
       if (code[0] === "#") {
         const hex = code[1]?.toLowerCase() === "x";
         const point = Number.parseInt(code.slice(hex ? 2 : 1), hex ? 16 : 10);
@@ -275,7 +275,7 @@ function extractPatient(html: string, requested: string) {
         (key !== "nome" && p.label.startsWith(alias + " ")));
       if (found?.value) return found.value.trim();
     }
-    const lines = dados.texto.split(/\\n+/).map((v) => v.trim()).filter(Boolean);
+    const lines = dados.texto.split(/\n+/).map((v) => v.trim()).filter(Boolean);
     for (let i = 0; i < lines.length; i++) {
       const line = normalizeLabel(lines[i]).replace(/:$/, "");
       const matches = names.some((alias) => line === alias ||
