@@ -369,15 +369,43 @@ function extractPatient(html: string, requested: string) {
     throw new Error("O SISREG respondeu, mas a captura estruturada da tela CADWEB não encontrou o campo Nome. A resposta foi preservada para diagnóstico sem expor dados do paciente.");
   }
   const digitos = (value: string) => value.replace(/\D/g, "");
+  const pickAll = (key: string) => {
+    const names = aliases[key];
+    const values = pares.filter((p) => names.some((alias) =>
+      p.label === alias || (key !== "nome" && p.label.startsWith(alias + " "))
+    )).map((p) => p.value.trim()).filter(Boolean);
+    return values;
+  };
+  // O CADWEB pode listar mais de um telefone. Prioriza o último cadastrado,
+  // normalmente o contato mais recente.
+  const telefones = pickAll("telefone");
+  const ddds = pickAll("ddd");
+  const ultimoTelefone = telefones.length ? telefones[telefones.length - 1] : "";
+  const ultimoDdd = ddds.length ? ddds[ddds.length - 1] : "";
+  const telefoneFinal = digitos(ultimoTelefone);
+  const telefone = telefoneFinal
+    ? (ultimoDdd && !telefoneFinal.startsWith(digitos(ultimoDdd)) ? digitos(ultimoDdd) + telefoneFinal : telefoneFinal)
+    : "";
+  const logradouro = pick("endereco");
+  const complemento = pick("complemento");
+  const enderecoCompleto = logradouro
+    ? (complemento && !normalizeLabel(logradouro).includes(normalizeLabel(complemento))
+      ? logradouro.trim() + " (" + complemento.trim() + ")"
+      : logradouro.trim())
+    : "";
+  // Evita que um telefone capturado por engano como "Número" seja gravado
+  // no número residencial. Número de imóvel não deve ser um telefone longo.
+  const numeroBruto = pick("numero");
+  const numeroEndereco = digitos(numeroBruto).length > 6 ? "" : numeroBruto;
   return {
     nome,
     nascimento: pick("nascimento"),
     cpf: digitos(pick("cpf")).match(/\d{11}/)?.[0] || (requested.length === 11 ? requested : ""),
     cns: digitos(pick("cns")).match(/\d{15}/)?.[0] || (requested.length === 15 ? requested : ""),
     mae: pick("mae"),
-    telefone: (() => { const ddd = digitos(pick("ddd")); const tel = digitos(pick("telefone")); return tel ? (ddd && !tel.startsWith(ddd) ? ddd + tel : tel) : ""; })(),
-    endereco: pick("endereco"),
-    numero: pick("numero"),
+    telefone,
+    endereco: enderecoCompleto,
+    numero: numeroEndereco,
     bairro: pick("bairro"),
     municipio: pick("municipio"),
     cep: digitos(pick("cep")),
