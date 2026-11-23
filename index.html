@@ -3658,6 +3658,12 @@
       <span class="cpam-home-description">Área da Regulação para cadastrar novos agendamentos cirúrgicos.</span>
       <span class="cpam-home-action">Abrir módulo <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
     </a>
+    <a id="homeCardGastro" href="/gastroenterologia" onclick="event.preventDefault();navegarSistema('gastro')" class="cpam-home-card group hidden">
+      <span class="cpam-home-icon"><i class="fa-solid fa-stethoscope"></i></span>
+      <span class="cpam-home-title">Gastroenterologia</span>
+      <span class="cpam-home-description">Acesse a agenda, a fila de exames e os atendimentos gastroenterológicos.</span>
+      <span class="cpam-home-action">Abrir módulo <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
+    </a>
   </div>
 </section>
 
@@ -6198,7 +6204,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             gastroVinculosCache=vinculos.data||[];
             const usuarioSelect=document.getElementById('gastroVinculoUsuario');
             if(usuarioSelect){
-                const vinculados=new Set(gastroVinculosCache.filter(v=>v.ativo).map(v=>v.user_id));
+                const vinculados=new Set(gastroVinculosCache.map(v=>v.user_id));
                 usuarioSelect.innerHTML='<option value="">Selecione o usuário do sistema</option>'+gastroUsuariosCache.filter(u=>!vinculados.has(u.user_id)).map(u=>'<option value="'+u.user_id+'">'+escaparHtml(u.full_name||u.email)+' · '+escaparHtml(u.role)+'</option>').join('');
             }
             const medicoSelect=document.getElementById('gastroVinculoMedico');
