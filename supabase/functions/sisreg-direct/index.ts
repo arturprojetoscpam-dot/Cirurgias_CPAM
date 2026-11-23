@@ -599,9 +599,50 @@ async function handle(req: Request) {
   const userId = auth.userId, action = new URL(req.url).pathname.split("/").filter(Boolean).at(-1) || "";
   try {
     if (action === "status") {
-      const rows = await dbRequest("sisreg_credentials?user_id=eq." + encodeURIComponent(userId) + "&select=user_id&limit=1");
-      if (!Array.isArray(rows) || !rows[0]) return json(req, { configured: false, connected: false });
-      return json(req, { configured: true, connected: Boolean(await getSession(userId)) });
+      const credentials = await readCredentials(userId);
+      if (!credentials) return json(req, { configured: false, connected: false });
+
+      const headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,*/*",
+        "Referer": SISREG_LOGIN_URL,
+      };
+      const validarCookie = async (candidate: string) => {
+        let navigation = await findCadwebPage(SISREG_CADWEB_URL, candidate, headers);
+        if (!navigation.page) {
+          const fromIndex = await findCadwebPage(SISREG_LOGIN_URL, candidate, headers);
+          navigation = {
+            page: fromIndex.page,
+            pages: [...navigation.pages, ...fromIndex.pages],
+            cookies: [...navigation.cookies, ...fromIndex.cookies],
+          };
+        }
+        return navigation.page
+          ? mergeCookies([candidate], navigation.cookies)
+          : null;
+      };
+
+      let cookie = await getSession(userId);
+      if (cookie) {
+        try {
+          const validCookie = await validarCookie(cookie);
+          if (validCookie) {
+            await saveSession(userId, validCookie);
+            return json(req, { configured: true, connected: true, sessionReused: true });
+          }
+        } catch (error) {
+          if (!(error instanceof Error) || error.message !== "SESSION_EXPIRED") throw error;
+        }
+      }
+
+      // Sessão ausente/expirada: refaz o login com as credenciais já criptografadas.
+      cookie = await loginSisreg(credentials.usuario, credentials.senha);
+      const validCookie = await validarCookie(cookie);
+      if (!validCookie) {
+        throw new Error("O login foi aceito, mas não foi possível validar o acesso à consulta CADWEB do SISREG.");
+      }
+      await saveSession(userId, validCookie);
+      return json(req, { configured: true, connected: true, sessionReused: false, reconnected: true });
     }
     if (action === "configure") {
       const body = await req.json(), usuario = String(body.usuario || "").trim(), senha = String(body.senha || "");
