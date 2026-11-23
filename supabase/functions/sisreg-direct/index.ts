@@ -248,6 +248,46 @@ function extractCadwebJson(html: string) {
     .split("\n").map((line) => line.replace(/\s+/g, " ").trim()).filter(Boolean).join("\n");
   return { titulo, campos, tabelas, texto };
 }
+function safeCadwebDiagnostics(html: string, url: string, status: number | null = null, contentType = "") {
+  const title = stripHtml((html.match(/<title\\b[^>]*>([\\s\\S]*?)<\\/title>/i) || [,""])[1]).slice(0, 120);
+  const inputNames: string[] = [];
+  const inputRe = /<(input|select|textarea)\\b([^>]*)>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = inputRe.exec(html)) !== null) {
+    const a = htmlAttributes(m[2]);
+    if (a.name) inputNames.push(a.name.slice(0, 80));
+  }
+  const labels: string[] = [];
+  const labelRe = /<label\\b[^>]*>([\\s\\S]*?)<\\/label>/gi;
+  while ((m = labelRe.exec(html)) !== null) {
+    const label = stripHtml(m[1]).slice(0, 80);
+    if (label) labels.push(label);
+  }
+  const forms: string[] = [];
+  const formRe = /<form\\b([^>]*)>/gi;
+  while ((m = formRe.exec(html)) !== null) {
+    const a = htmlAttributes(m[1]);
+    forms.push((a.method || "get").toUpperCase() + " " + (a.action || "(mesma página)").slice(0, 120));
+  }
+  const frames: string[] = [];
+  const frameRe = /<(?:iframe|frame)\\b([^>]*)>/gi;
+  while ((m = frameRe.exec(html)) !== null) {
+    const src = htmlAttributes(m[1]).src;
+    if (src) { try { frames.push(new URL(src, url).pathname); } catch {} }
+  }
+  let path = "";
+  try { path = new URL(url).pathname; } catch {}
+  return {
+    path, status, contentType, htmlLength: html.length, title,
+    inputNames: [...new Set(inputNames)].slice(0, 40),
+    labels: [...new Set(labels)].slice(0, 40),
+    forms: forms.slice(0, 15), frames: frames.slice(0, 20),
+    hasCadwebTitle: /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(title)),
+    hasCnsInput: /name=["']nu_cns["']/i.test(html),
+    hasNameWord: /\\bnome\\b/i.test(stripHtml(html)),
+    hasPatientTable: /<table\\b/i.test(html),
+  };
+}
 function extractPatient(html: string, requested: string) {
   const dados = extractCadwebJson(html);
   const pares: Array<{ label: string; value: string }> = [];
@@ -430,8 +470,24 @@ async function searchSisreg(identifier: string, cookie: string) {
     candidatePages.find((p) => /nome\s*(?:do\s*)?paciente|data de nascimento|cart[aã]o nacional de sa[uú]de/i.test(stripHtml(p.html))) ||
     candidatePages[0];
 
+  let paciente;
+  try {
+    paciente = extractPatient(resultPage.html, identifier);
+  } catch (error) {
+    // Diagnóstico estrutural: nunca registra HTML, valores de campos ou dados do paciente.
+    const diagnostics = candidatePages.map((p) => safeCadwebDiagnostics(p.html, p.url));
+    console.error("sisreg-direct: CADWEB_STRUCTURE_DIAGNOSTICS", JSON.stringify({
+      resultStatus: result.status,
+      resultContentType: result.headers.get("content-type") || "",
+      resultUrlPath: (() => { try { return new URL(result.url || action).pathname; } catch { return ""; } })(),
+      candidateCount: candidatePages.length,
+      candidates: diagnostics.slice(0, 12),
+      error: error instanceof Error ? error.message : "Falha de extração",
+    }));
+    throw error;
+  }
   return {
-    paciente: extractPatient(resultPage.html, identifier),
+    paciente,
     cookie: mergeCookies([cookie], navigation.cookies, setCookies(result.headers), resultTree.cookies),
     elapsedMs: Math.round(performance.now() - started),
   };
