@@ -4399,7 +4399,8 @@
                         const {data:checagem}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'check',nickname:nickname}});
                         nicknameJaExiste=checagem?.available===false;
                     }
-                    if(nicknameJaExiste)mostrarMensagemAuth('Este nome de usuário já está em uso. Escolha outro.');
+                    if(msg.includes('user_profiles_cpf_digits_uidx')||msg.includes('cpf'))mostrarMensagemAuth('Este CPF já possui cadastro no sistema. Confira os dados ou procure a Administração.');
+                    else if(nicknameJaExiste)mostrarMensagemAuth('Este nome de usuário já está em uso. Escolha outro.');
                     else if(msg.includes('already registered')||msg.includes('already been registered'))mostrarMensagemAuth('Este e-mail já possui cadastro. Tente entrar ou recuperar sua senha.');
                     else mostrarMensagemAuth('Não foi possível concluir o cadastro. Confira os dados e tente novamente.');
                     return;
