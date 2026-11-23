@@ -506,12 +506,17 @@ async function searchSisreg(identifier: string, cookie: string) {
   // Primeiro reproduzimos diretamente o clique no link CNS da tela inicial:
   // GET /cgi-bin/cadweb50?standalone=1, mantendo os cookies da sessão.
   // Se o SISREG depender da navegação pelo menu/frame, usamos a página inicial como fallback.
+  const etapasMs: Record<string, number> = {};
+  let etapaInicio = performance.now();
   let navigation = await findCadwebPage(SISREG_CADWEB_URL, cookie, {
     ...headers,
     "Referer": SISREG_LOGIN_URL,
   });
+  etapasMs.abrirCadwebMs = Math.round(performance.now() - etapaInicio);
   if (!navigation.page) {
+    etapaInicio = performance.now();
     const fromIndex = await findCadwebPage(SISREG_LOGIN_URL, cookie, headers);
+    etapasMs.fallbackMenuMs = Math.round(performance.now() - etapaInicio);
     navigation = {
       page: fromIndex.page,
       pages: [...navigation.pages, ...fromIndex.pages],
@@ -571,6 +576,7 @@ async function searchSisreg(identifier: string, cookie: string) {
   params.set("nu_cns", identifier);
   params.set("etapa", "DETALHAR");
 
+  etapaInicio = performance.now();
   const result = await sisregFetch(action, {
     method: "POST",
     headers: {
@@ -582,36 +588,67 @@ async function searchSisreg(identifier: string, cookie: string) {
     body: params,
   });
   const resultHtml = decode(await result.arrayBuffer());
+  etapasMs.pesquisaHttpMs = Math.round(performance.now() - etapaInicio);
   if (loginFormVisible(resultHtml) || result.status === 401 || result.status === 403) throw new Error("SESSION_EXPIRED");
   if (!result.ok) throw new Error("A pesquisa SISREG respondeu com erro HTTP " + result.status + ".");
 
-  // O resultado também pode estar em um frame diferente do formulário.
-  const resultTree = await findCadwebPage(result.url || action, mergeCookies([cookie], setCookies(result.headers)), headers);
-  const candidatePages = [ { url: result.url || action, html: resultHtml }, ...resultTree.pages ];
-  const resultPage = candidatePages.find((p) => /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(p.html))) ||
-    candidatePages.find((p) => /nome\s*(?:do\s*)?paciente|data de nascimento|cart[aã]o nacional de sa[uú]de/i.test(stripHtml(p.html))) ||
-    candidatePages[0];
-
-  let paciente;
+  // A resposta do POST costuma conter o cadastro completo. Tentamos extrair
+  // diretamente e só percorremos frames quando ela não contém os dados.
+  const paginaResposta = { url: result.url || action, html: resultHtml };
+  let paciente: Record<string, unknown> | null = null;
+  let resultTree: Awaited<ReturnType<typeof findCadwebPage>> | null = null;
+  let candidatePages: SisregPage[] = [paginaResposta];
+  let erroExtracaoDireta: unknown = null;
+  etapaInicio = performance.now();
   try {
-    paciente = extractPatient(resultPage.html, identifier);
+    paciente = extractPatient(resultHtml, identifier);
   } catch (error) {
-    // Diagnóstico estrutural: nunca registra HTML, valores de campos ou dados do paciente.
-    const diagnostics = candidatePages.map((p) => safeCadwebDiagnostics(p.html, p.url));
-    console.error("sisreg-direct: CADWEB_STRUCTURE_DIAGNOSTICS", JSON.stringify({
-      resultStatus: result.status,
-      resultContentType: result.headers.get("content-type") || "",
-      resultUrlPath: (() => { try { return new URL(result.url || action).pathname; } catch { return ""; } })(),
-      candidateCount: candidatePages.length,
-      candidates: diagnostics.slice(0, 12),
-      error: error instanceof Error ? error.message : "Falha de extração",
-    }));
-    throw error;
+    erroExtracaoDireta = error;
   }
+  etapasMs.extracaoRespostaDiretaMs = Math.round(performance.now() - etapaInicio);
+
+  if (!paciente) {
+    etapaInicio = performance.now();
+    resultTree = await findCadwebPage(result.url || action, mergeCookies([cookie], setCookies(result.headers)), headers);
+    etapasMs.buscaFramesMs = Math.round(performance.now() - etapaInicio);
+    candidatePages = [paginaResposta, ...resultTree.pages];
+    const resultPage = candidatePages.find((p) => /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(p.html))) ||
+      candidatePages.find((p) => /nome\s*(?:do\s*)?paciente|data de nascimento|cart[aã]o nacional de sa[uú]de/i.test(stripHtml(p.html))) ||
+      candidatePages[0];
+
+    etapaInicio = performance.now();
+    try {
+      paciente = extractPatient(resultPage.html, identifier);
+    } catch (error) {
+      // Diagnóstico estrutural sem registrar HTML ou dados pessoais.
+      const diagnostics = candidatePages.map((p) => safeCadwebDiagnostics(p.html, p.url));
+      console.error("sisreg-direct: CADWEB_STRUCTURE_DIAGNOSTICS", JSON.stringify({
+        resultStatus: result.status,
+        resultContentType: result.headers.get("content-type") || "",
+        resultUrlPath: (() => { try { return new URL(result.url || action).pathname; } catch { return ""; } })(),
+        candidateCount: candidatePages.length,
+        candidates: diagnostics.slice(0, 12),
+        error: error instanceof Error ? error.message : (erroExtracaoDireta instanceof Error ? erroExtracaoDireta.message : "Falha de extração"),
+      }));
+      throw error;
+    }
+    etapasMs.extracaoFrameMs = Math.round(performance.now() - etapaInicio);
+  }
+
+  const elapsedMs = Math.round(performance.now() - started);
+  console.info("sisreg-direct: SEARCH_TIMINGS", JSON.stringify({
+    ...etapasMs,
+    paginasNavegacaoInicial: navigation.pages.length,
+    paginasFramesResultado: resultTree?.pages.length || 0,
+    extracaoDireta: !resultTree,
+    totalMs: elapsedMs,
+  }));
   return {
     paciente,
-    cookie: mergeCookies([cookie], navigation.cookies, setCookies(result.headers), resultTree.cookies),
-    elapsedMs: Math.round(performance.now() - started),
+    cookie: mergeCookies([cookie], navigation.cookies, setCookies(result.headers), resultTree?.cookies || []),
+    elapsedMs,
+    etapasMs,
+    paginasFramesResultado: resultTree?.pages.length || 0,
   };
 }
 async function handle(req: Request) {
@@ -701,7 +738,7 @@ async function handle(req: Request) {
         result = await searchSisreg(identifier, cookie);
       }
       await saveSession(userId, result.cookie);
-      return json(req, { paciente: result.paciente, sessaoReutilizada: reused, tempoConsultaMs: result.elapsedMs });
+      return json(req, { paciente: result.paciente, sessaoReutilizada: reused, tempoConsultaMs: result.elapsedMs, etapasMs: result.etapasMs, paginasFramesResultado: result.paginasFramesResultado });
     }
     return json(req, { error: "Rota não encontrada." }, 404);
   } catch (error) {
