@@ -368,10 +368,21 @@ async function searchSisreg(identifier: string, cookie: string) {
     "Referer": SISREG_LOGIN_URL,
   };
 
-  // O SISREG monta a consulta por páginas e frames. Começamos na página inicial
-  // autenticada e percorremos os documentos acessíveis até encontrar nu_cns,
-  // em vez de presumir que cadweb50?standalone=1 já contém o formulário.
-  const navigation = await findCadwebPage(SISREG_LOGIN_URL, cookie, headers);
+  // Primeiro reproduzimos diretamente o clique no link CNS da tela inicial:
+  // GET /cgi-bin/cadweb50?standalone=1, mantendo os cookies da sessão.
+  // Se o SISREG depender da navegação pelo menu/frame, usamos a página inicial como fallback.
+  let navigation = await findCadwebPage(SISREG_CADWEB_URL, cookie, {
+    ...headers,
+    "Referer": SISREG_LOGIN_URL,
+  });
+  if (!navigation.page) {
+    const fromIndex = await findCadwebPage(SISREG_LOGIN_URL, cookie, headers);
+    navigation = {
+      page: fromIndex.page,
+      pages: [...navigation.pages, ...fromIndex.pages],
+      cookies: [...navigation.cookies, ...fromIndex.cookies],
+    };
+  }
   if (!navigation.page) {
     const hasCadwebTitle = navigation.pages.some((p) => /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(p.html)));
     throw new Error(hasCadwebTitle
