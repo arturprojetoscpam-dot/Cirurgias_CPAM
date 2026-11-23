@@ -377,16 +377,42 @@ function extractPatient(html: string, requested: string) {
     )).map((p) => p.value.trim()).filter(Boolean);
     return values;
   };
-  // O CADWEB pode listar mais de um telefone. Prioriza o último cadastrado,
-  // normalmente o contato mais recente.
+  // A listagem de telefones do CADWEB usa três colunas: Tipo Telefone,
+  // DDD e Número. Capturamos a linha mais recente (última linha válida),
+  // sem confundir o número telefônico com o número do endereço.
+  let telefoneTabela = "";
+  for (const tabela of dados.tabelas) {
+    for (let r = 0; r < tabela.length; r++) {
+      const cabecalho = tabela[r].map((cell) => normalizeLabel(cell));
+      const idxTipo = cabecalho.findIndex((v) => v === "tipo telefone" || v === "tipo de telefone");
+      const idxDdd = cabecalho.findIndex((v) => v === "ddd");
+      const idxNumero = cabecalho.findIndex((v) => v === "numero" || v === "numero telefone");
+      if (idxTipo < 0 || idxDdd < 0 || idxNumero < 0) continue;
+      for (let row = r + 1; row < tabela.length; row++) {
+        const dddLinha = digitos(tabela[row][idxDdd] || "");
+        const numeroLinha = digitos(tabela[row][idxNumero] || "");
+        if (!numeroLinha) continue;
+        const dddFinal = dddLinha || (numeroLinha.length >= 10 ? numeroLinha.slice(0, 2) : "");
+        const numeroLocal = dddLinha && numeroLinha.startsWith(dddLinha)
+          ? numeroLinha.slice(dddLinha.length)
+          : numeroLinha;
+        let numeroFormatado = numeroLocal;
+        if (numeroLocal.length === 9) numeroFormatado = numeroLocal.slice(0, 5) + "-" + numeroLocal.slice(5);
+        else if (numeroLocal.length === 8) numeroFormatado = numeroLocal.slice(0, 4) + "-" + numeroLocal.slice(4);
+        telefoneTabela = dddFinal ? "(" + dddFinal + ") " + numeroFormatado : numeroFormatado;
+      }
+    }
+  }
+  // Mantém compatibilidade com páginas CADWEB que exibem telefone fora da tabela.
   const telefones = pickAll("telefone");
   const ddds = pickAll("ddd");
   const ultimoTelefone = telefones.length ? telefones[telefones.length - 1] : "";
   const ultimoDdd = ddds.length ? ddds[ddds.length - 1] : "";
   const telefoneFinal = digitos(ultimoTelefone);
-  const telefone = telefoneFinal
+  const telefoneAlternativo = telefoneFinal
     ? (ultimoDdd && !telefoneFinal.startsWith(digitos(ultimoDdd)) ? digitos(ultimoDdd) + telefoneFinal : telefoneFinal)
     : "";
+  const telefone = telefoneTabela || telefoneAlternativo;
   const logradouro = pick("endereco");
   const complemento = pick("complemento");
   const enderecoCompleto = logradouro
