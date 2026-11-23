@@ -5631,9 +5631,9 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             document.getElementById('regularProntuarioAmb').value=p.numero_cadastro_ambulatorio||'';
             document.getElementById('regularNomeMae').value=p.nome_mae||'';document.getElementById('regularTelefone').value=p.telefone||'';
             ['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularNomeMae','regularTelefone'].forEach(id=>document.getElementById(id).readOnly=true);
-            document.getElementById('regularProntuarioAmb').readOnly=!!p.numero_cadastro_ambulatorio;
-            const st=document.getElementById('regularPacienteStatus');st.textContent='Paciente localizado na base';st.className='rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold text-emerald-800';
-            const resumo=document.getElementById('regularPacienteSelecionado');resumo.textContent='Paciente selecionado: '+p.nome_paciente+' · Prontuário ambulatorial: '+(p.numero_cadastro_ambulatorio||'não informado');resumo.classList.remove('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');
+            document.getElementById('regularProntuarioAmb').readOnly=true;
+            const st=document.getElementById('regularPacienteStatus');st.textContent=p.numero_cadastro_ambulatorio?'Paciente localizado na base':'Paciente localizado · prontuário pendente';st.className=p.numero_cadastro_ambulatorio?'rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold text-emerald-800':'rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold text-amber-800';
+            const resumo=document.getElementById('regularPacienteSelecionado');resumo.textContent='Paciente selecionado: '+p.nome_paciente+' · Prontuário ambulatorial: '+(p.numero_cadastro_ambulatorio||'NÃO INFORMADO — regularize o cadastro antes de agendar');resumo.classList.remove('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');
         }
         async function buscarPacienteRegular(){
             const termo=document.getElementById('regularBuscaPaciente').value.trim(),tipo=document.getElementById('regularTipoBusca').value;
