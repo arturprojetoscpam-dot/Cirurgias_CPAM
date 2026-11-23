@@ -5017,8 +5017,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 atualizarBadgeSISREG(!sisregConfigurado?'desconectado':(r.connected?'conectado':'aguardando'));
                 if(!silencioso)exibirToast(r.connected?'Conexão SISREG pronta para uso.':(r.configured?'Acesso salvo. O login será refeito automaticamente na próxima consulta.':'Configure seu acesso SISREG para habilitar a consulta.'),r.connected?'sucesso':'info');
             }catch(e){
-                sisregConfigurado=false;
-                atualizarBadgeSISREG('desconectado');
+                atualizarBadgeSISREG(sisregConfigurado?'erro':'desconectado');
                 if(!silencioso)exibirToast(e.message,'erro');else console.warn('Status SISREG:',e.message);
             }finally{sisregVerificacaoEmAndamento=false;}
         }
@@ -5045,7 +5044,6 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(sisregConsultaController)return;
             const tipo=valor.length===11?'cpf':(valor.length===15?'cns':'');
             if(!tipo){exibirToast('Informe um CPF com 11 dígitos ou um Cartão SUS (CNS) com 15 dígitos.','erro');campo.focus();return;}
-            if(!sisregConfigurado){abrirModalSISREG();exibirToast('Configure seu acesso SISREG uma única vez para continuar.','info');return;}
             const controller=new AbortController(),btn=document.getElementById('btnConsultarSISREG');
             sisregConsultaController=controller;btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Consultando...';campo.disabled=true;
             box.classList.add('hidden');localBox.classList.remove('hidden');
