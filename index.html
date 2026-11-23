@@ -3378,7 +3378,26 @@
         @keyframes cpamDialogFade{from{opacity:0}to{opacity:1}}@keyframes cpamDialogRise{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
         @media(max-width:480px){.cpam-dialog-backdrop{align-items:flex-end;padding:12px}.cpam-dialog-card{border-radius:18px}.cpam-dialog-actions{padding:13px 15px}.cpam-dialog-btn{flex:1}}
         @media(prefers-reduced-motion:reduce){.cpam-dialog-backdrop,.cpam-dialog-card{animation:none}}
-</style>
+
+        /* Badges clínicos: paleta fechada, texto branco e acabamento uniforme. */
+        #appShell .cpam-status-badge{
+          display:inline-flex!important;align-items:center!important;justify-content:center!important;
+          gap:.3rem!important;white-space:nowrap!important;border:1px solid rgba(0,0,0,.16)!important;
+          border-radius:999px!important;padding:.25rem .6rem!important;
+          color:#fff!important;font-size:10px!important;font-weight:800!important;
+          line-height:1.25!important;letter-spacing:.025em!important;
+          box-shadow:inset 0 1px 0 rgba(255,255,255,.12)!important;
+        }
+        #appShell .cpam-badge-realizada{background:#166534!important;border-color:#14532d!important;color:#fff!important}
+        #appShell .cpam-badge-urgencia{background:#92400e!important;border-color:#78350f!important;color:#fff!important}
+        #appShell .cpam-badge-andamento{background:#475569!important;border-color:#334155!important;color:#fff!important}
+        #appShell .cpam-badge-cancelada{background:#9f1239!important;border-color:#881337!important;color:#fff!important}
+        #appShell .cpam-badge-eletiva{background:#1d4ed8!important;border-color:#1e40af!important;color:#fff!important}
+        #appShell #detalheSituacaoBadge,#appShell #detalheCaraterBadge{
+          width:max-content;max-width:100%;min-height:26px;padding:.3rem .65rem!important;
+        }
+
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
@@ -4429,8 +4448,8 @@
                 if(!cirurgiasPacienteModal.length){corpo.innerHTML='<tr><td colspan="6" class="p-6 text-center text-slate-500">Nenhuma cirurgia registrada para este paciente.</td></tr>';return;}
                 corpo.innerHTML=cirurgiasPacienteModal.map(function(r,i){
                     const status=(r.Situaçao||'').toUpperCase(),realizada=status==='REALIZADA',andamento=status==='EM ANDAMENTO';
-                    const badge=realizada?'<span class="rounded-full border border-emerald-800 bg-emerald-700 px-2 py-1 text-[10px] font-bold text-white">REALIZADA</span>':andamento?'<span class="rounded-full border border-amber-200 bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-900">EM ANDAMENTO</span>':'<span class="rounded-full border border-rose-200 bg-rose-100 px-2 py-1 text-[10px] font-bold text-rose-800">CANCELADA</span>';
-                    const carater=(r.Carater_Atendimento||'').toUpperCase(),car=carater==='ELETIVA'?'<span class="text-blue-800">ELETIVA</span>':carater==='URGENCIA'?'<span class="inline-flex rounded-md border border-amber-800 bg-amber-700 px-2 py-1 text-[10px] font-bold text-white">URGÊNCIA</span>':carater==='EMERGENCIA'?'<span class="inline-flex rounded-md border border-amber-800 bg-amber-700 px-2 py-1 text-[10px] font-bold text-white">EMERGÊNCIA</span>':'<span class="text-slate-500">-</span>';
+                    const badge=realizada?'<span class="cpam-status-badge cpam-badge-realizada">REALIZADA</span>':andamento?'<span class="cpam-status-badge cpam-badge-andamento">EM ANDAMENTO</span>':'<span class="cpam-status-badge cpam-badge-cancelada">CANCELADA</span>';
+                    const carater=(r.Carater_Atendimento||'').toUpperCase(),car=carater==='ELETIVA'?'<span class="cpam-status-badge cpam-badge-eletiva">ELETIVA</span>':carater==='URGENCIA'?'<span class="cpam-status-badge cpam-badge-urgencia">URGÊNCIA</span>':carater==='EMERGENCIA'?'<span class="cpam-status-badge cpam-badge-urgencia">EMERGÊNCIA</span>':'<span class="text-slate-500">-</span>';
                     return '<tr class="hover:bg-slate-50"><td class="whitespace-nowrap p-3 font-mono">'+escaparHtml(formatarData(r.Data_da_Cirurgia))+'</td><td class="p-3"><div class="font-semibold text-slate-800">'+escaparHtml(r.Procedimento1||'Procedimento não informado')+'</div><div class="mt-1 text-[10px] text-slate-500">'+escaparHtml(r.Especialidade||'')+(r.Procedimento2?' · '+escaparHtml(r.Procedimento2):'')+'</div></td><td class="p-3">'+escaparHtml(r.Medico||'-')+'</td><td class="p-3">'+car+'</td><td class="p-3">'+badge+'</td><td class="p-3"><div class="flex justify-center gap-1"><button type="button" onclick="verCirurgiaHistoricoPacienteModal('+i+')" class="rounded-lg p-2 text-slate-500 hover:bg-teal-50 hover:text-teal-700" title="Ver cirurgia"><i class="fa-solid fa-eye"></i></button>'+(['administrador','coordenacao','cadastro'].includes(perfilAtual.role)?'<button type="button" onclick="editarCirurgiaHistoricoPacienteModal('+i+')" class="rounded-lg p-2 text-teal-700 hover:bg-teal-50" title="Editar cirurgia"><i class="fa-solid fa-pen-to-square"></i></button>':'')+'</div></td></tr>';
                 }).join('');
             }catch(error){console.error(error);corpo.innerHTML='<tr><td colspan="6" class="p-6 text-center text-rose-700">Não foi possível carregar o histórico: '+escaparHtml(error.message)+'</td></tr>';}
@@ -4870,8 +4889,8 @@
             const paginas=Math.ceil(total/itensPorPagina),inicio=(paginaAtual-1)*itensPorPagina,itens=registrosFiltrados.slice(inicio,inicio+itensPorPagina);
             tbody.innerHTML=itens.map(function(reg,idx){
                 const status=(reg.Situaçao||'').toUpperCase(),realizada=status==='REALIZADA',andamento=status==='EM ANDAMENTO',urgencia=['URGENCIA','EMERGENCIA'].includes((reg.Carater_Atendimento||'').toUpperCase()),i=inicio+idx;
-                const sit=realizada?'<span class="inline-flex items-center gap-1 rounded-full border border-emerald-800 bg-emerald-700 px-2 py-0.5 text-[10px] font-bold text-white"><i class="fa-solid fa-circle-check"></i> REALIZADA</span>':andamento?'<span class="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900"><i class="fa-solid fa-clock"></i> EM ANDAMENTO</span>':'<span class="inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-800"><i class="fa-solid fa-circle-xmark"></i> CANCELADA</span>';
-                const car=urgencia?'<span class="inline-flex items-center gap-1 rounded-md border border-amber-800 bg-amber-700 px-2 py-0.5 text-[10px] font-bold text-white"><i class="fa-solid fa-triangle-exclamation"></i> '+((reg.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA')+'</span>':'<span class="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-blue-800"><i class="fa-solid fa-calendar-check"></i> ELETIVA</span>';
+                const sit=realizada?'<span class="cpam-status-badge cpam-badge-realizada"><i class="fa-solid fa-circle-check"></i> REALIZADA</span>':andamento?'<span class="cpam-status-badge cpam-badge-andamento"><i class="fa-solid fa-clock"></i> EM ANDAMENTO</span>':'<span class="cpam-status-badge cpam-badge-cancelada"><i class="fa-solid fa-circle-xmark"></i> CANCELADA</span>';
+                const car=urgencia?'<span class="cpam-status-badge cpam-badge-urgencia"><i class="fa-solid fa-triangle-exclamation"></i> '+((reg.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA')+'</span>':'<span class="cpam-status-badge cpam-badge-eletiva"><i class="fa-solid fa-calendar-check"></i> ELETIVA</span>';
                 return '<tr class="group cursor-pointer transition hover:bg-slate-50" onclick="abrirDetalhesIndex('+i+')"><td class="whitespace-nowrap p-3.5 font-mono text-sm font-bold text-slate-900">'+escaparHtml(formatarData(reg.Data_da_Cirurgia))+'</td>'+
                     '<td class="p-3.5"><div class="font-semibold text-slate-800">'+escaparHtml(reg.Procedimento1||'Procedimento não informado')+'</div><div class="mt-1 text-[10px] text-slate-500">'+escaparHtml(reg.Especialidade||'')+(reg.Procedimento2?' · '+escaparHtml(reg.Procedimento2):'')+'</div></td>'+
                     '<td class="p-3.5">'+escaparHtml(reg.Medico||'-')+'</td><td class="p-3.5">'+car+'</td><td class="p-3.5">'+sit+'</td>'+
@@ -5088,10 +5107,10 @@
             preencherTexto('detalheProcedimentoCabecalho', 'Procedimento: '+(procedimentoResolvido||r.Procedimento1||'-'));
             preencherTexto('detalhePacienteCabecalho',nomePacienteCabecalho);preencherTexto('detalheProntuarioCabecalho',codigoPacienteCabecalho);
             const realizada=(r.Situaçao||'').toUpperCase()==='REALIZADA',badge=document.getElementById('detalheSituacaoBadge');
-            const andamento=(r.Situaçao||'').toUpperCase()==='EM ANDAMENTO';badge.innerHTML=realizada?'<i class="fa-solid fa-circle-check mr-1"></i>REALIZADA':andamento?'<i class="fa-solid fa-clock mr-1"></i>EM ANDAMENTO':'<i class="fa-solid fa-circle-xmark mr-1"></i>CANCELADA';badge.className=realizada?'font-bold text-emerald-700':andamento?'font-bold text-amber-700':'font-bold text-rose-700';
+            const andamento=(r.Situaçao||'').toUpperCase()==='EM ANDAMENTO';badge.innerHTML=realizada?'<i class="fa-solid fa-circle-check mr-1"></i>REALIZADA':andamento?'<i class="fa-solid fa-clock mr-1"></i>EM ANDAMENTO':'<i class="fa-solid fa-circle-xmark mr-1"></i>CANCELADA';badge.className='detalhe-info-value cpam-status-badge '+(realizada?'cpam-badge-realizada':andamento?'cpam-badge-andamento':'cpam-badge-cancelada');
             document.getElementById('detalheBoxCancelamento').classList.toggle('hidden',realizada||andamento);
             if(!realizada)document.getElementById('detalheMotivoCancelamento').textContent=r.Mot_Cancelam||'Não informado';
-            const carater=(r.Carater_Atendimento||'').toUpperCase()!=='ELETIVA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>'+(String(r.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA'):'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className=carater?'font-bold text-amber-700':'font-bold text-blue-700';
+            const carater=(r.Carater_Atendimento||'').toUpperCase()!=='ELETIVA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>'+(String(r.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA'):'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className='detalhe-info-value cpam-status-badge '+(carater?'cpam-badge-urgencia':'cpam-badge-eletiva');
             if(atualizarHistorico)telaAnteriorDetalhes=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'historico':'pesquisa');['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secFormulario','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));document.getElementById('btnEditarCirurgiaDetalhe').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarCirurgiaCabecalho').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('secDetalhesCirurgia').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});
         }
         function imprimirResumoCirurgia(){const nome=(document.getElementById('detalhePacienteCabecalho')?.textContent||'-').trim().toLocaleUpperCase('pt-BR');const prontuario=document.getElementById('detalheProntuarioCabecalho')?.textContent||'-';document.getElementById('printPacienteNome').textContent=nome;document.getElementById('printPacienteProntuario').textContent=prontuario;document.getElementById('printDataEmissao').textContent=new Date().toLocaleString('pt-BR');window.print();}
