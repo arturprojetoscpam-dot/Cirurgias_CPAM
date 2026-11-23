@@ -3499,14 +3499,13 @@
 
         <div id="authGoogleNickname" class="hidden">
           <div class="login-restricted"><i class="fa-brands fa-google"></i> PRIMEIRO ACESSO</div>
-          <h2 class="login-title">Defina seu nickname</h2>
-          <p class="login-subtitle">Escolha um nome exclusivo para sua identificação no CPAM.</p>
+          <h2 class="login-title">Complete seu cadastro</h2>
+          <p class="login-subtitle">Informe seus dados para solicitar acesso ao sistema.</p>
           <form onsubmit="salvarNicknameGoogle(event)" class="login-form">
-            <div class="login-field">
-              <label for="googleNickname">Nome de usuário (nickname)</label>
-              <div class="login-input-wrap"><i class="fa-regular fa-user"></i><input id="googleNickname" type="text" required maxlength="40" autocomplete="nickname" placeholder="Escolha seu nome de usuário"></div>
-              <p class="login-field-hint">O nickname será verificado antes de salvar.</p>
-            </div>
+            <div class="login-field"><label for="googleNome">Nome completo</label><div class="login-input-wrap"><i class="fa-regular fa-user"></i><input id="googleNome" type="text" required maxlength="120" autocomplete="name" placeholder="Digite seu nome completo"></div></div>
+            <div class="login-field"><label for="googleCpf">CPF</label><div class="login-input-wrap"><i class="fa-regular fa-id-card"></i><input id="googleCpf" type="text" required inputmode="numeric" maxlength="14" autocomplete="off" placeholder="000.000.000-00" oninput="formatarCPFUsuario(this)"></div></div>
+            <div class="login-field"><label for="googleFuncao">Função no Arlinda</label><div class="login-input-wrap"><i class="fa-solid fa-briefcase"></i><input id="googleFuncao" type="text" required maxlength="120" autocomplete="organization-title" placeholder="Informe sua função na instituição"></div></div>
+            <div class="login-field"><label for="googleNickname">Nome de usuário (nickname)</label><div class="login-input-wrap"><i class="fa-regular fa-user"></i><input id="googleNickname" type="text" required maxlength="40" autocomplete="nickname" placeholder="Escolha seu nome de usuário"></div><p class="login-field-hint">O nickname será verificado antes de salvar.</p></div>
             <button id="btnSalvarGoogleNickname" type="submit" class="login-submit"><span>CONTINUAR</span><i class="fa-solid fa-arrow-right"></i></button>
           </form>
         </div>
@@ -4431,19 +4430,24 @@
         async function salvarNicknameGoogle(evento){
             evento.preventDefault();
             ocultarMensagemAuth();
+            const nome=document.getElementById('googleNome').value.trim().replace(/\\s+/g,' ');
+            const cpf=document.getElementById('googleCpf').value.replace(/\\D/g,'');
+            const funcao=document.getElementById('googleFuncao').value.trim().replace(/\\s+/g,' ');
             const nickname=document.getElementById('googleNickname').value.trim().replace(/\\s+/g,' ');
-            if(!nickname||nickname.length>40){mostrarMensagemAuth('Informe um nickname com até 40 caracteres.');return;}
+            if(!nome||!funcao||!nickname){mostrarMensagemAuth('Preencha todos os campos.');return;}
+            if(!validarCPFUsuario(cpf)){mostrarMensagemAuth('Informe um CPF válido.');return;}
+            if(nickname.length>40){mostrarMensagemAuth('Informe um nickname com até 40 caracteres.');return;}
             const botao=document.getElementById('btnSalvarGoogleNickname');botao.disabled=true;
             botao.innerHTML='<span>VERIFICANDO...</span><i class="fa-solid fa-spinner fa-spin"></i>';
             try{
                 const {data:resultadoNickname,error:erroVerificacao}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'check',nickname:nickname}});
                 if(erroVerificacao)throw erroVerificacao;
                 if(resultadoNickname?.available!==true){mostrarMensagemAuth('Este nickname já está em uso. Escolha outro.');return;}
-                const {error}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'set',nickname:nickname}});
+                const {error}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'set',nickname:nickname,full_name:nome,cpf:cpf,institutional_function:funcao}});
                 if(error){
                     const msg=String(error.message||'').toLowerCase();
                     const status=error.context?.status;
-                    mostrarMensagemAuth(status===409||msg.includes('nickname')||error.code==='23505'?'Este nickname já está em uso. Escolha outro.':'Não foi possível salvar o nickname. Tente novamente.');
+                    mostrarMensagemAuth(status===409||msg.includes('nickname')||error.code==='23505'?'Este nickname ou CPF já está cadastrado. Confira os dados.':'Não foi possível salvar seus dados. Tente novamente.');
                     return;
                 }
                 const {data:perfil,error:erroPerfil}=await supabaseClient.from('user_profiles').select('active,nickname').eq('user_id',usuarioGoogleAguardandoNickname.id).single();
@@ -4453,63 +4457,17 @@
                 if(!perfil.active){
                     await supabaseClient.auth.signOut();
                     mostrarLogin();
-                    mostrarMensagemAuth('Nickname salvo! Sua conta está aguardando autorização do administrador do sistema. Assim que o acesso for aprovado, você poderá entrar normalmente.',true);
+                    mostrarMensagemAuth('Cadastro recebido! Sua conta está aguardando autorização do administrador do sistema. Confirme também seu e-mail, se solicitado.',true);
                     return;
                 }
                 document.getElementById('authGoogleNickname').classList.add('hidden');
                 await ativarSessao(usuario);
             }catch(error){
                 console.error(error);
-                mostrarMensagemAuth('Não foi possível concluir a configuração do nickname. Tente novamente.');
+                mostrarMensagemAuth('Não foi possível concluir seu cadastro. Verifique os dados e tente novamente.');
             }finally{
                 botao.disabled=false;botao.innerHTML='<span>CONTINUAR</span><i class="fa-solid fa-arrow-right"></i>';
             }
-        }
-
-        function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
-        async function entrar(evento){
-            evento.preventDefault();
-            if(!loginEnviadoPorClique)return;
-            loginEnviadoPorClique=false;
-            ocultarMensagemAuth();
-            const botao=document.getElementById('btnEntrar');
-            botao.disabled=true;botao.textContent='Autenticando...';
-            try{
-                const {data,error}=await supabaseClient.auth.signInWithPassword({
-                    email:document.getElementById('loginEmail').value.trim(),
-                    password:document.getElementById('loginSenha').value
-                });
-                if(error){
-                    console.error('Falha na autenticação:',error);
-                    if(error.code==='email_not_confirmed'){
-                        mostrarMensagemAuth('Seu e-mail ainda não foi confirmado. Confirme pelo link enviado quando você criou sua conta. Depois da confirmação, o sistema verificará se seu acesso já foi autorizado pela Administração.');
-                        document.getElementById('authReenviarConfirmacao').classList.remove('hidden');
-                    }else if(error.code==='invalid_credentials'){
-                        mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');
-                    }else{
-                        mostrarMensagemAuth('Não foi possível concluir o login neste momento. Tente novamente ou procure a Administração do sistema.');
-                    }
-                    return;
-                }
-                if(data.user)await ativarSessao(data.user);
-            }catch(error){
-                console.error('Erro inesperado no login:',error);
-                mostrarMensagemAuth('Ocorreu um erro ao tentar entrar. Tente novamente.');
-            }finally{
-                botao.disabled=false;botao.textContent='Entrar';
-            }
-        }
-        async function solicitarRecuperacao(){
-            ocultarMensagemAuth();const email=document.getElementById('loginEmail').value.trim();
-            if(!email){mostrarMensagemAuth('Informe seu e-mail no campo acima.');document.getElementById('loginEmail').focus();return;}
-            const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin+window.location.pathname});
-            if(error)mostrarMensagemAuth('Não foi possível solicitar a recuperação: '+error.message);
-            else mostrarMensagemAuth('Se o e-mail estiver cadastrado, você receberá as instruções.',true);
-        }
-        function alternarVisibilidadeSenha(id,botao){const campo=document.getElementById(id);if(!campo)return;const mostrar=campo.type==='password';campo.type=mostrar?'text':'password';botao.innerHTML=mostrar?'<i class="fa-solid fa-eye-slash"></i>':'<i class="fa-solid fa-eye"></i>';}
-        function mostrarNovaSenha(){
-            document.getElementById('appShell').classList.add('hidden');document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('authLogin').classList.add('hidden');document.getElementById('authCadastro').classList.add('hidden');document.getElementById('authGoogleNickname').classList.add('hidden');document.getElementById('authNovaSenha').classList.remove('hidden');ocultarMensagemAuth();
         }
         async function salvarNovaSenha(evento){
             evento.preventDefault();const senha=document.getElementById('novaSenha').value,confirmacao=document.getElementById('confirmaNovaSenha').value;
