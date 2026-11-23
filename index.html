@@ -4417,6 +4417,40 @@
                 botao.disabled=false;botao.innerHTML='<span>CRIAR CONTA</span><i class="fa-solid fa-arrow-right"></i>';
             }
         }
+function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
+        async function entrar(evento){
+            evento.preventDefault();
+            if(!loginEnviadoPorClique)return;
+            loginEnviadoPorClique=false;
+            ocultarMensagemAuth();
+            const botao=document.getElementById('btnEntrar');
+            botao.disabled=true;botao.textContent='Autenticando...';
+            try{
+                const {data,error}=await supabaseClient.auth.signInWithPassword({
+                    email:document.getElementById('loginEmail').value.trim(),
+                    password:document.getElementById('loginSenha').value
+                });
+                if(error){
+                    console.error('Falha na autenticação:',error);
+                    if(error.code==='email_not_confirmed'){
+                        mostrarMensagemAuth('Seu e-mail ainda não foi confirmado. Confirme pelo link enviado quando você criou sua conta. Depois da confirmação, o sistema verificará se seu acesso já foi autorizado pela Administração.');
+                        document.getElementById('authReenviarConfirmacao').classList.remove('hidden');
+                    }else if(error.code==='invalid_credentials'){
+                        mostrarMensagemAuth('Não foi possível entrar. Confira o e-mail e a senha.');
+                    }else{
+                        mostrarMensagemAuth('Não foi possível concluir o login neste momento. Tente novamente ou procure a Administração do sistema.');
+                    }
+                    return;
+                }
+                if(data.user)await ativarSessao(data.user);
+            }catch(error){
+                console.error('Erro inesperado no login:',error);
+                mostrarMensagemAuth('Ocorreu um erro ao tentar entrar. Tente novamente.');
+            }finally{
+                botao.disabled=false;botao.textContent='Entrar';
+            }
+        }
+        
         async function entrarComGoogle(){
             ocultarMensagemAuth();
             const {error}=await supabaseClient.auth.signInWithOAuth({
