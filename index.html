@@ -4993,7 +4993,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const el=document.getElementById('sisregStatusIntegracao');
             if(!el)return;
             const cfg={verificando:['Verificando conexão','bg-amber-100 text-amber-800'],conectado:['Conectado','bg-emerald-100 text-emerald-800'],aguardando:['Login automático na próxima consulta','bg-blue-100 text-blue-800'],desconectado:['Não configurado','bg-slate-100 text-slate-600'],erro:['Falha na conexão','bg-rose-100 text-rose-800']}[estado]||['Não configurado','bg-slate-100 text-slate-600'];
-            el.textContent=cfg[0];el.className='rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-wide '+cfg[1];
+            el.textContent=(estado==='conectado'?'● CONECTADO':cfg[0]);el.className='rounded-full px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-wide '+cfg[1];
         }
         function abrirModalSISREG(){
             document.getElementById('sisregUsuario').value='';document.getElementById('sisregSenha').value='';
