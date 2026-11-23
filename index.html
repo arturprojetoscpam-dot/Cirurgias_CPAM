@@ -4326,9 +4326,9 @@
             const campo=document.getElementById('cadastroNickname'),status=document.getElementById('cadastroNicknameStatus');
             const nickname=campo.value.trim().replace(/\\s+/g,' ');
             if(!nickname){status.textContent='Esse nome será exclusivo e aparecerá na sua identificação.';status.className='login-field-hint';return false;}
-            const {data,error}=await supabaseClient.rpc('check_nickname_available',{p_nickname:nickname});
+            const {data,error}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'check',nickname:nickname}});
             if(error){status.textContent='Não foi possível verificar agora. Tente novamente.';status.className='login-field-hint unavailable';return false;}
-            const disponivel=data===true;
+            const disponivel=data?.available===true;
             status.textContent=disponivel?'Nickname disponível.':'Esse nickname já está em uso. Escolha outro.';
             status.className='login-field-hint '+(disponivel?'available':'unavailable');
             return disponivel;
@@ -4347,9 +4347,9 @@
             const botao=document.getElementById('btnCadastrar');botao.disabled=true;
             botao.innerHTML='<span>VERIFICANDO...</span><i class="fa-solid fa-spinner fa-spin"></i>';
             try{
-                const {data:disponivel,error:erroNickname}=await supabaseClient.rpc('check_nickname_available',{p_nickname:nickname});
+                const {data:resultadoNickname,error:erroNickname}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'check',nickname:nickname}});
                 if(erroNickname)throw erroNickname;
-                if(disponivel!==true){document.getElementById('cadastroNicknameStatus').textContent='Esse nickname já está em uso. Escolha outro.';document.getElementById('cadastroNicknameStatus').className='login-field-hint unavailable';mostrarMensagemAuth('Este nome de usuário já está em uso. Escolha outro.');return;}
+                if(resultadoNickname?.available!==true){document.getElementById('cadastroNicknameStatus').textContent='Esse nickname já está em uso. Escolha outro.';document.getElementById('cadastroNicknameStatus').className='login-field-hint unavailable';mostrarMensagemAuth('Este nome de usuário já está em uso. Escolha outro.');return;}
                 const {data,error}=await supabaseClient.auth.signUp({
                     email:email,
                     password:senha,
@@ -4396,10 +4396,10 @@
             const botao=document.getElementById('btnSalvarGoogleNickname');botao.disabled=true;
             botao.innerHTML='<span>VERIFICANDO...</span><i class="fa-solid fa-spinner fa-spin"></i>';
             try{
-                const {data:disponivel,error:erroVerificacao}=await supabaseClient.rpc('check_nickname_available',{p_nickname:nickname});
+                const {data:resultadoNickname,error:erroVerificacao}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'check',nickname:nickname}});
                 if(erroVerificacao)throw erroVerificacao;
-                if(disponivel!==true){mostrarMensagemAuth('Este nickname já está em uso. Escolha outro.');return;}
-                const {error}=await supabaseClient.rpc('set_my_nickname',{p_nickname:nickname});
+                if(resultadoNickname?.available!==true){mostrarMensagemAuth('Este nickname já está em uso. Escolha outro.');return;}
+                const {error}=await supabaseClient.functions.invoke('account-nickname',{body:{action:'set',nickname:nickname}});
                 if(error){
                     const msg=String(error.message||'').toLowerCase();
                     mostrarMensagemAuth(msg.includes('nickname')||error.code==='23505'?'Este nickname já está em uso. Escolha outro.':'Não foi possível salvar o nickname. Tente novamente.');
