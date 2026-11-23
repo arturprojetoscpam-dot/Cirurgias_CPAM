@@ -5889,7 +5889,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(idadeRegular<18&&perfilAtual.role==='coordenacao'){exibirToast('O perfil Coordenador só pode regularizar pacientes maiores de idade em casos especiais autorizados pela Direção. Para menores, utilize o fluxo da Regulação.','erro');return;}
             if(idadeRegular>=18&&!['administrador','coordenacao'].includes(perfilAtual.role)){exibirToast('Bloqueado: pacientes com 18 anos ou mais na data prevista só podem ser regularizados pelo Coordenador ou Administrador, em caso especial autorizado pela Direção.','erro');return;}
             if(idadeRegular>=18){const autorizou=await confirmarDialogo({titulo:'Exceção para paciente maior de idade',mensagem:'O paciente terá '+idadeRegular+' anos na data prevista da cirurgia.',detalhes:'A regularização de pacientes com 18 anos ou mais é excepcional e somente pode ocorrer com autorização da Direção. Confirme apenas se esta autorização foi concedida.\\n\\nDeseja prosseguir com a regularização?',tipo:'atencao',textoConfirmar:'Confirmo a autorização da Direção',textoCancelar:'Cancelar'});if(!autorizou)return;}
-            const confirmou=await confirmarDialogo({titulo:'Confirmar agendamento',mensagem:'Deseja realmente salvar este agendamento cirúrgico eletivo?',detalhes:'Paciente: '+nome+'\\nProcedimento: '+procedimento+'\\nData prevista: '+data+'\\n\\nSe for um novo paciente, o cadastro definitivo e o prontuário interno do Bloco serão gerados agora.',tipo:'atencao',textoConfirmar:'Sim, salvar',textoCancelar:'Revisar dados'});if(!confirmou)return;
+            const confirmou=await confirmarDialogo({titulo:'Confirmar agendamento',mensagem:'Deseja realmente salvar este agendamento cirúrgico eletivo?',detalhes:'Paciente: '+nome+'\\nProcedimento: '+procedimento+'\\nData prevista: '+data+(procedimentoGastro?'\\nMédico responsável: '+(document.getElementById('regularGastroMedico').selectedOptions[0]?.textContent||'Não selecionado'):'')+'\\n\\nSe for um novo paciente, o cadastro definitivo e o prontuário interno do Bloco serão gerados agora.',tipo:'atencao',textoConfirmar:'Sim, salvar',textoCancelar:'Revisar dados'});if(!confirmou)return;
             const btn=document.getElementById('btnSalvarAgendamentoRegular');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
             try{
                 let pacienteId=regularPacienteAtual?regularPacienteAtual.id:null,codigoBlocoGerado=regularPacienteAtual?.codigo_paciente||null;
@@ -5990,7 +5990,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
 
         async function atualizarAcessoGastro(){
             acessoGastroAtual=false;profissionalGastroAtual=null;
-            if(!usuarioAtual||!perfilAtual){document.getElementById('navGastro')?.classList.add('hidden');return;}
+            if(!usuarioAtual||!perfilAtual){document.getElementById('navGastro')?.classList.add('hidden');document.getElementById('homeCardGastro')?.classList.add('hidden');return;}
             if(perfilAtual.role==='administrador')acessoGastroAtual=true;
             else{
                 try{
@@ -6094,7 +6094,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         }
         function gastroEhProcedimentoRegular(nome){
             const n=String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
-            return /(ENDOSCOPIA DIGESTIVA|COLONOSCOPIA|RETOSSIGMOIDOSCOPIA|GASTROSTOMIA|DILATACAO DE ESOFAGO|TUBO DIGESTIVO)/.test(n);
+            return /(ENDOSCOPIA DIGESTIVA|COLONOSCOPIA|RETOSSIGMOIDOSCOPIA|GASTROSTOMIA ENDOSCOPICA|TROCA DE SONDA DE GASTROSTOMIA|DILATACAO DE ESOFAGO|TUBO DIGESTIVO)/.test(n);
         }
         function gastroLimparMedicoRegular(){const wrap=document.getElementById('regularGastroMedicoWrap'),campo=document.getElementById('regularGastroMedico');if(wrap)wrap.classList.add('hidden');if(campo){campo.required=false;campo.value='';}}
         async function gastroAtualizarMedicoRegular(){
