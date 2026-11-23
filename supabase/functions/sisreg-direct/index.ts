@@ -249,28 +249,28 @@ function extractCadwebJson(html: string) {
   return { titulo, campos, tabelas, texto };
 }
 function safeCadwebDiagnostics(html: string, url: string, status: number | null = null, contentType = "") {
-  const title = stripHtml((html.match(/<title\\b[^>]*>([\\s\\S]*?)<\\/title>/i) || [,""])[1]).slice(0, 120);
+  const title = stripHtml((html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i) || [,""])[1]).slice(0, 120);
   const inputNames: string[] = [];
-  const inputRe = /<(input|select|textarea)\\b([^>]*)>/gi;
+  const inputRe = /<(input|select|textarea)\b([^>]*)>/gi;
   let m: RegExpExecArray | null;
   while ((m = inputRe.exec(html)) !== null) {
     const a = htmlAttributes(m[2]);
     if (a.name) inputNames.push(a.name.slice(0, 80));
   }
   const labels: string[] = [];
-  const labelRe = /<label\\b[^>]*>([\\s\\S]*?)<\\/label>/gi;
+  const labelRe = /<label\b[^>]*>([\s\S]*?)<\/label>/gi;
   while ((m = labelRe.exec(html)) !== null) {
     const label = stripHtml(m[1]).slice(0, 80);
     if (label) labels.push(label);
   }
   const forms: string[] = [];
-  const formRe = /<form\\b([^>]*)>/gi;
+  const formRe = /<form\b([^>]*)>/gi;
   while ((m = formRe.exec(html)) !== null) {
     const a = htmlAttributes(m[1]);
     forms.push((a.method || "get").toUpperCase() + " " + (a.action || "(mesma página)").slice(0, 120));
   }
   const frames: string[] = [];
-  const frameRe = /<(?:iframe|frame)\\b([^>]*)>/gi;
+  const frameRe = /<(?:iframe|frame)\b([^>]*)>/gi;
   while ((m = frameRe.exec(html)) !== null) {
     const src = htmlAttributes(m[1]).src;
     if (src) { try { frames.push(new URL(src, url).pathname); } catch {} }
@@ -282,10 +282,10 @@ function safeCadwebDiagnostics(html: string, url: string, status: number | null 
     inputNames: [...new Set(inputNames)].slice(0, 40),
     labels: [...new Set(labels)].slice(0, 40),
     forms: forms.slice(0, 15), frames: frames.slice(0, 20),
-    hasCadwebTitle: /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(stripHtml(title)),
+    hasCadwebTitle: /CONSULTA AO CADASTRO DE PACIENTES SUS/i.test(title),
     hasCnsInput: /name=["']nu_cns["']/i.test(html),
-    hasNameWord: /\\bnome\\b/i.test(stripHtml(html)),
-    hasPatientTable: /<table\\b/i.test(html),
+    hasNameWord: /\bnome\b/i.test(stripHtml(html)),
+    hasPatientTable: /<table\b/i.test(html),
   };
 }
 function extractPatient(html: string, requested: string) {
