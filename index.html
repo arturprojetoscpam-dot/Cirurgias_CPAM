@@ -3617,7 +3617,6 @@
                     <button id="navAgendamentos" data-nav="agendamentos" onclick="navegarSistema('agendamentos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-calendar-check w-5 text-center text-base"></i><span>Cirurgias Eletivas</span></button>
                     <button id="navRegularCirurgia" data-nav="regularCirurgia" onclick="navegarSistema('regularCirurgia')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-clipboard-list w-5 text-center text-base"></i><span>Regular Cirurgia</span></button>
                     <button id="navNovoPaciente" data-nav="novoPaciente" onclick="navegarSistema('novoPaciente')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-user-plus w-5 text-center text-base"></i><span>Novo Paciente</span></button>
-                    <button id="navRegistro" data-nav="registro" onclick="navegarSistema('registro')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-file-circle-plus w-5 text-center text-base"></i><span>Registrar Cirurgia</span></button>
                     <button id="navMedicos" data-nav="medicos" onclick="navegarSistema('medicos')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-user-doctor w-5 text-center text-base"></i><span>Profissionais</span></button>
                     <button id="navDashboards" data-nav="dashboards" onclick="navegarSistema('dashboards')" class="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-chart-pie w-5 text-center text-base"></i><span>Dashboards</span></button>
                     <button id="navAuditoria" data-nav="auditoria" onclick="navegarSistema('auditoria')" class="hidden flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-600 transition hover:bg-teal-50 hover:text-teal-800"><i class="fa-solid fa-clipboard-list w-5 text-center text-base"></i><span>Auditoria</span></button>
@@ -3691,197 +3690,7 @@
 <section id="secAdmin" class="hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4"><div><h2 class="font-bold text-slate-800"><i class="fa-solid fa-user-shield mr-2 text-teal-700"></i>Gestão de usuários</h2><p class="mt-1 text-xs text-slate-500">Altere perfis e suspenda acessos. Convide novas contas pelo Supabase Auth.</p></div><a href="https://supabase.com/dashboard/project/uazilxyspnycvntxcxzu/auth/users" target="_blank" rel="noopener noreferrer" class="rounded-xl border border-teal-200 px-3 py-2 text-xs font-semibold text-teal-800">Convidar usuário <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a></div><div class="mt-4 overflow-x-auto"><table class="w-full min-w-[1050px] text-left text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3">E-mail</th><th class="p-3">Nome</th><th class="p-3">CPF</th><th class="p-3">Função no Arlinda</th><th class="p-3">Perfil</th><th class="p-3">Acesso</th><th class="p-3">Ação</th></tr></thead><tbody id="gridUsuarios" class="divide-y divide-slate-100"><tr><td colspan="7" class="p-4 text-center text-slate-400">Carregando...</td></tr></tbody></table></div><p class="mt-3 text-[10px] text-slate-400">Novas contas recebem inicialmente o perfil Consulta.</p></section>
 
 
-        <!-- FORMULÁRIO COMPLETO DE CADASTRO -->
-        <section id="secFormulario" class="hidden bg-white rounded-2xl border border-slate-200/90 shadow-md p-6 transition-all duration-300">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-6">
-                <div>
-                    <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-file-signature text-teal-600"></i> Ficha de Registro de Cirurgia
-                    </h3>
-                    <p class="text-xs text-slate-400">Selecione um paciente cadastrado ou registre um novo; depois informe a ocorrência cirúrgica.</p>
-                </div>
-                <button onclick="toggleFormulario()" class="text-slate-400 hover:text-slate-600 p-1">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
 
-            <form id="formCirurgia" onsubmit="salvarCirurgia(event)" class="space-y-6">
-
-                <!-- 1. IDENTIFICAÇÃO DO PACIENTE -->
-                <div>
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user-injured"></i> 1. Dados do Paciente
-                    </h4>
-                    <div class="mb-4 rounded-xl border border-teal-100 bg-teal-50/60 p-4">
-                        <label for="buscaPaciente" class="mb-1 block text-xs font-semibold text-slate-700">Localizar paciente já cadastrado</label>
-                        <div class="flex flex-col gap-2 sm:flex-row">
-                            <input type="search" id="buscaPaciente" oninput="buscarPacientes()" placeholder="Nome, cadastro ambulatorial, CPF ou Cartão SUS (CNS)" autocomplete="off" class="w-full rounded-xl border border-slate-300 bg-white p-2.5 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500">
-                            <button type="button" onclick="iniciarNovoPaciente()" class="shrink-0 rounded-xl border border-teal-700 px-4 py-2 text-xs font-semibold text-teal-800 hover:bg-teal-100">Cadastrar novo paciente</button>
-                        </div>
-                        <div class="mt-2 max-w-xs"><label for="buscaDataNascimentoPaciente" class="mb-1 block text-[11px] font-semibold text-slate-600">Data de nascimento</label><input type="date" id="buscaDataNascimentoPaciente" onchange="buscarPacientes()" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500"></div>
-                        <div id="resultadosPacientes" class="mt-2 hidden max-h-56 overflow-y-auto rounded-xl border border-slate-200 bg-white"></div>
-                        <p id="pacienteSelecionadoInfo" class="mt-2 hidden text-xs font-semibold text-emerald-800" aria-live="polite"></p>
-                        <div id="acoesEdicaoPaciente" class="mt-2 hidden flex flex-wrap gap-2">
-                            <button type="button" id="btnEditarPaciente" onclick="editarPacienteSelecionado()" class="rounded-lg border border-teal-300 bg-white px-3 py-2 text-[11px] font-semibold text-teal-800 hover:bg-teal-50"><i class="fa-solid fa-pen-to-square mr-1"></i>Editar dados do paciente</button>
-                            <button type="button" id="btnSalvarEdicaoPaciente" onclick="salvarEdicaoPaciente()" class="hidden rounded-lg bg-teal-700 px-3 py-2 text-[11px] font-semibold text-white"><i class="fa-solid fa-floppy-disk mr-1"></i>Salvar dados</button>
-                            <button type="button" id="btnCancelarEdicaoPaciente" onclick="cancelarEdicaoPaciente()" class="hidden rounded-lg border border-slate-300 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700">Cancelar edição</button>
-                        </div>
-                        <p class="mt-2 text-[10px] text-slate-500">Pesquise antes de cadastrar. A seleção vincula esta cirurgia ao cadastro existente; um novo paciente só será criado quando não houver seleção.</p>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome Completo do Paciente *</label>
-                            <input type="text" id="Nome_Paciente" required placeholder="Ex: MARIA SILVA DOS SANTOS" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Cadastro ambulatorial (se houver)</label>
-                            <input type="text" id="prontuario" placeholder="Número de cadastro ambulatorial" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">NBE</label>
-                            <input type="text" id="NBE" placeholder="Ex: NBE-9988" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Cartão SUS (CNS)</label>
-                            <input type="text" id="CNS" placeholder="Número do CNS" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Data de Nascimento</label>
-                            <input type="date" id="Data_Nascimento" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Sexo</label>
-                            <select id="sexo" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-                                <option value="">Selecione</option>
-                                <option value="FEMININO">FEMININO</option>
-                                <option value="MASCULINO">MASCULINO</option>
-                                <option value="OUTRO">OUTRO</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Nome da Mãe</label>
-                            <input type="text" id="NOME_MAE" placeholder="Nome da mãe" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 2. DETALHES DO PROCEDIMENTO -->
-                <div class="border-t border-slate-100 pt-5">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-procedures"></i> 2. Detalhes do Procedimento Cirúrgico
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Data da Cirurgia *</label>
-                            <input type="date" id="Data_da_Cirurgia" required class="w-full border border-slate-300 p-2.5 rounded-xl text-xs focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Especialidade *</label>
-                            <select id="Especialidade" required class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-                                <option value="CIRURGIA GERAL">CIRURGIA GERAL</option>
-                                <option value="PEQUENAS CIRURGIAS">PEQUENAS CIRURGIAS</option>
-                                <option value="ORTOPEDIA">ORTOPEDIA</option>
-                                <option value="OTORRINOLARINGOLOGIA">OTORRINOLARINGOLOGIA</option>
-                                <option value="NEUROCIRURGIA">NEUROCIRURGIA</option>
-                                <option value="ODONTOLOGIA">ODONTOLOGIA / BUCOMAXILO</option>
-                                <option value="PLASTICA">CIRURGIA PLÁSTICA</option>
-                                <option value="OFTALMOLOGIA">OFTALMOLOGIA</option>
-                                <option value="VASCULAR">CIRURGIA VASCULAR</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Caráter do Atendimento *</label>
-                            <select id="Carater_Atendimento" required class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-                                <option value="URGENCIA">URGÊNCIA</option>
-                                <option value="ELETIVA">ELETIVA</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Situação *</label>
-                            <select id="Situaçao" required onchange="aoMudarSituacao()" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none font-bold">
-                                <option value="REALIZADA" class="text-emerald-700">REALIZADA</option>
-                                <option value="CANCELADA" class="text-rose-700">CANCELADA</option>
-                            </select>
-                        </div>
-
-                        <!-- Procedimentos (1, 2, 3) -->
-                        <div class="md:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Procedimento Principal (1)</label>
-                                <input type="text" id="Procedimento1" placeholder="Ex: COLECISTECTOMIA" class="w-full border border-slate-300 p-2 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Procedimento Secundário (2)</label>
-                                <input type="text" id="Procedimento2" placeholder="Procedimento secundário" class="w-full border border-slate-300 p-2 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-600 mb-1">Procedimento Terciário (3)</label>
-                                <input type="text" id="Procedimento3" placeholder="Procedimento adicional" class="w-full border border-slate-300 p-2 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                            </div>
-                        </div>
-
-                        <!-- Motivo Cancelamento (Exibido dinamicamente) -->
-                        <div id="boxMotivoCancelamento" class="hidden md:col-span-4 bg-rose-50 p-3 rounded-xl border border-rose-200">
-                            <label class="block text-xs font-bold text-rose-800 mb-1">Motivo do Cancelamento *</label>
-                            <select id="Mot_Cancelam" onchange="aoMudarMotivoCancelamento('Mot_Cancelam','Mot_Cancelam_outro')" class="w-full border border-rose-300 p-2 rounded-xl text-xs bg-white text-rose-900 focus:ring-2 focus:ring-rose-500 outline-none"><option value="">Selecione o motivo</option></select><input id="Mot_Cancelam_outro" type="text" placeholder="Descreva o motivo (obrigatório)" aria-label="Descreva o motivo do cancelamento classificado como Outro" class="hidden mt-2 w-full border border-rose-300 p-2 rounded-xl text-xs bg-white text-rose-900"><div id="boxResponsabilidadeCancelamento" class="hidden mt-2"><label for="responsabilidade_cancelamento" class="block text-xs font-semibold text-rose-800 mb-1">Responsabilidade do cancelamento *</label><select id="responsabilidade_cancelamento" class="w-full border border-rose-300 p-2 rounded-xl text-xs bg-white text-rose-900"><option value="">Selecione quem foi responsável</option><option value="PACIENTE">Paciente</option><option value="EXTRA-PACIENTE">Extra-paciente (estrutura/equipe)</option></select></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 3. EQUIPE MÉDICA E ANESTESIA -->
-                <div class="border-t border-slate-100 pt-5">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-teal-700 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user-doctor"></i> 3. Equipe Médica & Anestesia
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Médico Cirurgião Principal *</label>
-                            <input type="text" id="Medico" required placeholder="Nome do médico cirurgião" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">CRM Cirurgião</label>
-                            <input type="text" id="CRM_CIR" placeholder="CRM/UF" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo de Anestesia</label>
-                            <select id="Anestesia1" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs bg-white focus:ring-2 focus:ring-teal-500 outline-none">
-                                <option value="">Selecione</option>
-                                <option value="GERAL">GERAL</option>
-                                <option value="SEDAÇÃO">SEDAÇÃO</option>
-                                <option value="RAQUI">RAQUI</option>
-                                <option value="LOCAL">LOCAL</option>
-                                <option value="PERIDURAL">PERIDURAL</option>
-                                <option value="BLOQUEIO">BLOQUEIO REGIONAL</option>
-                            </select>
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Médico Anestesista</label>
-                            <input type="text" id="Anestesista" placeholder="Nome do anestesista" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">CRM Anestesista</label>
-                            <input type="text" id="CRM_ANEST" placeholder="CRM/UF" class="w-full border border-slate-300 p-2.5 rounded-xl text-xs uppercase focus:ring-2 focus:ring-teal-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Digitado Por</label>
-                            <input type="text" id="DIGITADO_POR" value="WEB_OPERATOR" readonly class="w-full border border-slate-200 bg-slate-50 p-2.5 rounded-xl text-xs text-slate-500 outline-none">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- BOTÕES DO FORMULÁRIO -->
-                <div class="border-t border-slate-100 pt-5 flex justify-end gap-3">
-                    <button type="button" onclick="toggleFormulario()" class="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-50 font-semibold text-xs transition">
-                        Cancelar
-                    </button>
-                    <button type="submit" id="btnSalvar" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-md transition flex items-center gap-2 text-xs">
-                        <i class="fa-solid fa-floppy-disk"></i>
-                        <span>Salvar cirurgia</span>
-                    </button>
-                </div>
-            </form>
-        </section>
 
     <!-- PÁGINA DEDICADA DE CADASTRO E EDIÇÃO DO PACIENTE -->
     <section id="secCadastroPaciente" class="hidden w-full space-y-4" aria-labelledby="tituloModalPaciente">
@@ -4397,7 +4206,6 @@
                 document.getElementById('btnUsuarios').classList.toggle('hidden',perfil.role!=='administrador');
                 document.getElementById('navAuditoria').classList.toggle('hidden',perfil.role!=='administrador');
                 document.getElementById('navUsuarios').classList.toggle('hidden',perfil.role!=='administrador');
-                document.getElementById('navRegistro').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navMedicos').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
                 document.getElementById('navPesquisa').classList.remove('hidden');
                 document.getElementById('navNovoPaciente').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfil.role));
@@ -4405,7 +4213,6 @@
                 document.getElementById('navCancelamentos')?.classList.remove('hidden');
                 document.getElementById('navDashboards')?.classList.remove('hidden');
                 document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
-                document.getElementById('secCadastroPaciente').classList.add('hidden');document.getElementById('secFormulario').classList.add('hidden');
                 atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);void verificarStatusSISREG(true);resolverRotaAtual();
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
             finally{carregandoPerfil=false;}
@@ -5256,7 +5063,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const nomePacienteContexto=p.nome_paciente||'Paciente não identificado',codigoPacienteContexto=formatarCodigoPaciente(p.codigo_paciente),dataCirurgiaContexto=normalizarDataParaInput(r.Data_da_Cirurgia)||'',dataCirurgiaLegivel=dataCirurgiaContexto?formatarData(dataCirurgiaContexto):'Data não informada',nomeProcedimentoContexto=(procedimentoResolvido||r.Procedimento1||'Procedimento não informado').trim();
             document.getElementById('tituloModalCirurgia').textContent=registro?'Editando Cirurgia: '+nomeProcedimentoContexto:'Registro de Cirurgia';
             document.getElementById('subtituloModalCirurgia').textContent=registro?'Data: '+dataCirurgiaLegivel:'Registro de procedimento realizado';
-            ['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secDetalhesCirurgia','secFormulario','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));document.getElementById('secCadastroCirurgia').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});aoMudarStatusCirurgiaModal();
+            ['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secDetalhesCirurgia','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));document.getElementById('secCadastroCirurgia').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});aoMudarStatusCirurgiaModal();
         }
         async function salvarCirurgiaModal(evento){
             evento.preventDefault();if(!pacienteHistoricoAtual||!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
@@ -5461,82 +5268,6 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 }
             },300);
         }
-        async function salvarCirurgia(evento){
-            evento.preventDefault();
-            if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){exibirToast('Seu perfil não permite cadastrar cirurgias.','erro');return;}
-            const botao=document.getElementById('btnSalvar');
-            await carregarCatalogoCancelamentos();
-            const situacao=document.getElementById('Situaçao').value,motivoInfo=lerMotivoCancelamento('Mot_Cancelam','Mot_Cancelam_outro'),motivo=motivoInfo.texto,responsabilidade=lerResponsabilidadeCancelamento('Mot_Cancelam');
-            if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast(motivoInfo.id===16?'Descreva o motivo manualmente ao selecionar “Outro”.':'Informe o motivo do cancelamento.','erro');document.getElementById(motivoInfo.id===16?'Mot_Cancelam_outro':'Mot_Cancelam').focus();return;}
-            if(situacao==='CANCELADA'&&!responsabilidade){exibirToast('Informe se o cancelamento foi responsabilidade do paciente ou extra-paciente.','erro');document.getElementById('responsabilidade_cancelamento').focus();return;}
-            if(modoEdicaoPaciente){exibirToast('Salve ou cancele a edição dos dados do paciente antes de gravar a cirurgia.','erro');return;}if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
-            botao.disabled=true;botao.textContent='Gravando...';
-            try{
-                if(!pacienteSelecionado){
-                    const novoPaciente={
-                        nome_paciente:document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
-                        data_nascimento:dataInputParaBanco(document.getElementById('Data_Nascimento').value)||null,
-                        cns:document.getElementById('CNS').value.trim()||null,
-                        nome_mae:document.getElementById('NOME_MAE').value.toUpperCase().trim()||null,
-                        sexo:document.getElementById('sexo').value||null,
-                        numero_cadastro_ambulatorio:document.getElementById('prontuario').value.trim()||null
-                    };
-                    const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').insert([novoPaciente]).select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio').single();
-                    if(erroPaciente)throw new Error('Falha ao cadastrar paciente: '+erroPaciente.message);
-                    pacienteSelecionado=paciente;document.getElementById('acoesEdicaoPaciente').classList.remove('hidden');document.getElementById('btnEditarPaciente').classList.remove('hidden');
-                    bloquearCamposPaciente(true);
-                    const info=document.getElementById('pacienteSelecionadoInfo');
-                    info.textContent='Novo paciente '+formatarCodigoPaciente(paciente.codigo_paciente)+' cadastrado e selecionado: '+paciente.nome_paciente;
-                    info.classList.remove('hidden');
-                }
-                const novo={
-                    'Identificação':'REG_'+Date.now(),'paciente_id':pacienteSelecionado.id,
-                    'Data_da_Cirurgia':document.getElementById('Data_da_Cirurgia').value,
-                    'Nome_Paciente':pacienteSelecionado.nome_paciente||document.getElementById('Nome_Paciente').value.toUpperCase().trim(),
-                    'prontuario':pacienteSelecionado.numero_cadastro_ambulatorio||'',
-                    'NBE':document.getElementById('NBE').value.trim(),
-                    'CNS':pacienteSelecionado.cns||'',
-                    'Data_Nascimento':pacienteSelecionado.data_nascimento||'',
-                    'sexo':pacienteSelecionado.sexo||'',
-                    'NOME_MAE':pacienteSelecionado.nome_mae||'',
-                    'Especialidade':document.getElementById('Especialidade').value,
-                    'Carater_Atendimento':document.getElementById('Carater_Atendimento').value,'Situaçao':situacao,
-                    'Procedimento1':document.getElementById('Procedimento1').value.toUpperCase().trim(),
-                    'Procedimento2':document.getElementById('Procedimento2').value.toUpperCase().trim(),
-                    'Procedimento3':document.getElementById('Procedimento3').value.toUpperCase().trim(),
-                    'Mot_Cancelam':situacao==='CANCELADA'?motivo.toUpperCase().trim():'',
-                    'id_cancelamento':situacao==='CANCELADA'?motivoInfo.id:null,
-                    'responsabilidade_cancelamento':situacao==='CANCELADA'?responsabilidade:null,
-                    'Medico':document.getElementById('Medico').value.toUpperCase().trim(),
-                    'CRM_CIR':document.getElementById('CRM_CIR').value.toUpperCase().trim(),
-                    'Anestesista':document.getElementById('Anestesista').value.toUpperCase().trim(),
-                    'CRM_ANEST':document.getElementById('CRM_ANEST').value.toUpperCase().trim(),
-                    'Anestesia1':document.getElementById('Anestesia1').value,
-                    'DIGITADO_POR':usuarioAtual.email||perfilAtual.email,'DIGITADO_EM':new Date().toLocaleString('pt-BR')
-                };
-                const pacienteIdSalvo=pacienteSelecionado.id;
-                const {error}=await supabaseClient.from('cirurgias').insert([novo]);if(error)throw error;
-                exibirToast('Cirurgia gravada e vinculada ao paciente.','sucesso');
-                document.getElementById('formCirurgia').reset();
-                limparPacienteSelecionado();
-                document.getElementById('Data_da_Cirurgia').valueAsDate=new Date();aoMudarSituacao();toggleFormulario();await carregarPacientes();await abrirHistoricoPaciente(pacienteIdSalvo);
-            }catch(error){
-                console.error(error);exibirToast('Erro ao gravar: '+error.message,'erro');
-            }finally{
-                botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk"></i> <span>Salvar cirurgia</span>';
-            }
-        }
-        function toggleFormulario(){
-            if(!perfilAtual||!['administrador','coordenacao','cadastro'].includes(perfilAtual.role))return;
-            const sec=document.getElementById('secFormulario');sec.classList.toggle('hidden');if(!sec.classList.contains('hidden'))sec.scrollIntoView({behavior:'smooth'});
-        }
-        function aoMudarSituacao(){
-            const cancelada=document.getElementById('Situaçao').value==='CANCELADA';
-            const select=document.getElementById('Mot_Cancelam'),detalhe=document.getElementById('Mot_Cancelam_outro');
-            document.getElementById('boxMotivoCancelamento').classList.toggle('hidden',!cancelada);select.required=cancelada;detalhe.required=cancelada&&select.value==='16';atualizarResponsabilidadeCancelamento('Mot_Cancelam');
-            if(!cancelada){const resp=document.getElementById('responsabilidade_cancelamento');if(resp)resp.required=false;}
-            if(cancelada)carregarCatalogoCancelamentos();
-        }
         async function abrirDetalhesIndex(i,atualizarHistorico=true){
             const registroAlvo=(i&&typeof i==='object')?i:registrosFiltrados[i];
             if(!registroAlvo){exibirToast('Não foi possível identificar a cirurgia selecionada.','erro');return;}
@@ -5544,7 +5275,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 telaAnteriorDetalhes=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'historico':'pesquisa');
                 if(registroAlvo.id)definirRota('/cirurgias/'+encodeURIComponent(registroAlvo.id),false);
             }
-            ['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secFormulario','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
+            ['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
             document.getElementById('secDetalhesCirurgia').classList.remove('hidden');
             window.scrollTo({top:0,behavior:'auto'});
             try{return await abrirDetalhesIndexConteudo(registroAlvo,false);}
@@ -5574,7 +5305,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             document.getElementById('detalheBoxCancelamento').classList.toggle('hidden',realizada||andamento);
             if(!realizada)document.getElementById('detalheMotivoCancelamento').textContent=r.Mot_Cancelam||'Não informado';
             const carater=(r.Carater_Atendimento||'').toUpperCase()!=='ELETIVA',badgeCarater=document.getElementById('detalheCaraterBadge');badgeCarater.innerHTML=carater?'<i class="fa-solid fa-triangle-exclamation mr-1"></i>'+(String(r.Carater_Atendimento||'').toUpperCase()==='EMERGENCIA'?'EMERGÊNCIA':'URGÊNCIA'):'<i class="fa-solid fa-calendar-check mr-1"></i>ELETIVA';badgeCarater.className='detalhe-info-value cpam-status-badge '+(carater?'cpam-badge-urgencia':'cpam-badge-eletiva');
-            if(atualizarHistorico)telaAnteriorDetalhes=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'historico':'pesquisa');['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secFormulario','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));document.getElementById('btnEditarCirurgiaDetalhe').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarCirurgiaCabecalho').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('secDetalhesCirurgia').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});
+            if(atualizarHistorico)telaAnteriorDetalhes=!document.getElementById('secCadastroPaciente').classList.contains('hidden')?'cadastroPaciente':(!document.getElementById('secHistoricoCirurgias').classList.contains('hidden')?'historico':'pesquisa');['secPacientes','secHistoricoCirurgias','secCadastroPaciente','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secCancelamentos','secDashboards'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));document.getElementById('btnEditarCirurgiaDetalhe').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('btnEditarCirurgiaCabecalho').classList.toggle('hidden',!['administrador','coordenacao','cadastro'].includes(perfilAtual.role));document.getElementById('secDetalhesCirurgia').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});
         }
         function imprimirResumoCirurgia(){const nome=(document.getElementById('detalhePacienteCabecalho')?.textContent||'-').trim().toLocaleUpperCase('pt-BR');const prontuario=document.getElementById('detalheProntuarioCabecalho')?.textContent||'-';document.getElementById('printPacienteNome').textContent=nome;document.getElementById('printPacienteProntuario').textContent=prontuario;document.getElementById('printDataEmissao').textContent=new Date().toLocaleString('pt-BR');window.print();}
         function fecharModalDetalhes(){document.getElementById('secDetalhesCirurgia').classList.add('hidden');if(telaAnteriorDetalhes==='cadastroPaciente')document.getElementById('secCadastroPaciente').classList.remove('hidden');else if(telaAnteriorDetalhes==='historico')document.getElementById('secHistoricoCirurgias').classList.remove('hidden');else document.getElementById('secPacientes').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});}
@@ -5940,12 +5671,11 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const rotasDestino={'inicio':'/inicio','agendamentos':'/agendamentos-eletivos','regularCirurgia':'/regular-cirurgia','cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios','medicos':'/profissionais'};
             if(atualizarHistorico&&rotasDestino[destino])definirRota(rotasDestino[destino],false);
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
-            if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
-            ['secInicio','secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos','secRegularCirurgia'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
+            if(['medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
+            ['secInicio','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos','secRegularCirurgia'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
             if(destino==='inicio'){document.getElementById('secInicio').classList.remove('hidden');}
             else if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');inicializarAgendaEletiva();}
             else if(destino==='regularCirurgia'){document.getElementById('secRegularCirurgia').classList.remove('hidden');inicializarFormularioRegular();}
-            else if(destino==='registro'){document.getElementById('secFormulario').classList.remove('hidden');}
             else if(destino==='medicos'){document.getElementById('secProfissionais').classList.remove('hidden');carregarProfissionais();}
             else if(destino==='pesquisa'){document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];carregarPacientes();}
             else if(destino==='novoPaciente'){pacienteHistoricoAtual=null;abrirCadastroPaciente();}
