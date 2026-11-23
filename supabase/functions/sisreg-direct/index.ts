@@ -720,25 +720,48 @@ async function handle(req: Request) {
       return json(req, { ok: true, configured: true, connected: true });
     }
     if (action === "search") {
+      const requestStarted = performance.now();
+      const etapasAcessoMs: Record<string, number> = {};
       const body = await req.json(), identifier = String(body.identificador || "").replace(/\D/g, "");
       const tipo = String(body.tipo || "");
       if ((tipo === "cns" && identifier.length !== 15) || (tipo === "cpf" && identifier.length !== 11) || !["cns", "cpf"].includes(tipo)) {
         return json(req, { error: tipo === "cns" ? "Informe um CNS com 15 números." : "Informe um CPF com 11 números." }, 400);
       }
+      let etapaAcessoInicio = performance.now();
       const credentials = await readCredentials(userId);
+      etapasAcessoMs.carregarCredenciaisMs = Math.round(performance.now() - etapaAcessoInicio);
       if (!credentials) return json(req, { error: "Configure seu acesso SISREG antes de consultar pacientes." }, 409);
+      etapaAcessoInicio = performance.now();
       let cookie = await getSession(userId), reused = Boolean(cookie);
-      if (!cookie) cookie = await loginSisreg(credentials.usuario, credentials.senha);
+      etapasAcessoMs.recuperarSessaoMs = Math.round(performance.now() - etapaAcessoInicio);
+      let tempoLoginMs = 0;
+      if (!cookie) {
+        etapaAcessoInicio = performance.now();
+        cookie = await loginSisreg(credentials.usuario, credentials.senha);
+        tempoLoginMs += Math.round(performance.now() - etapaAcessoInicio);
+      }
       let result;
       try { result = await searchSisreg(identifier, cookie); }
       catch (error) {
         if (!(error instanceof Error) || error.message !== "SESSION_EXPIRED") throw error;
+        etapaAcessoInicio = performance.now();
         cookie = await loginSisreg(credentials.usuario, credentials.senha);
+        tempoLoginMs += Math.round(performance.now() - etapaAcessoInicio);
         reused = false;
         result = await searchSisreg(identifier, cookie);
       }
+      etapasAcessoMs.loginSISREGMs = tempoLoginMs;
+      etapaAcessoInicio = performance.now();
       await saveSession(userId, result.cookie);
-      return json(req, { paciente: result.paciente, sessaoReutilizada: reused, tempoConsultaMs: result.elapsedMs, etapasMs: result.etapasMs, paginasFramesResultado: result.paginasFramesResultado });
+      etapasAcessoMs.salvarSessaoMs = Math.round(performance.now() - etapaAcessoInicio);
+      etapasAcessoMs.pesquisaCADWEBTotalMs = result.elapsedMs;
+      etapasAcessoMs.totalBackendMs = Math.round(performance.now() - requestStarted);
+      console.info("sisreg-direct: ACCESS_TIMINGS", JSON.stringify({
+        ...etapasAcessoMs,
+        sessaoReutilizada: reused,
+        paginasFramesResultado: result.paginasFramesResultado,
+      }));
+      return json(req, { paciente: result.paciente, sessaoReutilizada: reused, tempoConsultaMs: result.elapsedMs, tempoTotalBackendMs: etapasAcessoMs.totalBackendMs, etapasMs: { ...etapasAcessoMs, ...result.etapasMs }, paginasFramesResultado: result.paginasFramesResultado });
     }
     return json(req, { error: "Rota não encontrada." }, 404);
   } catch (error) {
