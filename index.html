@@ -5005,6 +5005,14 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const btn=document.getElementById('btnConsultarSISREG');if(btn)btn.disabled=true;
             try{
                 const r=await chamarRelaySISREG('search',{tipo,identificador:valor}),p=r.paciente||{};
+                // Compatibilidade: se algum campo vier somente no mapa "campos",
+                // recupera-o também para o preenchimento dos controles da tela.
+                const mapa=p.campos||{};
+                p.nome=p.nome||mapa.nome||mapa['nome completo']||mapa['nome do paciente']||'';
+                p.nascimento=p.nascimento||mapa['data de nascimento']||mapa.nascimento||'';
+                p.cpf=p.cpf||mapa.cpf||mapa['numero cpf']||'';
+                p.cns=p.cns||mapa.cns||mapa['cartao sus']||mapa['numero cns']||'';
+                p.mae=p.mae||mapa['nome da mae']||mapa.mae||'';
                 const card=document.createElement('div');card.className='rounded-xl border border-emerald-200 bg-emerald-50 p-3';
                 const title=document.createElement('strong');title.className='block text-sm text-emerald-950';title.textContent=p.nome||'Paciente localizado no SISREG';
                 const details=document.createElement('p');details.className='mt-1 text-xs leading-relaxed text-emerald-900';details.textContent=['Nascimento: '+(p.nascimento||'não informado'),'CPF: '+(p.cpf||'não informado'),'CNS: '+(p.cns||'não informado'),'Mãe: '+(p.mae||'não informado')].join(' · ');
@@ -5016,7 +5024,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             finally{if(btn)btn.disabled=false;}
         }
         function normalizarDataSISREG(valor){
-            const v=String(valor||'').trim();let m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(m)return m[3]+'-'+m[2]+'-'+m[1];m=v.match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[0]:'';
+            const v=String(valor||'').trim();let m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})/);if(m)return m[3]+'-'+m[2]+'-'+m[1];m=v.match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[0]:'';
         }
 
         function aguardarIntervaloVITAI(ms,signal){
