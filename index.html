@@ -4270,7 +4270,7 @@
                 if(error)throw error;
                 if(!perfil)throw new Error('Perfil de usuário não encontrado.');
                 if(!perfil.nickname&&(usuario.app_metadata?.provider==='google'||usuario.identities?.some(function(identidade){return identidade.provider==='google';}))){mostrarConfiguracaoNicknameGoogle(usuario);return;}
-                if(!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Sua solicitação de acesso foi recebida e aguarda aprovação da Administração.',true);return;}
+                if(!perfil.active){await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Sua conta está aguardando autorização do administrador do sistema. Assim que o acesso for aprovado, você poderá entrar normalmente.',true);return;}
                 usuarioAtual=usuario;perfilAtual=perfil;
                 if(caminhoAtual()==='/'||caminhoAtual()==='/login')definirRota('/inicio',true);
                 document.getElementById('authScreen').classList.add('hidden');document.getElementById('appShell').classList.remove('hidden');
@@ -4418,7 +4418,7 @@
                 if(!perfil.active){
                     await supabaseClient.auth.signOut();
                     mostrarLogin();
-                    mostrarMensagemAuth('Nickname salvo! Sua solicitação de acesso aguarda aprovação da Administração.',true);
+                    mostrarMensagemAuth('Nickname salvo! Sua conta está aguardando autorização do administrador do sistema. Assim que o acesso for aprovado, você poderá entrar normalmente.',true);
                     return;
                 }
                 document.getElementById('authGoogleNickname').classList.add('hidden');
@@ -5647,13 +5647,34 @@
         async function enviarLinkRedefinicao(emailCodificado){if(!perfilAtual||perfilAtual.role!=='administrador')return;const email=decodeURIComponent(emailCodificado||'');if(!email)return;const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:window.location.origin});if(error){exibirToast('Não foi possível enviar o link: '+error.message,'erro');return;}exibirToast('Link de redefinição enviado para '+email+'.','sucesso');}
         async function salvarPerfilUsuario(id){
             if(!perfilAtual||perfilAtual.role!=='administrador')return;
-            const role=document.getElementById('role-'+id).value,active=document.getElementById('active-'+id).value==='true',full_name=document.getElementById('nome-usuario-'+id).value.trim();
-            const {error}=await supabaseClient.from('user_profiles').update({role:role,active:active,full_name:full_name||null}).eq('user_id',id);
-            if(error){exibirToast('Não foi possível atualizar: '+error.message,'erro');return;}
-            exibirToast('Perfil atualizado.','sucesso');
-            if(id===usuarioAtual.id&&(!active||role!=='administrador')){await supabaseClient.auth.signOut();mostrarLogin();return;}
-            if(id===usuarioAtual.id){perfilAtual.full_name=full_name;document.getElementById('usuarioEmail').textContent=full_name||usuarioAtual.email||perfilAtual.email;document.getElementById('sidebarNomeUsuario').textContent=full_name||usuarioAtual.email||perfilAtual.email;}
-            await carregarUsuarios();
+            const botao=document.querySelector('#gridUsuarios button[onclick*="'+id+'"]');
+            const role=document.getElementById('role-'+id).value;
+            const active=document.getElementById('active-'+id).value==='true';
+            const full_name=document.getElementById('nome-usuario-'+id).value.trim();
+            if(botao){botao.disabled=true;botao.textContent='Salvando...';}
+            try{
+                const {error}=await supabaseClient.from('user_profiles')
+                    .update({role:role,active:active,full_name:full_name||null})
+                    .eq('user_id',id);
+                if(error)throw error;
+                exibirToast(active?'Usuário ativado e alterações salvas.':'Alterações do usuário salvas.','sucesso');
+                if(id===usuarioAtual.id&&(!active||role!=='administrador')){
+                    await supabaseClient.auth.signOut();
+                    mostrarLogin();
+                    return;
+                }
+                if(id===usuarioAtual.id){
+                    perfilAtual.full_name=full_name;
+                    document.getElementById('usuarioEmail').textContent=full_name||usuarioAtual.email||perfilAtual.email;
+                    document.getElementById('sidebarNomeUsuario').textContent=full_name||usuarioAtual.email||perfilAtual.email;
+                }
+                await carregarUsuarios();
+            }catch(error){
+                console.error('Erro ao salvar perfil do usuário:',error);
+                exibirToast('Não foi possível salvar as alterações: '+(error.message||'erro inesperado'),'erro');
+            }finally{
+                if(botao){botao.disabled=false;botao.textContent='Salvar';}
+            }
         }
 
     </script>
