@@ -3998,14 +3998,20 @@
             <p class="mt-1 text-sm text-slate-600">Cadastro de novos agendamentos cirúrgicos eletivos</p>
           </header>
           <div class="overflow-hidden rounded-xl border border-emerald-200 bg-[#ECFDF5] p-4 shadow-none sm:p-5">
-            <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-4">
-              <div class="flex w-[140px] flex-none flex-col items-start">
-                <span class="inline-flex h-11 min-h-[44px] box-border items-center rounded-lg border border-black bg-emerald-800 px-3 font-sans text-xl font-extrabold uppercase tracking-tight text-white shadow-sm">SISREG III</span>
-                <div id="sisregStatusIntegracao" class="mt-3 flex min-h-[24px] w-[140px] min-w-0 items-start gap-2 text-sm font-extrabold text-amber-700" role="status" aria-live="polite"><span id="sisregStatusDot" class="mt-1 h-2.5 w-2.5 flex-none rounded-full bg-amber-500"></span><span class="min-w-0 whitespace-normal break-words">VERIFICANDO CONEXÃO</span></div>
+            <div class="flex flex-col items-start gap-4 sm:flex-row sm:items-start sm:gap-6">
+              <div class="flex min-w-0 flex-col items-start">
+                <span class="inline-flex h-11 min-h-[44px] items-center rounded-lg border border-black border-b-4 border-b-yellow-400 bg-emerald-800 px-3 font-sans text-xl font-extrabold uppercase tracking-tight text-white shadow-sm">SISREG III</span>
+                <div id="sisregStatusIntegracao" class="mt-4 flex items-center gap-2 text-sm font-extrabold text-amber-700" role="status" aria-live="polite">
+                  <i id="sisregStatusIcon" class="fa-solid fa-arrows-rotate" aria-hidden="true"></i>
+                  <span>VERIFICANDO CONEXÃO</span>
+                </div>
               </div>
-              <button type="button" onclick="abrirModalSISREG()" class="h-11 min-h-[44px] box-border inline-flex items-center justify-center w-full rounded-lg border border-emerald-300 bg-white px-4 py-0 text-[11px] font-bold text-emerald-950 shadow-sm hover:bg-emerald-100 sm:mt-0 sm:w-auto"><i class="fa-solid fa-key mr-1"></i>Configurar / trocar sessão</button>
+              <button type="button" onclick="abrirModalSISREG()" class="h-11 min-h-[44px] w-full rounded-lg border border-emerald-300 bg-white px-4 py-0 text-[11px] font-bold text-emerald-950 shadow-sm hover:bg-emerald-100 sm:w-auto">
+                <i class="fa-solid fa-key mr-1"></i>Configurar / trocar sessão
+              </button>
             </div>
-            <div class="mt-3 border-t border-emerald-200/80 pt-3"><button type="button" onclick="verificarStatusSISREG(false)" class="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2.5 text-left text-[10px] font-semibold text-emerald-900 hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-rotate mr-1"></i>Verificar conexão</button>
+            <div class="mt-3 border-t border-emerald-200/80 pt-3">
+              <button type="button" onclick="verificarStatusSISREG(false)" class="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2.5 text-[10px] font-semibold text-emerald-900 hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-rotate mr-1"></i>Verificar conexão</button>
             </div>
             <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
               <div class="w-full min-w-0 sm:w-72 sm:flex-none"><label for="regularBuscaPaciente" class="mb-1 block text-[10px] font-semibold text-slate-600">CPF ou Cartão do SUS (CNS)</label><input id="regularBuscaPaciente" inputmode="numeric" class="w-full min-h-[48px] rounded-lg border border-emerald-300 bg-white px-3 py-3 text-base" autocomplete="off" maxlength="18" placeholder="Digite CPF ou Cartão do SUS" aria-describedby="regularBuscaAjuda"></div>
@@ -4990,17 +4996,17 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             sisregEstado=estado;
             const el=document.getElementById('sisregStatusIntegracao');
             if(!el)return;
-            const dot=document.getElementById('sisregStatusDot');
+            const icone=document.getElementById('sisregStatusIcon');
             const cfg={
-                verificando:{texto:'VERIFICANDO CONEXÃO',classe:'text-amber-700',ponto:'bg-amber-500'},
-                conectado:{texto:'CONECTADO',classe:'text-emerald-800',ponto:'bg-emerald-600'},
-                aguardando:{texto:'DESCONECTADO · LOGIN AUTOMÁTICO NA PRÓXIMA CONSULTA',classe:'text-rose-700',ponto:'bg-rose-600'},
-                desconectado:{texto:'DESCONECTADO',classe:'text-rose-700',ponto:'bg-rose-600'},
-                erro:{texto:'DESCONECTADO',classe:'text-rose-700',ponto:'bg-rose-600'}
-            }[estado]||{texto:'DESCONECTADO',classe:'text-rose-700',ponto:'bg-rose-600'};
-            el.className='mt-3 flex min-h-[24px] w-[140px] min-w-0 items-start gap-2 text-sm font-extrabold '+cfg.classe;
-            if(dot)dot.className='h-2.5 w-2.5 flex-none rounded-full '+cfg.ponto;
-            const texto=el.querySelector('span:last-child');
+                verificando:{texto:'VERIFICANDO CONEXÃO',classe:'text-amber-700',icone:'fa-arrows-rotate'},
+                conectado:{texto:'CONECTADO',classe:'text-emerald-800',icone:'fa-check'},
+                aguardando:{texto:'DESCONECTADO · LOGIN AUTOMÁTICO NA PRÓXIMA CONSULTA',classe:'text-rose-700',icone:'fa-xmark'},
+                desconectado:{texto:'DESCONECTADO',classe:'text-rose-700',icone:'fa-xmark'},
+                erro:{texto:'DESCONECTADO',classe:'text-rose-700',icone:'fa-xmark'}
+            }[estado]||{texto:'DESCONECTADO',classe:'text-rose-700',icone:'fa-xmark'};
+            el.className='mt-4 flex items-center gap-2 text-sm font-extrabold '+cfg.classe;
+            if(icone)icone.className='fa-solid '+cfg.icone;
+            const texto=el.querySelector('span');
             if(texto)texto.textContent=cfg.texto;
         }
         function abrirModalSISREG(){
