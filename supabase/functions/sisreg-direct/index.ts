@@ -302,7 +302,7 @@ function extractPatient(html: string, requested: string) {
     "numero cns", "tipo sanguineo", "nacionalidade", "municipio de nascimento",
     "tipo logradouro", "logradouro", "complemento", "numero", "bairro", "cep",
     "pais de residencia", "municipio de residencia", "email", "e mail",
-    "ddd", "telefone", "tipo telefone",
+    "ddd", "telefone", "tipo telefone", "celular", "telefone celular", "logradouro", "endereco", "complemento", "municipio", "municipio de residencia", "numero",
   ]);
   for (const tabela of dados.tabelas) {
     for (let r = 0; r < tabela.length; r++) {
@@ -334,6 +334,13 @@ function extractPatient(html: string, requested: string) {
     cpf: ["cpf", "numero cpf"],
     cns: ["cns", "cartao sus", "cartao nacional de saude", "numero cns"],
     mae: ["nome da mae", "mae", "filiacao materna"],
+    telefone: ["telefone", "telefone celular", "celular"],
+    ddd: ["ddd"],
+    endereco: ["logradouro", "endereco", "tipo logradouro"],
+    numero: ["numero"],
+    bairro: ["bairro"],
+    municipio: ["municipio de residencia", "municipio"],
+    cep: ["cep"],
   };
   const pick = (key: string) => {
     const names = aliases[key];
@@ -368,6 +375,12 @@ function extractPatient(html: string, requested: string) {
     cpf: digitos(pick("cpf")).match(/\d{11}/)?.[0] || (requested.length === 11 ? requested : ""),
     cns: digitos(pick("cns")).match(/\d{15}/)?.[0] || (requested.length === 15 ? requested : ""),
     mae: pick("mae"),
+    telefone: (() => { const ddd = digitos(pick("ddd")); const tel = digitos(pick("telefone")); return tel ? (ddd && !tel.startsWith(ddd) ? ddd + tel : tel) : ""; })(),
+    endereco: pick("endereco"),
+    numero: pick("numero"),
+    bairro: pick("bairro"),
+    municipio: pick("municipio"),
+    cep: digitos(pick("cep")),
     campos: pares.reduce((acc, item) => { if (item.label && item.value) acc[item.label] = item.value; return acc; }, {} as Record<string, string>),
     identificadorConsultado: requested,
   };
