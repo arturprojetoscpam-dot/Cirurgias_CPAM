@@ -4058,6 +4058,7 @@
               <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div class="sm:col-span-2 relative"><label for="regularBuscaProcedimento" class="label-cirurgia">Procedimento cirúrgico *</label><input id="regularBuscaProcedimento" class="campo-cirurgia" autocomplete="off" placeholder="Pesquise pelo nome ou código do procedimento" oninput="buscarProcedimentosRegular()"><input type="hidden" id="regularProcedimentoCodigo"><input type="hidden" id="regularProcedimentoNome"><div id="regularResultadosProcedimento" class="absolute z-30 mt-1 hidden max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl"></div><p id="regularProcedimentoSelecionado" class="mt-1 hidden text-[10px] font-semibold text-emerald-800"></p></div>
                 <div><label for="regularCodigoOrigem" class="label-cirurgia">Código do procedimento</label><input id="regularCodigoOrigem" class="campo-cirurgia" maxlength="60" placeholder="Preenchido automaticamente ao selecionar o procedimento"></div>
+                <div id="regularGastroMedicoWrap" class="hidden"><label for="regularGastroMedico" class="label-cirurgia">Médico responsável pelo exame *</label><select id="regularGastroMedico" class="campo-cirurgia"><option value="">Selecione o médico responsável</option></select><p class="mt-1 text-[10px] text-slate-500">Este profissional será encaminhado junto com o exame para a Gastroenterologia.</p></div>
               </div>
             </section>
             <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
@@ -4319,50 +4320,20 @@
     </section>
 
         
+
         <section id="secGastro" class="hidden space-y-5">
-          <header class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div><p class="text-[11px] font-extrabold uppercase tracking-[.18em] text-emerald-700">CPAM · Assistência especializada</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl"><i class="fa-solid fa-stethoscope mr-2 text-emerald-700"></i>Gastroenterologia</h2><p class="mt-1 text-sm text-slate-500">Agenda, fila de exames e acompanhamento dos atendimentos gastroenterológicos.</p></div>
-            <div class="flex flex-wrap gap-2"><button type="button" onclick="carregarGastro()" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-2"></i>Atualizar</button><button id="btnGastroNovoEncaminhamento" type="button" onclick="gastroAlternarFormulario()" class="hidden rounded-xl bg-[#123C32] px-4 py-2.5 text-xs font-extrabold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-calendar-plus mr-2"></i>Encaminhar exame</button></div>
-          </header>
+          <header class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p class="text-[11px] font-extrabold uppercase tracking-[.18em] text-emerald-700">CPAM · Assistência especializada</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl"><i class="fa-solid fa-stethoscope mr-2 text-emerald-700"></i>Gastroenterologia</h2><p class="mt-1 text-sm text-slate-500">Acompanhamento dos exames encaminhados pela Regulação e prontuário gastroenterológico dos pacientes.</p></div><div class="flex flex-wrap gap-2"><button type="button" onclick="carregarGastro()" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-2"></i>Atualizar</button><button type="button" onclick="gastroAbrirTodosDocumentos()" class="rounded-xl bg-[#123C32] px-4 py-2.5 text-xs font-extrabold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-file-medical mr-2"></i>Todos os laudos e documentos</button></div></header>
           <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
-            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Na agenda</span><i class="fa-solid fa-calendar-days text-emerald-700"></i></div><strong id="gastroTotalAgendados" class="mt-2 block text-3xl font-extrabold text-slate-900">0</strong><span class="text-[10px] text-slate-500">Atendimentos acessíveis</span></div>
-            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Pendentes</span><i class="fa-solid fa-hourglass-half text-amber-600"></i></div><strong id="gastroTotalPendentes" class="mt-2 block text-3xl font-extrabold text-slate-900">0</strong><span class="text-[10px] text-slate-500">Aguardando conclusão</span></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Exames regulados</span><i class="fa-solid fa-calendar-days text-emerald-700"></i></div><strong id="gastroTotalAgendados" class="mt-2 block text-3xl font-extrabold text-slate-900">0</strong><span class="text-[10px] text-slate-500">Encaminhados pela Regulação</span></div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Pendentes</span><i class="fa-solid fa-hourglass-half text-amber-600"></i></div><strong id="gastroTotalPendentes" class="mt-2 block text-3xl font-extrabold text-slate-900">0</strong><span class="text-[10px] text-slate-500">Aguardando atendimento</span></div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Realizados</span><i class="fa-solid fa-circle-check text-emerald-700"></i></div><strong id="gastroTotalRealizados" class="mt-2 block text-3xl font-extrabold text-emerald-800">0</strong><span class="text-[10px] text-slate-500">Exames concluídos</span></div>
             <div class="rounded-2xl border border-slate-200 bg-white p-4"><div class="flex items-center justify-between"><span class="text-[10px] font-bold uppercase tracking-wide text-slate-500">Hoje</span><i class="fa-solid fa-clock text-blue-700"></i></div><strong id="gastroTotalHoje" class="mt-2 block text-3xl font-extrabold text-slate-900">0</strong><span class="text-[10px] text-slate-500">Programados para hoje</span></div>
           </div>
-          <section id="gastroFormRegulacao" data-aberto="0" class="hidden rounded-2xl border border-emerald-300 bg-[#F2FAF5] p-4 shadow-none sm:p-5">
-            <div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-[10px] font-extrabold uppercase tracking-[.16em] text-emerald-800">Área da Regulação</p><h3 class="mt-1 text-lg font-extrabold text-slate-900">Novo encaminhamento gastroenterológico</h3><p class="mt-1 text-xs text-slate-600">A Regulação define o paciente, o exame, o médico responsável e a data prevista.</p></div><button type="button" onclick="gastroAlternarFormulario()" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-600">Fechar</button></div>
-            <form id="formGastroRegulacao" onsubmit="gastroSalvarEncaminhamento(event)" class="mt-4 space-y-4">
-              <input id="gastroPacienteId" type="hidden">
-              <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-                <div class="md:col-span-2"><label for="gastroBuscaCPF" class="mb-1 block text-xs font-bold text-slate-700">CPF do paciente</label><div class="flex flex-col gap-2 sm:flex-row"><input id="gastroBuscaCPF" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm" oninput="this.value=this.value.replace(/\D/g,'').slice(0,11)"><button type="button" onclick="gastroBuscarPaciente()" class="min-h-11 rounded-xl border border-slate-900 bg-white px-4 text-xs font-bold text-slate-800 hover:bg-emerald-50"><i class="fa-solid fa-magnifying-glass mr-2"></i>Localizar paciente</button></div><div id="gastroResultadoPaciente" class="mt-2 hidden space-y-2"></div><div id="gastroPacienteResumo" class="mt-2 hidden rounded-xl border border-emerald-300 bg-white p-3"></div></div>
-                <div><label for="gastroNovoProcedimento" class="mb-1 block text-xs font-bold text-slate-700">Exame</label><select id="gastroNovoProcedimento" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm"><option value="">Selecione o exame</option><option data-codigo="" value="ENDOSCOPIA DIGESTIVA ALTA">Endoscopia Digestiva Alta</option><option data-codigo="0209010029" value="COLONOSCOPIA">Colonoscopia</option><option data-codigo="0209010053" value="RETOSSIGMOIDOSCOPIA">Retossigmoidoscopia</option><option data-codigo="0309010039" value="GASTROSTOMIA ENDOSCÓPICA PERCUTÂNEA">Gastrostomia Endoscópica Percutânea</option></select></div>
-                <div><label for="gastroNovoMedico" class="mb-1 block text-xs font-bold text-slate-700">Médico responsável</label><select id="gastroNovoMedico" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm"><option value="">Carregando médicos...</option></select></div>
-                <div><label for="gastroNovaData" class="mb-1 block text-xs font-bold text-slate-700">Data prevista do exame</label><input id="gastroNovaData" type="date" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm"></div>
-                <div><label for="gastroNovaHora" class="mb-1 block text-xs font-bold text-slate-700">Horário (opcional)</label><input id="gastroNovaHora" type="time" class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm"></div>
-                <div class="md:col-span-2"><label for="gastroObservacaoEncaminhamento" class="mb-1 block text-xs font-bold text-slate-700">Observações da Regulação</label><textarea id="gastroObservacaoEncaminhamento" rows="2" maxlength="2000" class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm" placeholder="Informações adicionais relevantes para o encaminhamento..."></textarea></div>
-              </div>
-              <div class="flex flex-col-reverse justify-between gap-2 border-t border-emerald-200 pt-4 sm:flex-row sm:items-center"><p class="text-[10px] text-slate-600"><i class="fa-solid fa-shield-halved mr-1 text-emerald-800"></i>O usuário responsável será registrado para auditoria.</p><button id="btnGastroSalvar" type="submit" class="min-h-11 rounded-xl bg-[#123C32] px-5 py-3 text-xs font-extrabold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-paper-plane mr-2"></i>Confirmar encaminhamento</button></div>
-            </form>
-          </section>
-          <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-none">
-            <div class="border-b border-slate-200 p-4 sm:p-5"><div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="text-sm font-extrabold text-slate-900">Agenda e fila de atendimento</h3><p class="mt-1 text-xs text-slate-500">Os pacientes eletivos aparecem para o médico definido pela Regulação.</p></div><span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[10px] font-bold text-emerald-800">Gastroenterologia</span></div>
-              <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4"><input id="gastroBusca" oninput="gastroRenderizarLista()" placeholder="Buscar paciente, CPF, exame ou médico..." class="min-h-10 rounded-xl border border-slate-300 px-3 text-xs"><select id="gastroFiltroStatus" onchange="gastroRenderizarLista()" class="min-h-10 rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Todas as situações</option><option value="agendado">Agendado</option><option value="aguardando">Aguardando</option><option value="em_atendimento">Em atendimento</option><option value="realizado">Realizado</option><option value="cancelado">Cancelado</option><option value="nao_compareceu">Não compareceu</option></select><select id="gastroFiltroMedico" onchange="gastroRenderizarLista()" class="min-h-10 rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Todos os médicos</option></select><input id="gastroFiltroData" type="date" onchange="gastroRenderizarLista()" class="min-h-10 rounded-xl border border-slate-300 px-3 text-xs"></div>
-            </div>
-            <div id="gastroListaAtendimentos"><div class="p-8 text-center text-sm text-slate-500">Abra o módulo para carregar a agenda.</div></div>
-          </section>
-          <section id="gastroAdminVinculos" class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-none">
-            <div class="border-b border-slate-200 p-4"><p class="text-[10px] font-extrabold uppercase tracking-wide text-emerald-800">Administração</p><h3 class="mt-1 text-sm font-extrabold text-slate-900">Vincular médico ao usuário CPAM</h3><p class="mt-1 text-xs text-slate-500">Associe a conta de acesso ao cadastro profissional. O médico verá somente os atendimentos vinculados ao seu perfil profissional.</p></div>
-            <form id="formGastroVinculo" onsubmit="gastroSalvarVinculo(event)" class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
-              <div><label for="gastroVinculoUsuario" class="mb-1 block text-xs font-bold text-slate-700">Usuário CPAM</label><select id="gastroVinculoUsuario" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Carregando usuários...</option></select></div>
-              <div><label for="gastroVinculoMedico" class="mb-1 block text-xs font-bold text-slate-700">Médico cadastrado</label><select id="gastroVinculoMedico" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Selecione o profissional</option></select></div>
-              <button id="btnGastroSalvarVinculo" type="submit" class="min-h-11 rounded-xl bg-[#123C32] px-4 text-xs font-extrabold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-link mr-2"></i>Vincular médico</button>
-            </form>
-            <div id="gastroListaVinculos" class="border-t border-slate-100"><p class="p-4 text-xs text-slate-500">Carregando vínculos...</p></div>
-          </section>
-          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><div class="flex items-start gap-3"><i class="fa-solid fa-circle-info mt-0.5 text-lg text-emerald-800"></i><div><p class="text-xs font-bold text-slate-800">Próxima etapa do módulo</p><p class="mt-1 text-xs leading-relaxed text-slate-600">O atendimento direto de urgência e internação será conectado à consulta BE da integração VITAI existente. Os documentos clínicos (laudo, evolução, receituário, atestado, APAC e biópsias) serão construídos sobre esta base, com assinatura individual e adendos.</p></div></div></div>
+          <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-none"><div class="border-b border-slate-200 p-4 sm:p-5"><div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="text-sm font-extrabold text-slate-900">Exames encaminhados pela Regulação</h3><p class="mt-1 text-xs text-slate-500">A Gastroenterologia consulta os encaminhamentos; inclusão, médico responsável e data permanecem sob responsabilidade da Regulação.</p></div><span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[10px] font-bold text-emerald-800">Consulta assistencial</span></div><div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-4"><input id="gastroBusca" oninput="gastroRenderizarLista()" placeholder="Buscar paciente, CPF, exame ou médico..." class="min-h-10 rounded-xl border border-slate-300 px-3 text-xs"><select id="gastroFiltroStatus" onchange="gastroRenderizarLista()" class="min-h-10 rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Todas as situações</option><option value="aguardando_bloco">Aguardando atendimento</option><option value="realizado">Realizado</option><option value="cancelado">Cancelado</option><option value="remarcacao_solicitada">Remarcação solicitada</option><option value="nao_compareceu">Não compareceu</option></select><select id="gastroFiltroMedico" onchange="gastroRenderizarLista()" class="min-h-10 rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Todos os médicos</option></select><input id="gastroFiltroData" type="date" onchange="gastroRenderizarLista()" class="min-h-10 rounded-xl border border-slate-300 px-3 text-xs"></div></div><div id="gastroListaAtendimentos"><div class="p-8 text-center text-sm text-slate-500">Abra o módulo para carregar os encaminhamentos da Regulação.</div></div></section>
+          <section id="gastroProntuarioPaciente" class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-none"></section><section id="gastroTodosDocumentos" class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-none"></section>
+          <section id="gastroAdminVinculos" class="hidden overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-none"><div class="border-b border-slate-200 p-4"><p class="text-[10px] font-extrabold uppercase tracking-wide text-emerald-800">Administração</p><h3 class="mt-1 text-sm font-extrabold text-slate-900">Vincular médico ao usuário CPAM</h3><p class="mt-1 text-xs text-slate-500">Associe a conta de acesso ao cadastro profissional. Médicos vinculados têm acesso à fila completa de exames gastroenterológicos e aos prontuários da especialidade.</p></div><form id="formGastroVinculo" onsubmit="gastroSalvarVinculo(event)" class="grid grid-cols-1 gap-3 p-4 md:grid-cols-[1fr_1fr_auto] md:items-end"><div><label for="gastroVinculoUsuario" class="mb-1 block text-xs font-bold text-slate-700">Usuário CPAM</label><select id="gastroVinculoUsuario" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Carregando usuários...</option></select></div><div><label for="gastroVinculoMedico" class="mb-1 block text-xs font-bold text-slate-700">Médico cadastrado</label><select id="gastroVinculoMedico" required class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 text-xs"><option value="">Selecione o profissional</option></select></div><button id="btnGastroSalvarVinculo" type="submit" class="min-h-11 rounded-xl bg-[#123C32] px-4 text-xs font-extrabold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-link mr-2"></i>Vincular médico</button></form><div id="gastroListaVinculos" class="border-t border-slate-100"><p class="p-4 text-xs text-slate-500">Carregando vínculos...</p></div></section>
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4"><div class="flex items-start gap-3"><i class="fa-solid fa-shield-halved mt-0.5 text-lg text-emerald-800"></i><div><p class="text-xs font-bold text-slate-800">Fluxo de trabalho</p><p class="mt-1 text-xs leading-relaxed text-slate-600">A Regulação mantém o cadastro do encaminhamento, a escolha do médico e a data prevista. A Gastroenterologia recebe esses dados em modo assistencial e reúne o histórico de exames, laudos, evoluções, receituários, atestados, APAC e biópsias no prontuário do paciente.</p></div></div></div>
         </section>
-
 </main>
     </div>
     </div>
@@ -4377,7 +4348,7 @@
         let timedLocalResultado=null,vitaiConfigurado=false,vitaiEstado='desconhecido',vitaiVerificacaoEmAndamento=false;
         let pacienteModalAtual=null,cirurgiaModalAtual=null,telaAnteriorCirurgia='historico',telaAnteriorDetalhes='historico',cirurgiasPacienteModal=[],usuarioAtual=null,perfilAtual=null,todosRegistros=[],registrosFiltrados=[],paginaAtual=1,carregandoPerfil=false,loginEnviadoPorClique=false,pacienteSelecionado=null,pacientesEncontrados=[],timerBuscaPaciente=null,pacientesPagina=[],paginaPacientes=1,totalPacientes=0,timerListaPacientes=null,pacienteHistoricoAtual=null,termoListaPacientes='',telaAnteriorCadastroPaciente='pesquisa',modoEdicaoPaciente=false,edicaoPacienteSemCirurgia=false,timerDuplicidadeNomePaciente=null,sequenciaDuplicidadeNomePaciente=0;
         const itensPorPagina=15;
-        let acessoGastroAtual=false, profissionalGastroAtual=null, gastroAtendimentosCache=[], gastroProfissionaisCache=[], gastroPacienteSelecionado=null, gastroUsuariosCache=[], gastroVinculosCache=[];
+        let acessoGastroAtual=false, profissionalGastroAtual=null, gastroAtendimentosCache=[], gastroProfissionaisCache=[], gastroPacienteSelecionado=null, gastroUsuariosCache=[], gastroVinculosCache=[], gastroDocumentosCache=[], gastroMedicosRegulacaoCache=null;
         const ROTULOS_PERFIL={administrador:'Administrador',coordenacao:'Coordenação',cadastro:'Cadastro',consulta:'Consulta',regulacao:'Regulação',bloco:'Bloco Cirúrgico'};
 
         window.addEventListener('DOMContentLoaded',async function(){
@@ -5893,18 +5864,21 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         }
         async function buscarProcedimentosRegular(){
             const campo=document.getElementById('regularBuscaProcedimento'),box=document.getElementById('regularResultadosProcedimento'),termo=campo.value.trim();
+            gastroLimparMedicoRegular();
             document.getElementById('regularProcedimentoCodigo').value='';document.getElementById('regularProcedimentoNome').value='';document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');
             if(regularBuscaProcedimentoTimer)clearTimeout(regularBuscaProcedimentoTimer);if(termo.length<2){box.classList.add('hidden');return;}
             regularBuscaProcedimentoTimer=setTimeout(async()=>{try{
                 let consulta=supabaseClient.from('procedimentos').select('cod_proced,procedimento,especialidade');if(/^\d+$/.test(termo)){consulta=consulta.eq('cod_proced',termo);}else{consulta=consulta.ilike('procedimento','%'+termo+'%');}const {data,error}=await consulta.order('procedimento',{ascending:true}).limit(15);if(error)throw error;box.innerHTML='';box.classList.remove('hidden');
                 if(!data||!data.length){box.textContent='Nenhum procedimento encontrado no catálogo.';return;}
-                if(/^\d+$/.test(termo)&&data.length===1){const p=data[0];document.getElementById('regularProcedimentoCodigo').value=p.cod_proced;document.getElementById('regularProcedimentoNome').value=p.procedimento;document.getElementById('regularCodigoOrigem').value=p.cod_proced;campo.value=p.procedimento;const s=document.getElementById('regularProcedimentoSelecionado');s.textContent='Selecionado automaticamente: '+p.procedimento+' · Código '+p.cod_proced;s.classList.remove('hidden');box.classList.add('hidden');return;}
-                data.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='block w-full border-b border-slate-100 px-3 py-2.5 text-left text-xs hover:bg-emerald-50';const n=document.createElement('strong');n.className='block text-slate-800';n.textContent=p.procedimento;const d=document.createElement('span');d.className='mt-1 block text-[10px] text-slate-500';d.textContent='Código: '+p.cod_proced+(p.especialidade?' · '+p.especialidade:'');b.append(n,d);b.addEventListener('click',()=>{document.getElementById('regularProcedimentoCodigo').value=p.cod_proced;document.getElementById('regularProcedimentoNome').value=p.procedimento;document.getElementById('regularCodigoOrigem').value=p.cod_proced;campo.value=p.procedimento;const s=document.getElementById('regularProcedimentoSelecionado');s.textContent='Selecionado: '+p.procedimento+' · Código '+p.cod_proced;s.classList.remove('hidden');box.classList.add('hidden');});box.appendChild(b);});
+                if(/^\d+$/.test(termo)&&data.length===1){const p=data[0];document.getElementById('regularProcedimentoCodigo').value=p.cod_proced;document.getElementById('regularProcedimentoNome').value=p.procedimento;document.getElementById('regularCodigoOrigem').value=p.cod_proced;campo.value=p.procedimento;const s=document.getElementById('regularProcedimentoSelecionado');s.textContent='Selecionado automaticamente: '+p.procedimento+' · Código '+p.cod_proced;s.classList.remove('hidden');box.classList.add('hidden');gastroAtualizarMedicoRegular();return;}
+                data.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='block w-full border-b border-slate-100 px-3 py-2.5 text-left text-xs hover:bg-emerald-50';const n=document.createElement('strong');n.className='block text-slate-800';n.textContent=p.procedimento;const d=document.createElement('span');d.className='mt-1 block text-[10px] text-slate-500';d.textContent='Código: '+p.cod_proced+(p.especialidade?' · '+p.especialidade:'');b.append(n,d);b.addEventListener('click',()=>{document.getElementById('regularProcedimentoCodigo').value=p.cod_proced;document.getElementById('regularProcedimentoNome').value=p.procedimento;document.getElementById('regularCodigoOrigem').value=p.cod_proced;campo.value=p.procedimento;const s=document.getElementById('regularProcedimentoSelecionado');s.textContent='Selecionado: '+p.procedimento+' · Código '+p.cod_proced;s.classList.remove('hidden');box.classList.add('hidden');gastroAtualizarMedicoRegular();});box.appendChild(b);});
             }catch(error){console.error(error);box.classList.remove('hidden');box.textContent='Erro ao consultar catálogo de procedimentos.';}},250);
         }
         async function salvarAgendamentoRegular(evento){
             evento.preventDefault();if(!perfilAtual||!['administrador','regulacao','coordenacao'].includes(perfilAtual.role)){exibirToast('Apenas a Regulação, o Coordenador ou o Administrador podem acessar esta função.','erro');return;}
             const nome=document.getElementById('regularNomePaciente').value.trim(),amb=document.getElementById('regularProntuarioAmb').value.trim(),cpf=document.getElementById('regularCPF').value.replace(/\D/g,''),cns=document.getElementById('regularCNS').value.replace(/\D/g,''),codigo=document.getElementById('regularProcedimentoCodigo').value,procedimento=document.getElementById('regularProcedimentoNome').value,data=document.getElementById('regularDataPrevista').value;
+            const procedimentoGastro=gastroEhProcedimentoRegular(procedimento),profissionalResponsavelId=document.getElementById('regularGastroMedico').value;
+            if(procedimentoGastro&&!profissionalResponsavelId){exibirToast('Selecione o médico responsável pelo exame gastroenterológico.','erro');document.getElementById('regularGastroMedico').focus();return;}
             if(!nome||!procedimento||!codigo||!data){exibirToast('Preencha nome, procedimento e data prevista. O prontuário ambulatorial pode ser informado quando disponível.','erro');return;}
             if(!regularPacienteAtual&&!cpf&&!cns){exibirToast('Para cadastrar um novo paciente, informe CPF ou Cartão SUS (CNS).','erro');return;}
             if(cpf&&cpf.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}
@@ -5927,14 +5901,14 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                     const {data:novoPaciente,error:erroPaciente}=await supabaseClient.from('pacientes').insert(payloadPaciente).select('id,codigo_paciente').single();if(erroPaciente)throw erroPaciente;pacienteId=novoPaciente.id;codigoBlocoGerado=novoPaciente.codigo_paciente;
                 }
                 if(regularPacienteAtual&&regularDadosSISREG){const upd={};for(const [col,id] of [['telefone','regularTelefone'],['endereco','regularEndereco'],['numero','regularNumeroEndereco'],['bairro','regularBairro'],['cep','regularCEP'],['municipio','regularMunicipio'],['numero_cadastro_ambulatorio','regularProntuarioAmb'],['nome_mae','regularNomeMae'],['cpf','regularCPF'],['cns','regularCNS']]){const v=document.getElementById(id).value.trim();if(v&&!regularPacienteAtual[col])upd[col]=v;}if(Object.keys(upd).length){const {error:eu}=await supabaseClient.from('pacientes').update(upd).eq('id',pacienteId);if(eu)throw eu;}}
-                const payload={paciente_id:pacienteId,procedimento_catalogo_codigo:codigo,procedimento_nome:procedimento,procedimento_codigo_origem:document.getElementById('regularCodigoOrigem').value.trim()||codigo,identificacao_origem:'REGULACAO',id_ss:null,prontuario_legado:amb||null,data_prevista:data,turno_atend:null,turno_cirurgico:null,local:null,dados_origem:{origem:regularDadosSISREG?'sisreg':'cadastro_manual_regulacao',observacao:document.getElementById('regularObservacao').value.trim()||null}};
+                const payload={paciente_id:pacienteId,profissional_responsavel_id:procedimentoGastro?profissionalResponsavelId:null,procedimento_catalogo_codigo:codigo,procedimento_nome:procedimento,procedimento_codigo_origem:document.getElementById('regularCodigoOrigem').value.trim()||codigo,identificacao_origem:'REGULACAO',id_ss:null,prontuario_legado:amb||null,data_prevista:data,turno_atend:null,turno_cirurgico:null,local:null,dados_origem:{origem:regularDadosSISREG?'sisreg':'cadastro_manual_regulacao',observacao:document.getElementById('regularObservacao').value.trim()||null}};
                 const {error}=await supabaseClient.from('agendamentos_eletivos').insert(payload);if(error)throw error;exibirToast('Agendamento salvo. Paciente definitivo vinculado · Prontuário interno do Bloco #'+String(codigoBlocoGerado||'').padStart(7,'0')+'.','sucesso');await limparFormularioRegular(false);
             }catch(error){console.error('Erro ao salvar agendamento eletivo:',error);exibirToast('Não foi possível salvar o agendamento: '+(error.message||'erro inesperado'),'erro');}
             finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar agendamento';}
         }
         async function limparFormularioRegular(confirmar=true){
             if(confirmar){const ok=await confirmarDialogo({titulo:'Limpar formulário?',mensagem:'Deseja realmente limpar os dados preenchidos neste agendamento?',detalhes:'As informações ainda não salvas serão perdidas.',tipo:'atencao',textoConfirmar:'Sim, limpar',textoCancelar:'Continuar preenchendo'});if(!ok)return;}
-            document.getElementById('formRegularCirurgia').reset();regularPacienteAtual=null;['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularProntuarioAmb','regularNomeMae','regularTelefone'].forEach(id=>document.getElementById(id).readOnly=false);['regularProcedimentoCodigo','regularProcedimentoNome'].forEach(id=>document.getElementById(id).value='');
+            document.getElementById('formRegularCirurgia').reset();gastroLimparMedicoRegular();regularPacienteAtual=null;['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularProntuarioAmb','regularNomeMae','regularTelefone'].forEach(id=>document.getElementById(id).readOnly=false);['regularProcedimentoCodigo','regularProcedimentoNome'].forEach(id=>document.getElementById(id).value='');
             const st=document.getElementById('regularPacienteStatus');st.textContent='Nenhum paciente selecionado';st.className='rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-600';
             document.getElementById('regularPacienteSelecionado').classList.add('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');document.getElementById('regularResultadosSISREG')?.classList.add('hidden');document.getElementById('sisregLocalResultado')?.classList.add('hidden');document.getElementById('regularResultadosProcedimento').classList.add('hidden');document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');inicializarFormularioRegular();
         }
@@ -6013,11 +5987,11 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(busca)busca.addEventListener('keydown',evento=>{if(evento.key==='Enter'){evento.preventDefault();executarBuscaRapida();}});
         })();
 
+
         async function atualizarAcessoGastro(){
             acessoGastroAtual=false;profissionalGastroAtual=null;
             if(!usuarioAtual||!perfilAtual){document.getElementById('navGastro')?.classList.add('hidden');return;}
-            const rolesComAcesso=['administrador','coordenacao','regulacao'];
-            if(rolesComAcesso.includes(perfilAtual.role))acessoGastroAtual=true;
+            if(perfilAtual.role==='administrador')acessoGastroAtual=true;
             else{
                 try{
                     const {data,error}=await supabaseClient.from('gastro_profissional_acessos').select('profissional_id').eq('user_id',usuarioAtual.id).eq('ativo',true).maybeSingle();
@@ -6028,224 +6002,106 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             document.getElementById('navGastro')?.classList.toggle('hidden',!acessoGastroAtual);
             document.getElementById('homeCardGastro')?.classList.toggle('hidden',!acessoGastroAtual);
         }
-        function gastroPodeEncaminhar(){
-            return !!perfilAtual&&['administrador','coordenacao','regulacao'].includes(perfilAtual.role);
-        }
         function gastroFormatarData(valor){
-            if(!valor)return '—';
-            const p=String(valor).slice(0,10).split('-');
-            return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:valor;
+            if(!valor)return '—';const p=String(valor).slice(0,10).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:valor;
         }
         function gastroStatusInfo(status){
-            const mapa={
-                agendado:['Agendado','bg-blue-50 text-blue-800 border-blue-200'],
-                aguardando:['Aguardando','bg-amber-50 text-amber-800 border-amber-200'],
-                em_atendimento:['Em atendimento','bg-violet-50 text-violet-800 border-violet-200'],
-                realizado:['Realizado','bg-emerald-50 text-emerald-800 border-emerald-200'],
-                cancelado:['Cancelado','bg-rose-50 text-rose-800 border-rose-200'],
-                nao_compareceu:['Não compareceu','bg-slate-100 text-slate-700 border-slate-200']
-            };
-            return mapa[status]||['Não informado','bg-slate-100 text-slate-700 border-slate-200'];
+            const mapa={aguardando_bloco:['Aguardando atendimento','bg-amber-50 text-amber-800 border-amber-200'],agendado:['Agendado','bg-blue-50 text-blue-800 border-blue-200'],confirmado:['Confirmado','bg-blue-50 text-blue-800 border-blue-200'],realizado:['Realizado','bg-emerald-50 text-emerald-800 border-emerald-200'],cancelado:['Cancelado','bg-rose-50 text-rose-800 border-rose-200'],remarcacao_solicitada:['Remarcação solicitada','bg-violet-50 text-violet-800 border-violet-200'],nao_compareceu:['Não compareceu','bg-slate-100 text-slate-700 border-slate-200']};
+            return mapa[status]||[String(status||'Não informado').replaceAll('_',' '),'bg-slate-100 text-slate-700 border-slate-200'];
         }
         async function carregarGastro(){
             if(!acessoGastroAtual)return;
             const lista=document.getElementById('gastroListaAtendimentos');
-            if(lista)lista.innerHTML='<div class="p-8 text-center text-sm text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando agenda e fila...</div>';
+            if(lista)lista.innerHTML='<div class="p-8 text-center text-sm text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando encaminhamentos da Regulação...</div>';
             try{
                 const [atendimentos,profissionais]=await Promise.all([
-                    supabaseClient.from('gastro_atendimentos')
-                      .select('id,paciente_id,profissional_id,procedimento_nome,origem,data_prevista,hora_prevista,status,criado_em,paciente:pacientes!gastro_atendimentos_paciente_id_fkey(nome_paciente,cpf,codigo_paciente),medico:profissionais!gastro_atendimentos_profissional_id_fkey(nome,crm)')
-                      .order('data_prevista',{ascending:true}).order('hora_prevista',{ascending:true}).limit(300),
-                    supabaseClient.from('profissionais').select('id,nome,crm,especialidade')
-                      .eq('ativo',true).eq('grupo','Cirurgiao').ilike('especialidade','%Gastro%').order('nome')
+                    supabaseClient.from('gastro_agendamentos').select('*').order('data_prevista',{ascending:true}).limit(1000),
+                    supabaseClient.from('profissionais').select('id,nome,crm,especialidade').eq('ativo',true).eq('grupo','Cirurgiao').ilike('especialidade','%Gastro%').order('nome')
                 ]);
-                if(atendimentos.error)throw atendimentos.error;
-                if(profissionais.error)throw profissionais.error;
-                gastroAtendimentosCache=atendimentos.data||[];
-                gastroProfissionaisCache=profissionais.data||[];
+                if(atendimentos.error)throw atendimentos.error;if(profissionais.error)throw profissionais.error;
+                gastroAtendimentosCache=atendimentos.data||[];gastroProfissionaisCache=profissionais.data||[];
                 const seletor=document.getElementById('gastroFiltroMedico');
-                if(seletor){
-                    const atual=seletor.value;
-                    seletor.innerHTML='<option value="">Todos os médicos</option>'+gastroProfissionaisCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+'</option>').join('');
-                    if(gastroProfissionaisCache.some(p=>p.id===atual))seletor.value=atual;
-                    seletor.classList.toggle('hidden',!['administrador','coordenacao','regulacao','bloco'].includes(perfilAtual.role));
-                }
-                const medicoForm=document.getElementById('gastroNovoMedico');
-                if(medicoForm)medicoForm.innerHTML='<option value="">Selecione o médico responsável</option>'+gastroProfissionaisCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</option>').join('');
-                const podeCriar=gastroPodeEncaminhar();
-                document.getElementById('btnGastroNovoEncaminhamento')?.classList.toggle('hidden',!podeCriar);
-                document.getElementById('gastroFormRegulacao')?.classList.toggle('hidden',!podeCriar||document.getElementById('gastroFormRegulacao').dataset.aberto!=='1');
-                gastroRenderizarLista();
-                if(perfilAtual.role==='administrador')await gastroCarregarVinculos();
-            }catch(error){
-                console.error('Erro ao carregar Gastroenterologia:',error);
-                if(lista)lista.innerHTML='<div class="p-6 text-center text-sm font-semibold text-rose-700">Não foi possível carregar a Gastroenterologia: '+escaparHtml(error.message||'erro inesperado')+'</div>';
-                exibirToast('Falha ao carregar a agenda de Gastroenterologia.','erro');
-            }
+                if(seletor){const atual=seletor.value;seletor.innerHTML='<option value="">Todos os médicos</option>'+gastroProfissionaisCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+'</option>').join('');if(gastroProfissionaisCache.some(p=>p.id===atual))seletor.value=atual;}
+                gastroRenderizarLista();if(perfilAtual.role==='administrador')await gastroCarregarVinculos();
+            }catch(error){console.error('Erro ao carregar Gastroenterologia:',error);if(lista)lista.innerHTML='<div class="p-6 text-center text-sm font-semibold text-rose-700">Não foi possível carregar os encaminhamentos: '+escaparHtml(error.message||'erro inesperado')+'</div>';exibirToast('Falha ao carregar a agenda de Gastroenterologia.','erro');}
         }
         function gastroRenderizarLista(){
-            const lista=document.getElementById('gastroListaAtendimentos');
-            if(!lista)return;
-            const busca=(document.getElementById('gastroBusca')?.value||'').trim().toLocaleLowerCase('pt-BR');
-            const status=document.getElementById('gastroFiltroStatus')?.value||'';
-            const medico=document.getElementById('gastroFiltroMedico')?.value||'';
-            const data=document.getElementById('gastroFiltroData')?.value||'';
-            const registros=gastroAtendimentosCache.filter(a=>{
-                const paciente=a.paciente||{},prof=a.medico||{};
-                const texto=[paciente.nome_paciente,paciente.cpf,a.procedimento_nome,prof.nome].join(' ').toLocaleLowerCase('pt-BR');
-                return (!busca||texto.includes(busca))&&(!status||a.status===status)&&(!medico||a.profissional_id===medico)&&(!data||a.data_prevista===data);
-            });
-            const hoje=new Date();hoje.setHours(0,0,0,0);
-            const pendentes=gastroAtendimentosCache.filter(a=>!['realizado','cancelado','nao_compareceu'].includes(a.status)).length;
-            const realizados=gastroAtendimentosCache.filter(a=>a.status==='realizado').length;
-            const hojeISO=dataLocalISOAgenda(new Date());
-            const hojeCount=gastroAtendimentosCache.filter(a=>a.data_prevista===hojeISO).length;
-            document.getElementById('gastroTotalAgendados').textContent=String(gastroAtendimentosCache.length);
-            document.getElementById('gastroTotalPendentes').textContent=String(pendentes);
-            document.getElementById('gastroTotalRealizados').textContent=String(realizados);
-            document.getElementById('gastroTotalHoje').textContent=String(hojeCount);
-            if(!registros.length){
-                lista.innerHTML='<div class="p-10 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-2xl text-slate-400"><i class="fa-solid fa-calendar-check"></i></div><h3 class="mt-3 text-sm font-bold text-slate-800">Nenhum atendimento encontrado</h3><p class="mt-1 text-xs text-slate-500">Ajuste os filtros ou aguarde novos encaminhamentos da Regulação.</p></div>';
-                return;
-            }
-            lista.innerHTML='<div class="overflow-x-auto"><table class="w-full min-w-[850px] text-left text-xs"><thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Paciente</th><th class="px-4 py-3">Exame</th><th class="px-4 py-3">Médico</th><th class="px-4 py-3">Data</th><th class="px-4 py-3">Origem</th><th class="px-4 py-3">Situação</th></tr></thead><tbody class="divide-y divide-slate-100">'+registros.map(a=>{
-                const paciente=a.paciente||{},prof=a.medico||{},st=gastroStatusInfo(a.status);
-                const origem={regulacao:'Regulação',urgencia:'Urgência',internacao:'Internação'}[a.origem]||a.origem;
-                return '<tr class="hover:bg-emerald-50/40"><td class="px-4 py-3"><strong class="block text-slate-800">'+escaparHtml(paciente.nome_paciente||'Paciente sem nome')+'</strong><span class="mt-1 block text-[10px] text-slate-500">CPF: '+escaparHtml(paciente.cpf||'—')+(paciente.codigo_paciente?' · Prontuário #'+escaparHtml(String(paciente.codigo_paciente)):'')+'</span></td><td class="px-4 py-3 font-semibold text-slate-700">'+escaparHtml(a.procedimento_nome)+'</td><td class="px-4 py-3 text-slate-700">'+escaparHtml(prof.nome||'—')+'</td><td class="px-4 py-3 whitespace-nowrap"><strong>'+gastroFormatarData(a.data_prevista)+'</strong><span class="block mt-1 text-[10px] text-slate-500">'+(a.hora_prevista?String(a.hora_prevista).slice(0,5):'Horário não informado')+'</span></td><td class="px-4 py-3">'+escaparHtml(origem)+'</td><td class="px-4 py-3"><span class="inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold '+st[1]+'">'+st[0]+'</span></td></tr>';
-            }).join('')+'</tbody></table></div><div class="border-t border-slate-100 bg-slate-50/60 px-4 py-3 text-[10px] text-slate-500">Exibindo '+registros.length+' de '+gastroAtendimentosCache.length+' atendimentos acessíveis.</div>';
+            const lista=document.getElementById('gastroListaAtendimentos');if(!lista)return;
+            const busca=(document.getElementById('gastroBusca')?.value||'').trim().toLocaleLowerCase('pt-BR'),status=document.getElementById('gastroFiltroStatus')?.value||'',medico=document.getElementById('gastroFiltroMedico')?.value||'',data=document.getElementById('gastroFiltroData')?.value||'';
+            const registros=gastroAtendimentosCache.filter(a=>{const texto=[a.nome_paciente,a.cpf,a.cns,a.procedimento_nome,a.medico_nome].join(' ').toLocaleLowerCase('pt-BR');return(!busca||texto.includes(busca))&&(!status||a.situacao===status)&&(!medico||a.profissional_responsavel_id===medico)&&(!data||a.data_prevista===data);});
+            const pendentes=gastroAtendimentosCache.filter(a=>!['realizado','cancelado','nao_compareceu'].includes(a.situacao)).length,realizados=gastroAtendimentosCache.filter(a=>a.situacao==='realizado').length,hojeISO=dataLocalISOAgenda(new Date()),hojeCount=gastroAtendimentosCache.filter(a=>a.data_prevista===hojeISO).length;
+            document.getElementById('gastroTotalAgendados').textContent=String(gastroAtendimentosCache.length);document.getElementById('gastroTotalPendentes').textContent=String(pendentes);document.getElementById('gastroTotalRealizados').textContent=String(realizados);document.getElementById('gastroTotalHoje').textContent=String(hojeCount);
+            if(!registros.length){lista.innerHTML='<div class="p-10 text-center"><div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 text-2xl text-slate-400"><i class="fa-solid fa-calendar-check"></i></div><h3 class="mt-3 text-sm font-bold text-slate-800">Nenhum exame gastroenterológico regulado encontrado</h3><p class="mt-1 text-xs text-slate-500">Os encaminhamentos aparecerão aqui automaticamente após serem registrados na área da Regulação.</p></div>';return;}
+            lista.innerHTML='<div class="overflow-x-auto"><table class="w-full min-w-[900px] text-left text-xs"><thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Paciente / prontuário</th><th class="px-4 py-3">Exame regulado</th><th class="px-4 py-3">Médico responsável</th><th class="px-4 py-3">Data prevista</th><th class="px-4 py-3">Situação</th><th class="px-4 py-3 text-right">Prontuário</th></tr></thead><tbody class="divide-y divide-slate-100">'+registros.map(a=>{const st=gastroStatusInfo(a.situacao);return '<tr class="hover:bg-emerald-50/40"><td class="px-4 py-3"><button type="button" onclick="gastroAbrirProntuario(\''+a.paciente_id+'\')" class="text-left"><strong class="block text-slate-800 hover:text-emerald-800">'+escaparHtml(a.nome_paciente||'Paciente sem nome')+'</strong><span class="mt-1 block text-[10px] text-slate-500">CPF: '+escaparHtml(a.cpf||'—')+(a.codigo_paciente?' · Prontuário #'+escaparHtml(String(a.codigo_paciente)):'')+'</span></button></td><td class="px-4 py-3 font-semibold text-slate-700">'+escaparHtml(a.procedimento_nome)+'</td><td class="px-4 py-3 text-slate-700">'+escaparHtml(a.medico_nome||'Médico não registrado na Regulação')+(a.medico_crm?'<span class="block text-[10px] text-slate-500">CRM '+escaparHtml(a.medico_crm)+'</span>':'')+'</td><td class="px-4 py-3 whitespace-nowrap"><strong>'+gastroFormatarData(a.data_prevista)+'</strong><span class="block mt-1 text-[10px] text-slate-500">'+escaparHtml(a.turno_atend||'')+'</span></td><td class="px-4 py-3"><span class="inline-flex rounded-full border px-2.5 py-1 text-[10px] font-bold '+st[1]+'">'+escaparHtml(st[0])+'</span></td><td class="px-4 py-3 text-right"><button type="button" onclick="gastroAbrirProntuario(\''+a.paciente_id+'\')" class="rounded-lg border border-emerald-200 bg-white px-3 py-2 text-[10px] font-bold text-emerald-800 hover:bg-emerald-50"><i class="fa-solid fa-folder-open mr-1"></i>Abrir</button></td></tr>';}).join('')+'</tbody></table></div><div class="border-t border-slate-100 bg-slate-50/60 px-4 py-3 text-[10px] text-slate-500">Exibindo '+registros.length+' de '+gastroAtendimentosCache.length+' encaminhamentos gastroenterológicos feitos pela Regulação.</div>';
         }
-        function gastroAlternarFormulario(){
-            if(!gastroPodeEncaminhar())return;
-            const form=document.getElementById('gastroFormRegulacao');
-            if(!form)return;
-            const abrir=form.classList.contains('hidden');
-            form.classList.toggle('hidden',!abrir);
-            form.dataset.aberto=abrir?'1':'0';
-            if(abrir)document.getElementById('gastroBuscaCPF')?.focus();
+        function gastroTipoDocumento(tipo){return({laudo:'Laudo do exame',evolucao:'Evolução médica',receituario:'Receituário',atestado:'Atestado',laudo_apac:'Laudo APAC',biopsias:'Biópsias'})[tipo]||tipo;}
+        function gastroResumoConteudo(conteudo){
+            if(!conteudo||typeof conteudo!=='object'||!Object.keys(conteudo).length)return '<span class="text-slate-400">Conteúdo ainda não preenchido.</span>';
+            return '<dl class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">'+Object.entries(conteudo).map(([k,v])=>'<div class="rounded-lg bg-slate-50 p-2"><dt class="text-[9px] font-bold uppercase text-slate-500">'+escaparHtml(k.replaceAll('_',' '))+'</dt><dd class="mt-1 whitespace-pre-wrap text-xs text-slate-700">'+escaparHtml(typeof v==='object'?JSON.stringify(v):String(v??'—'))+'</dd></div>').join('')+'</dl>';
         }
-        async function gastroBuscarPaciente(){
-            const campo=document.getElementById('gastroBuscaCPF');
-            const cpf=(campo?.value||'').replace(/\D/g,'');
-            const box=document.getElementById('gastroResultadoPaciente');
-            if(cpf.length!==11){exibirToast('Informe um CPF com 11 dígitos.','erro');campo?.focus();return;}
-            box.innerHTML='<p class="text-xs text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Localizando paciente...</p>';
-            box.classList.remove('hidden');
-            const formatado=cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4');
+        async function gastroAbrirProntuario(pacienteId){
+            const painel=document.getElementById('gastroProntuarioPaciente');painel.classList.remove('hidden');painel.innerHTML='<div class="p-8 text-center text-sm text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando prontuário gastroenterológico...</div>';
             try{
-                const {data,error}=await supabaseClient.from('pacientes')
-                  .select('id,nome_paciente,cpf,data_nascimento,cns,codigo_paciente')
-                  .or('cpf.eq.'+cpf+',cpf.eq.'+formatado).limit(10);
-                if(error)throw error;
-                if(!data?.length){
-                    gastroPacienteSelecionado=null;document.getElementById('gastroPacienteId').value='';
-                    box.innerHTML='<p class="text-xs font-semibold text-amber-800">Paciente não encontrado pelo CPF. Faça ou atualize o cadastro no módulo de pacientes antes de encaminhar.</p>';
-                    return;
-                }
-                box.innerHTML=data.map(p=>'<button type="button" onclick="gastroSelecionarPaciente(\''+p.id+'\')" class="w-full rounded-xl border border-slate-200 bg-white p-3 text-left hover:border-emerald-500 hover:bg-emerald-50"><strong class="block text-sm text-slate-800">'+escaparHtml(p.nome_paciente)+'</strong><span class="mt-1 block text-[10px] text-slate-500">CPF '+escaparHtml(p.cpf||'—')+' · Nascimento '+gastroFormatarData(p.data_nascimento)+' · Prontuário #'+escaparHtml(String(p.codigo_paciente||''))+'</span></button>').join('');
-            }catch(error){
-                box.innerHTML='<p class="text-xs font-semibold text-rose-700">'+escaparHtml(error.message||'Falha na busca')+'</p>';
-            }
+                const [paciente,exames,documentos]=await Promise.all([
+                    supabaseClient.from('pacientes').select('id,nome_paciente,codigo_paciente,cpf,cns,data_nascimento,nome_mae,telefone,municipio').eq('id',pacienteId).single(),
+                    supabaseClient.from('gastro_agendamentos').select('*').eq('paciente_id',pacienteId).order('data_prevista',{ascending:false}),
+                    supabaseClient.from('gastro_documentos').select('id,atendimento_id,tipo,titulo,conteudo,status,versao,criado_em,assinado_em,assinado_por').eq('paciente_id',pacienteId).order('criado_em',{ascending:false})
+                ]);
+                if(paciente.error)throw paciente.error;if(exames.error)throw exames.error;if(documentos.error)throw documentos.error;
+                const docs=documentos.data||[];let adendos=[];
+                if(docs.length){const ar=await supabaseClient.from('gastro_adendos').select('id,documento_id,texto,justificativa,criado_em,criado_por').in('documento_id',docs.map(d=>d.id)).order('criado_em',{ascending:true});if(ar.error)throw ar.error;adendos=ar.data||[];}
+                const p=paciente.data,listaExames=exames.data||[];
+                painel.innerHTML='<div class="flex flex-wrap items-start justify-between gap-3 border-b border-slate-200 p-4 sm:p-5"><div><p class="text-[10px] font-extrabold uppercase tracking-[.16em] text-emerald-800">Prontuário gastroenterológico</p><h3 class="mt-1 text-lg font-extrabold text-slate-900">'+escaparHtml(p.nome_paciente)+'</h3><p class="mt-1 text-xs text-slate-500">Prontuário CPAM #'+escaparHtml(String(p.codigo_paciente||'—'))+' · CPF '+escaparHtml(p.cpf||'—')+'</p></div><button type="button" onclick="gastroFecharProntuario()" class="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50"><i class="fa-solid fa-xmark mr-1"></i>Fechar prontuário</button></div>'+
+                '<div class="grid grid-cols-2 gap-3 border-b border-slate-100 p-4 sm:grid-cols-4"><div><span class="text-[9px] font-bold uppercase text-slate-500">Nascimento</span><strong class="mt-1 block text-xs text-slate-800">'+gastroFormatarData(p.data_nascimento)+'</strong></div><div><span class="text-[9px] font-bold uppercase text-slate-500">Cartão SUS</span><strong class="mt-1 block text-xs text-slate-800">'+escaparHtml(p.cns||'—')+'</strong></div><div><span class="text-[9px] font-bold uppercase text-slate-500">Nome da mãe</span><strong class="mt-1 block text-xs text-slate-800">'+escaparHtml(p.nome_mae||'—')+'</strong></div><div><span class="text-[9px] font-bold uppercase text-slate-500">Telefone</span><strong class="mt-1 block text-xs text-slate-800">'+escaparHtml(p.telefone||'—')+'</strong></div></div>'+
+                '<div class="grid grid-cols-1 gap-4 p-4 lg:grid-cols-2"><section><div class="mb-3 flex items-center justify-between"><h4 class="text-sm font-extrabold text-slate-900"><i class="fa-solid fa-calendar-check mr-2 text-emerald-700"></i>Histórico de exames</h4><span class="text-[10px] text-slate-500">'+listaExames.length+' registro(s)</span></div>'+(listaExames.length?'<div class="space-y-2">'+listaExames.map(a=>{const st=gastroStatusInfo(a.situacao);return '<article class="rounded-xl border border-slate-200 p-3"><div class="flex flex-wrap items-start justify-between gap-2"><strong class="text-xs text-slate-800">'+escaparHtml(a.procedimento_nome)+'</strong><span class="rounded-full border px-2 py-1 text-[9px] font-bold '+st[1]+'">'+escaparHtml(st[0])+'</span></div><p class="mt-1 text-[10px] text-slate-500">'+gastroFormatarData(a.data_prevista)+' · '+escaparHtml(a.medico_nome||'Médico não informado')+(a.medico_crm?' · CRM '+escaparHtml(a.medico_crm):'')+'</p></article>';}).join('')+'</div>':'<p class="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Nenhum exame regulado encontrado.</p>')+'</section>'+
+                '<section><div class="mb-3 flex items-center justify-between"><h4 class="text-sm font-extrabold text-slate-900"><i class="fa-solid fa-file-medical mr-2 text-emerald-700"></i>Laudos e documentos</h4><span class="text-[10px] text-slate-500">'+docs.length+' documento(s)</span></div>'+(docs.length?'<div class="space-y-2">'+docs.map(d=>{const ads=adendos.filter(a=>a.documento_id===d.id);return '<details class="rounded-xl border border-slate-200 p-3"><summary class="cursor-pointer list-none"><div class="flex flex-wrap items-center justify-between gap-2"><strong class="text-xs text-slate-800">'+escaparHtml(d.titulo||gastroTipoDocumento(d.tipo))+'</strong><span class="rounded-full border px-2 py-1 text-[9px] font-bold '+(d.status==='finalizado'?'border-emerald-200 bg-emerald-50 text-emerald-800':'border-amber-200 bg-amber-50 text-amber-800')+'">'+(d.status==='finalizado'?'Finalizado':'Rascunho')+'</span></div><p class="mt-1 text-[10px] text-slate-500">'+escaparHtml(gastroTipoDocumento(d.tipo))+' · '+gastroFormatarData(d.criado_em)+' · '+ads.length+' adendo(s)</p></summary>'+gastroResumoConteudo(d.conteudo)+(ads.length?'<div class="mt-3 border-t border-slate-100 pt-3"><p class="text-[10px] font-bold uppercase text-slate-500">Adendos</p>'+ads.map(a=>'<div class="mt-2 rounded-lg border border-amber-100 bg-amber-50/60 p-2"><p class="text-xs text-slate-700">'+escaparHtml(a.texto)+'</p><p class="mt-1 text-[10px] text-slate-500">Justificativa: '+escaparHtml(a.justificativa)+' · '+gastroFormatarData(a.criado_em)+'</p></div>').join('')+'</div>':'')+'</details>';}).join('')+'</div>':'<p class="rounded-xl bg-slate-50 p-4 text-xs text-slate-500">Ainda não existem laudos ou documentos gastroenterológicos para este paciente.</p>')+'</section></div>';
+                painel.scrollIntoView({behavior:'smooth',block:'start'});
+            }catch(error){console.error(error);painel.innerHTML='<div class="p-6 text-sm font-semibold text-rose-700">Não foi possível abrir o prontuário: '+escaparHtml(error.message||'erro inesperado')+'</div>';}
         }
-        function gastroSelecionarPaciente(id){
-            const botao=Array.from(document.querySelectorAll('#gastroResultadoPaciente button')).find(b=>b.getAttribute('onclick')?.includes(id));
-            if(!botao)return;
-            gastroPacienteSelecionado=id;
-            document.getElementById('gastroPacienteId').value=id;
-            document.getElementById('gastroPacienteResumo').innerHTML=botao.innerHTML;
-            document.getElementById('gastroPacienteResumo').classList.remove('hidden');
-            document.getElementById('gastroResultadoPaciente').classList.add('hidden');
-            exibirToast('Paciente selecionado.','sucesso');
-        }
-        async function gastroSalvarEncaminhamento(evento){
-            evento.preventDefault();
-            if(!gastroPodeEncaminhar()){exibirToast('Somente Regulação, Coordenação ou Administração podem encaminhar exames eletivos.','erro');return;}
-            const pacienteId=document.getElementById('gastroPacienteId').value;
-            const profissionalId=document.getElementById('gastroNovoMedico').value;
-            const procedimento=document.getElementById('gastroNovoProcedimento');
-            const nome=procedimento.value;
-            const codigo=procedimento.selectedOptions[0]?.dataset.codigo||null;
-            const data=document.getElementById('gastroNovaData').value;
-            const hora=document.getElementById('gastroNovaHora').value||null;
-            if(!pacienteId||!profissionalId||!nome||!data){exibirToast('Informe paciente, exame, médico responsável e data prevista.','erro');return;}
-            const botao=document.getElementById('btnGastroSalvar');
-            botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
+        function gastroFecharProntuario(){document.getElementById('gastroProntuarioPaciente')?.classList.add('hidden');}
+        async function gastroAbrirTodosDocumentos(){
+            const painel=document.getElementById('gastroTodosDocumentos');painel.classList.remove('hidden');painel.innerHTML='<div class="p-6 text-center text-sm text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando documentos...</div>';
             try{
-                const {error}=await supabaseClient.from('gastro_atendimentos').insert({
-                    paciente_id:pacienteId,profissional_id:profissionalId,
-                    procedimento_codigo:codigo,procedimento_nome:nome,
-                    origem:'regulacao',data_prevista:data,hora_prevista:hora,
-                    observacao_encaminhamento:document.getElementById('gastroObservacaoEncaminhamento').value.trim()||null
-                });
-                if(error)throw error;
-                exibirToast('Encaminhamento gastroenterológico registrado com sucesso.','sucesso');
-                document.getElementById('formGastroRegulacao').reset();
-                document.getElementById('gastroPacienteId').value='';
-                document.getElementById('gastroPacienteResumo').classList.add('hidden');
-                document.getElementById('gastroResultadoPaciente').classList.add('hidden');
-                gastroPacienteSelecionado=null;
-                gastroAlternarFormulario();
-                await carregarGastro();
-            }catch(error){
-                console.error(error);exibirToast('Não foi possível registrar o encaminhamento: '+(error.message||'erro inesperado'),'erro');
-            }finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-paper-plane mr-2"></i>Confirmar encaminhamento';}
+                const {data,error}=await supabaseClient.from('gastro_documentos').select('id,atendimento_id,paciente_id,tipo,titulo,status,versao,criado_em,assinado_em').order('criado_em',{ascending:false}).limit(500);
+                if(error)throw error;gastroDocumentosCache=data||[];
+                if(!gastroDocumentosCache.length){painel.innerHTML='<div class="p-8 text-center text-xs text-slate-500">Ainda não existem documentos gastroenterológicos finalizados ou em rascunho.</div>';return;}
+                const ids=[...new Set(gastroDocumentosCache.map(d=>d.atendimento_id))];
+                const {data:exames,error:erroExames}=await supabaseClient.from('gastro_agendamentos').select('id,paciente_id,nome_paciente,procedimento_nome,data_prevista').in('id',ids);
+                if(erroExames)throw erroExames;const map=new Map((exames||[]).map(a=>[a.id,a]));
+                painel.innerHTML='<div class="flex items-center justify-between border-b border-slate-200 p-4"><div><h3 class="text-sm font-extrabold text-slate-900">Todos os laudos e documentos</h3><p class="mt-1 text-xs text-slate-500">Documentos de todos os pacientes atendidos pela Gastroenterologia.</p></div><button type="button" onclick="document.getElementById(\'gastroTodosDocumentos\').classList.add(\'hidden\')" class="rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold text-slate-600">Fechar</button></div><div class="divide-y divide-slate-100">'+gastroDocumentosCache.map(d=>{const a=map.get(d.atendimento_id)||{};return '<div class="flex flex-wrap items-center justify-between gap-3 p-4"><div><strong class="block text-xs text-slate-800">'+escaparHtml(d.titulo||gastroTipoDocumento(d.tipo))+'</strong><span class="mt-1 block text-[10px] text-slate-500">'+escaparHtml(a.nome_paciente||'Paciente')+' · '+escaparHtml(a.procedimento_nome||'Exame')+' · '+gastroFormatarData(d.criado_em)+'</span></div><div class="flex items-center gap-2"><span class="rounded-full border px-2 py-1 text-[9px] font-bold '+(d.status==='finalizado'?'border-emerald-200 bg-emerald-50 text-emerald-800':'border-amber-200 bg-amber-50 text-amber-800')+'">'+(d.status==='finalizado'?'Finalizado':'Rascunho')+'</span><button type="button" onclick="gastroAbrirProntuario(\''+(a.paciente_id||d.paciente_id)+'\')" class="rounded-lg border border-emerald-200 px-3 py-2 text-[10px] font-bold text-emerald-800">Abrir prontuário</button></div></div>';}).join('')+'</div>';
+            }catch(error){painel.innerHTML='<p class="p-5 text-xs font-semibold text-rose-700">'+escaparHtml(error.message||'Falha ao consultar documentos')+'</p>';}
         }
-
-
         async function gastroCarregarVinculos(){
-            const area=document.getElementById('gastroAdminVinculos');
-            if(!area||perfilAtual?.role!=='administrador')return;
-            area.classList.remove('hidden');
-            const [usuarios,vinculos]=await Promise.all([
-                supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active').eq('active',true).order('full_name'),
-                supabaseClient.from('gastro_profissional_acessos').select('id,user_id,profissional_id,ativo,criado_em').order('criado_em',{ascending:false})
-            ]);
-            if(usuarios.error)throw usuarios.error;
-            if(vinculos.error)throw vinculos.error;
-            gastroUsuariosCache=usuarios.data||[];
-            gastroVinculosCache=vinculos.data||[];
-            const usuarioSelect=document.getElementById('gastroVinculoUsuario');
-            if(usuarioSelect){
-                const vinculados=new Set(gastroVinculosCache.map(v=>v.user_id));
-                usuarioSelect.innerHTML='<option value="">Selecione o usuário do sistema</option>'+gastroUsuariosCache.filter(u=>!vinculados.has(u.user_id)).map(u=>'<option value="'+u.user_id+'">'+escaparHtml(u.full_name||u.email)+' · '+escaparHtml(u.role)+'</option>').join('');
-            }
-            const medicoSelect=document.getElementById('gastroVinculoMedico');
-            if(medicoSelect)medicoSelect.innerHTML='<option value="">Selecione o profissional</option>'+gastroProfissionaisCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</option>').join('');
-            const lista=document.getElementById('gastroListaVinculos');
-            if(lista){
-                if(!gastroVinculosCache.length){lista.innerHTML='<p class="p-4 text-xs text-slate-500">Nenhum médico vinculado a usuário do sistema ainda.</p>';return;}
-                const usuariosMap=new Map(gastroUsuariosCache.map(u=>[u.user_id,u]));
-                const medicosMap=new Map(gastroProfissionaisCache.map(p=>[p.id,p]));
-                lista.innerHTML='<div class="overflow-x-auto"><table class="w-full min-w-[620px] text-left text-xs"><thead class="bg-slate-50 text-[10px] uppercase text-slate-500"><tr><th class="px-3 py-2">Usuário CPAM</th><th class="px-3 py-2">Profissional</th><th class="px-3 py-2">Acesso</th><th class="px-3 py-2 text-right">Ação</th></tr></thead><tbody class="divide-y divide-slate-100">'+gastroVinculosCache.map(v=>{
-                    const u=usuariosMap.get(v.user_id)||{},p=medicosMap.get(v.profissional_id)||{};
-                    return '<tr><td class="px-3 py-3"><strong>'+escaparHtml(u.full_name||u.email||'Usuário não localizado')+'</strong><span class="block mt-1 text-[10px] text-slate-500">'+escaparHtml(u.email||'')+'</span></td><td class="px-3 py-3">'+escaparHtml(p.nome||'Profissional não localizado')+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</td><td class="px-3 py-3"><span class="rounded-full border px-2 py-1 text-[10px] font-bold '+(v.ativo?'border-emerald-200 bg-emerald-50 text-emerald-800':'border-slate-200 bg-slate-100 text-slate-600')+'">'+(v.ativo?'Ativo':'Inativo')+'</span></td><td class="px-3 py-3 text-right"><button type="button" onclick="gastroAlternarVinculo(\''+v.id+'\','+(v.ativo?'false':'true')+')" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-[10px] font-bold text-slate-700 hover:bg-slate-50">'+(v.ativo?'Desativar':'Reativar')+'</button></td></tr>';
-                }).join('')+'</tbody></table></div>';
-            }
+            const area=document.getElementById('gastroAdminVinculos');if(!area||perfilAtual?.role!=='administrador')return;area.classList.remove('hidden');
+            const [usuarios,vinculos]=await Promise.all([supabaseClient.from('user_profiles').select('user_id,email,full_name,role,active').eq('active',true).order('full_name'),supabaseClient.from('gastro_profissional_acessos').select('id,user_id,profissional_id,ativo,criado_em').order('criado_em',{ascending:false})]);
+            if(usuarios.error)throw usuarios.error;if(vinculos.error)throw vinculos.error;gastroUsuariosCache=usuarios.data||[];gastroVinculosCache=vinculos.data||[];
+            const usuarioSelect=document.getElementById('gastroVinculoUsuario');if(usuarioSelect){const vinculados=new Set(gastroVinculosCache.map(v=>v.user_id));usuarioSelect.innerHTML='<option value="">Selecione o usuário do sistema</option>'+gastroUsuariosCache.filter(u=>!vinculados.has(u.user_id)).map(u=>'<option value="'+u.user_id+'">'+escaparHtml(u.full_name||u.email)+' · '+escaparHtml(u.role)+'</option>').join('');}
+            const medicoSelect=document.getElementById('gastroVinculoMedico');if(medicoSelect)medicoSelect.innerHTML='<option value="">Selecione o profissional</option>'+gastroProfissionaisCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</option>').join('');
+            const lista=document.getElementById('gastroListaVinculos');if(lista){if(!gastroVinculosCache.length){lista.innerHTML='<p class="p-4 text-xs text-slate-500">Nenhum médico vinculado a usuário do sistema ainda.</p>';return;}const usuariosMap=new Map(gastroUsuariosCache.map(u=>[u.user_id,u])),medicosMap=new Map(gastroProfissionaisCache.map(p=>[p.id,p]));lista.innerHTML='<div class="overflow-x-auto"><table class="w-full min-w-[620px] text-left text-xs"><thead class="bg-slate-50 text-[10px] uppercase text-slate-500"><tr><th class="px-3 py-2">Usuário CPAM</th><th class="px-3 py-2">Profissional</th><th class="px-3 py-2">Acesso</th><th class="px-3 py-2 text-right">Ação</th></tr></thead><tbody class="divide-y divide-slate-100">'+gastroVinculosCache.map(v=>{const u=usuariosMap.get(v.user_id)||{},p=medicosMap.get(v.profissional_id)||{};return '<tr><td class="px-3 py-3"><strong>'+escaparHtml(u.full_name||u.email||'Usuário não localizado')+'</strong><span class="block mt-1 text-[10px] text-slate-500">'+escaparHtml(u.email||'')+'</span></td><td class="px-3 py-3">'+escaparHtml(p.nome||'Profissional não localizado')+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</td><td class="px-3 py-3"><span class="rounded-full border px-2 py-1 text-[10px] font-bold '+(v.ativo?'border-emerald-200 bg-emerald-50 text-emerald-800':'border-slate-200 bg-slate-100 text-slate-600')+'">'+(v.ativo?'Ativo':'Inativo')+'</span></td><td class="px-3 py-3 text-right"><button type="button" onclick="gastroAlternarVinculo(\''+v.id+'\','+(v.ativo?'false':'true')+')" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-[10px] font-bold text-slate-700 hover:bg-slate-50">'+(v.ativo?'Desativar':'Reativar')+'</button></td></tr>';}).join('')+'</tbody></table></div>';}
         }
         async function gastroSalvarVinculo(evento){
-            evento.preventDefault();
-            if(perfilAtual?.role!=='administrador')return;
-            const userId=document.getElementById('gastroVinculoUsuario').value;
-            const profissionalId=document.getElementById('gastroVinculoMedico').value;
+            evento.preventDefault();if(perfilAtual?.role!=='administrador')return;const userId=document.getElementById('gastroVinculoUsuario').value,profissionalId=document.getElementById('gastroVinculoMedico').value;
             if(!userId||!profissionalId){exibirToast('Selecione o usuário e o profissional para criar o vínculo.','erro');return;}
-            const botao=document.getElementById('btnGastroSalvarVinculo');
-            botao.disabled=true;botao.textContent='Salvando...';
-            try{
-                const {error}=await supabaseClient.from('gastro_profissional_acessos').insert({user_id:userId,profissional_id:profissionalId});
-                if(error)throw error;
-                exibirToast('Vínculo médico criado. O usuário já pode acessar sua fila de Gastroenterologia.','sucesso');
-                document.getElementById('formGastroVinculo').reset();
-                await gastroCarregarVinculos();
-            }catch(error){exibirToast('Não foi possível criar o vínculo: '+(error.message||'erro inesperado'),'erro');}
+            const botao=document.getElementById('btnGastroSalvarVinculo');botao.disabled=true;botao.textContent='Salvando...';
+            try{const {error}=await supabaseClient.from('gastro_profissional_acessos').insert({user_id:userId,profissional_id:profissionalId});if(error)throw error;exibirToast('Vínculo médico criado. O usuário já pode acessar todos os exames gastroenterológicos.','sucesso');document.getElementById('formGastroVinculo').reset();await gastroCarregarVinculos();}
+            catch(error){exibirToast('Não foi possível criar o vínculo: '+(error.message||'erro inesperado'),'erro');}
             finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-link mr-2"></i>Vincular médico';}
         }
         async function gastroAlternarVinculo(id,ativo){
             if(perfilAtual?.role!=='administrador')return;
-            try{
-                const {error}=await supabaseClient.from('gastro_profissional_acessos').update({ativo:ativo}).eq('id',id);
-                if(error)throw error;
-                exibirToast(ativo?'Acesso médico reativado.':'Acesso médico desativado.','sucesso');
-                await gastroCarregarVinculos();
-            }catch(error){exibirToast('Não foi possível atualizar o vínculo: '+(error.message||'erro inesperado'),'erro');}
+            try{const {error}=await supabaseClient.from('gastro_profissional_acessos').update({ativo:ativo}).eq('id',id);if(error)throw error;exibirToast(ativo?'Acesso médico reativado.':'Acesso médico desativado.','sucesso');await gastroCarregarVinculos();}
+            catch(error){exibirToast('Não foi possível atualizar o vínculo: '+(error.message||'erro inesperado'),'erro');}
+        }
+        function gastroEhProcedimentoRegular(nome){
+            const n=String(nome||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
+            return /(ENDOSCOPIA DIGESTIVA|COLONOSCOPIA|RETOSSIGMOIDOSCOPIA|GASTROSTOMIA|DILATACAO DE ESOFAGO|TUBO DIGESTIVO)/.test(n);
+        }
+        function gastroLimparMedicoRegular(){const wrap=document.getElementById('regularGastroMedicoWrap'),campo=document.getElementById('regularGastroMedico');if(wrap)wrap.classList.add('hidden');if(campo){campo.required=false;campo.value='';}}
+        async function gastroAtualizarMedicoRegular(){
+            const nome=document.getElementById('regularProcedimentoNome')?.value||'',wrap=document.getElementById('regularGastroMedicoWrap'),campo=document.getElementById('regularGastroMedico');if(!wrap||!campo)return;
+            if(!gastroEhProcedimentoRegular(nome)){gastroLimparMedicoRegular();return;}wrap.classList.remove('hidden');campo.required=true;campo.innerHTML='<option value="">Carregando médicos...</option>';
+            try{if(!gastroMedicosRegulacaoCache){const {data,error}=await supabaseClient.from('profissionais').select('id,nome,crm').eq('ativo',true).eq('grupo','Cirurgiao').ilike('especialidade','%Gastro%').order('nome');if(error)throw error;gastroMedicosRegulacaoCache=data||[];}campo.innerHTML='<option value="">Selecione o médico responsável</option>'+gastroMedicosRegulacaoCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</option>').join('');if(!gastroMedicosRegulacaoCache.length)campo.innerHTML='<option value="">Nenhum gastroenterologista ativo cadastrado</option>';}
+            catch(error){campo.innerHTML='<option value="">Falha ao carregar médicos</option>';exibirToast('Não foi possível carregar os médicos da Gastroenterologia.','erro');}
         }
 
         function navegarSistema(destino,atualizarHistorico=true){
