@@ -5469,6 +5469,12 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(situacao==='CANCELADA'&&!motivo.trim()){exibirToast(motivoInfo.id===16?'Descreva o motivo manualmente ao selecionar “Outro”.':'Informe o motivo do cancelamento.','erro');document.getElementById(motivoInfo.id===16?'Mot_Cancelam_outro':'Mot_Cancelam').focus();return;}
             if(situacao==='CANCELADA'&&!responsabilidade){exibirToast('Informe se o cancelamento foi responsabilidade do paciente ou extra-paciente.','erro');document.getElementById('responsabilidade_cancelamento').focus();return;}
             if(modoEdicaoPaciente){exibirToast('Salve ou cancele a edição dos dados do paciente antes de gravar a cirurgia.','erro');return;}if(!pacienteSelecionado&&!document.getElementById('Nome_Paciente').value.trim()){exibirToast('Informe o nome do paciente.','erro');return;}
+            const nascimentoCirurgia=pacienteSelecionado?.data_nascimento||document.getElementById('Data_Nascimento').value;
+            const dataCirurgia=document.getElementById('Data_da_Cirurgia').value;
+            const idadeCirurgia=idadeNaData(nascimentoCirurgia,dataCirurgia);
+            if(idadeCirurgia===null){exibirToast('Informe uma data de nascimento válida e a data da cirurgia para verificar a idade do paciente.','erro');return;}
+            if(idadeCirurgia>=18&&!['administrador','coordenacao'].includes(perfilAtual.role)){exibirToast('Bloqueado: pacientes com 18 anos ou mais na data da cirurgia só podem ser incluídos pelo Coordenador ou Administrador, em caso especial autorizado pela Direção.','erro');return;}
+            if(idadeCirurgia>=18){const autorizou=await confirmarDialogo({titulo:'Exceção para paciente maior de idade',mensagem:'O paciente terá '+idadeCirurgia+' anos na data da cirurgia.',detalhes:'A inclusão de pacientes com 18 anos ou mais é excepcional e somente pode ocorrer com autorização da Direção. Confirme apenas se esta autorização foi concedida.\\n\\nDeseja prosseguir com a inclusão?',tipo:'atencao',textoConfirmar:'Confirmo a autorização da Direção',textoCancelar:'Cancelar'});if(!autorizou)return;}
             botao.disabled=true;botao.textContent='Gravando...';
             try{
                 if(!pacienteSelecionado){
@@ -5578,6 +5584,22 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         function imprimirResumoCirurgia(){const nome=(document.getElementById('detalhePacienteCabecalho')?.textContent||'-').trim().toLocaleUpperCase('pt-BR');const prontuario=document.getElementById('detalheProntuarioCabecalho')?.textContent||'-';document.getElementById('printPacienteNome').textContent=nome;document.getElementById('printPacienteProntuario').textContent=prontuario;document.getElementById('printDataEmissao').textContent=new Date().toLocaleString('pt-BR');window.print();}
         function fecharModalDetalhes(){document.getElementById('secDetalhesCirurgia').classList.add('hidden');if(telaAnteriorDetalhes==='cadastroPaciente')document.getElementById('secCadastroPaciente').classList.remove('hidden');else if(telaAnteriorDetalhes==='historico')document.getElementById('secHistoricoCirurgias').classList.remove('hidden');else document.getElementById('secPacientes').classList.remove('hidden');window.scrollTo({top:0,behavior:'auto'});}
         function formatarData(d){if(!d)return '-';if(d.includes('/'))return d;const p=d.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:d;}
+        function idadeNaData(nascimento, referencia){
+            const parseData=(valor)=>{
+                if(!valor)return null;
+                const s=String(valor).trim();let ano,mes,dia,m;
+                if((m=s.match(/^(\d{4})-(\d{2})-(\d{2})$/))){ano=+m[1];mes=+m[2];dia=+m[3];}
+                else if((m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/))){dia=+m[1];mes=+m[2];ano=+m[3];}
+                else return null;
+                const d=new Date(ano,mes-1,dia);
+                return d.getFullYear()===ano&&d.getMonth()===mes-1&&d.getDate()===dia?d:null;
+            };
+            const nasc=parseData(nascimento),ref=parseData(referencia);
+            if(!nasc||!ref||nasc>ref)return null;
+            let idade=ref.getFullYear()-nasc.getFullYear();
+            if(ref.getMonth()<nasc.getMonth()||(ref.getMonth()===nasc.getMonth()&&ref.getDate()<nasc.getDate()))idade--;
+            return idade;
+        }
         function calcularIdade(valor){
             if(!valor)return '-';
             const texto=String(valor).trim(),partes=texto.includes('/')?texto.split('/').reverse():texto.split('-');
@@ -5763,7 +5785,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 if(['auditoria','usuarios'].includes(destino)&&perfilAtual.role!=='administrador'){
                     definirRota('/pacientes',true);navegarSistema('pesquisa',false);return;
                 }
-                if(destino==='regularCirurgia'&&!['administrador','regulacao'].includes(perfilAtual.role)){definirRota('/inicio',true);navegarSistema('inicio',false);return;}
+                if(destino==='regularCirurgia'&&!['administrador','regulacao','coordenacao'].includes(perfilAtual.role)){definirRota('/inicio',true);navegarSistema('inicio',false);return;}
                 if(destino==='medicos'&&!['administrador','coordenacao','cadastro'].includes(perfilAtual.role)){
                     definirRota('/pacientes',true);navegarSistema('pesquisa',false);return;
                 }
@@ -5826,11 +5848,18 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             }catch(error){console.error(error);box.classList.remove('hidden');box.textContent='Erro ao consultar catálogo de procedimentos.';}},250);
         }
         async function salvarAgendamentoRegular(evento){
-            evento.preventDefault();if(!perfilAtual||!['administrador','regulacao'].includes(perfilAtual.role)){exibirToast('Apenas a Regulação pode cadastrar agendamentos nesta tela.','erro');return;}
+            evento.preventDefault();if(!perfilAtual||!['administrador','regulacao','coordenacao'].includes(perfilAtual.role)){exibirToast('Apenas a Regulação, o Coordenador ou o Administrador podem acessar esta função.','erro');return;}
             const nome=document.getElementById('regularNomePaciente').value.trim(),amb=document.getElementById('regularProntuarioAmb').value.trim(),cpf=document.getElementById('regularCPF').value.replace(/\D/g,''),cns=document.getElementById('regularCNS').value.replace(/\D/g,''),codigo=document.getElementById('regularProcedimentoCodigo').value,procedimento=document.getElementById('regularProcedimentoNome').value,data=document.getElementById('regularDataPrevista').value;
             if(!nome||!procedimento||!codigo||!data){exibirToast('Preencha nome, procedimento e data prevista. O prontuário ambulatorial pode ser informado quando disponível.','erro');return;}
             if(!regularPacienteAtual&&!cpf&&!cns){exibirToast('Para cadastrar um novo paciente, informe CPF ou Cartão SUS (CNS).','erro');return;}
             if(cpf&&cpf.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}
+            const nascimentoRegular=regularPacienteAtual?.data_nascimento||document.getElementById('regularNascimento').value;
+            const idadeRegular=idadeNaData(nascimentoRegular,data);
+            if(idadeRegular===null){exibirToast('Informe uma data de nascimento válida antes de regularizar a cirurgia.','erro');if(!regularPacienteAtual)document.getElementById('regularNascimento').focus();return;}
+            if(regularPacienteAtual&&!regularPacienteAtual.data_nascimento){exibirToast('Este paciente ainda não possui data de nascimento cadastrada. Atualize o cadastro do paciente antes de regularizar.','erro');return;}
+            if(idadeRegular<18&&perfilAtual.role==='coordenacao'){exibirToast('O perfil Coordenador só pode regularizar pacientes maiores de idade em casos especiais autorizados pela Direção. Para menores, utilize o fluxo da Regulação.','erro');return;}
+            if(idadeRegular>=18&&!['administrador','coordenacao'].includes(perfilAtual.role)){exibirToast('Bloqueado: pacientes com 18 anos ou mais na data prevista só podem ser regularizados pelo Coordenador ou Administrador, em caso especial autorizado pela Direção.','erro');return;}
+            if(idadeRegular>=18){const autorizou=await confirmarDialogo({titulo:'Exceção para paciente maior de idade',mensagem:'O paciente terá '+idadeRegular+' anos na data prevista da cirurgia.',detalhes:'A regularização de pacientes com 18 anos ou mais é excepcional e somente pode ocorrer com autorização da Direção. Confirme apenas se esta autorização foi concedida.\\n\\nDeseja prosseguir com a regularização?',tipo:'atencao',textoConfirmar:'Confirmo a autorização da Direção',textoCancelar:'Cancelar'});if(!autorizou)return;}
             const confirmou=await confirmarDialogo({titulo:'Confirmar agendamento',mensagem:'Deseja realmente salvar este agendamento cirúrgico eletivo?',detalhes:'Paciente: '+nome+'\\nProcedimento: '+procedimento+'\\nData prevista: '+data+'\\n\\nSe for um novo paciente, o cadastro definitivo e o prontuário interno do Bloco serão gerados agora.',tipo:'atencao',textoConfirmar:'Sim, salvar',textoCancelar:'Revisar dados'});if(!confirmou)return;
             const btn=document.getElementById('btnSalvarAgendamentoRegular');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
             try{
@@ -5932,7 +5961,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const podeEditar=perfilAtual&&['administrador','coordenacao','cadastro'].includes(perfilAtual.role);
             const podeAdministrar=perfilAtual&&perfilAtual.role==='administrador';
             if(['auditoria','usuarios'].includes(destino)&&!podeAdministrar){exibirToast('Acesso restrito ao perfil Administrador.','erro');return;}
-            if(destino==='regularCirurgia'&&(!perfilAtual||!['administrador','regulacao'].includes(perfilAtual.role))){exibirToast('A tela Regular Cirurgia é exclusiva da Regulação.','erro');return;}
+            if(destino==='regularCirurgia'&&(!perfilAtual||!['administrador','regulacao','coordenacao'].includes(perfilAtual.role))){exibirToast('A tela Regular Cirurgia é exclusiva da Regulação, com acesso excepcional do Coordenador e Administrador.','erro');return;}
             if(destino==='medicos'&&!podeEditar){exibirToast('Seu perfil não permite acessar os profissionais.','erro');return;}
             if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pacientes',false);
             if(destino==='novoPaciente'&&atualizarHistorico)definirRota('/pacientes/novo',false);
