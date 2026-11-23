@@ -337,6 +337,7 @@ function extractPatient(html: string, requested: string) {
     telefone: ["telefone", "telefone celular", "celular"],
     ddd: ["ddd"],
     endereco: ["logradouro", "endereco", "tipo logradouro"],
+    complemento: ["complemento"],
     numero: ["numero"],
     bairro: ["bairro"],
     municipio: ["municipio de residencia", "municipio"],
