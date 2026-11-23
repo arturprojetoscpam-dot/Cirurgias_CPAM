@@ -3997,10 +3997,10 @@
             <h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Regular Cirurgia</h2>
             <p class="mt-1 text-sm text-slate-600">Cadastro de novos agendamentos cirúrgicos eletivos</p>
           </header>
-          <div class="overflow-hidden rounded-xl border border-emerald-200 border-b-[3px] border-b-[#FACC15] bg-[#ECFDF5] p-4 shadow-none sm:p-5">
+          <div class="overflow-hidden rounded-xl border border-black border-b-4 border-b-[#191A23] bg-[#ECFDF5] p-4 shadow-none sm:p-5">
             <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-start sm:gap-5">
               <div class="flex min-w-0 flex-col items-start">
-                <span class="inline-flex h-11 min-h-[44px] items-center rounded-lg border border-emerald-900 bg-emerald-800 px-3 font-sans text-2xl font-extrabold uppercase tracking-tight text-white shadow-sm">SISREG III</span>
+                <span class="inline-flex h-9 min-h-[36px] items-center rounded-lg border border-emerald-900 bg-emerald-800 px-3 font-sans text-base font-extrabold uppercase tracking-tight text-white shadow-sm">SISREG III</span><span class="mt-1 h-1 w-full rounded-full bg-[#FACC15]" aria-hidden="true"></span>
                 <div id="sisregStatusIntegracao" class="mt-3 flex items-center gap-2 text-sm font-extrabold text-rose-700" role="status" aria-live="polite"><span class="h-2.5 w-2.5 rounded-full bg-rose-500"></span><span>Verificando conexão</span></div>
               </div>
               <button type="button" onclick="abrirModalSISREG()" class="h-11 min-h-[44px] w-full rounded-lg border border-emerald-300 bg-white px-4 py-0 text-[11px] font-bold text-emerald-950 shadow-sm hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-key mr-1"></i>Configurar / trocar sessão</button>
@@ -4992,7 +4992,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const el=document.getElementById('sisregStatusIntegracao');
             if(!el)return;
             const cfg={verificando:['Verificando conexão','bg-amber-100 text-amber-800'],conectado:['Conectado','bg-emerald-100 text-emerald-800'],aguardando:['Login automático na próxima consulta','bg-blue-100 text-blue-800'],desconectado:['Não configurado','bg-slate-100 text-slate-600'],erro:['Falha na conexão','bg-rose-100 text-rose-800']}[estado]||['Não configurado','bg-slate-100 text-slate-600'];
-            el.textContent=(estado==='conectado'?'● CONECTADO':cfg[0]);el.className='rounded-full px-3 py-1.5 text-[9px] font-extrabold uppercase tracking-wide '+cfg[1];
+            el.textContent=(estado==='conectado'?'● CONECTADO':cfg[0]);el.className='mt-2 inline-flex items-center rounded-full border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide '+cfg[1];
         }
         function abrirModalSISREG(){
             document.getElementById('sisregUsuario').value='';document.getElementById('sisregSenha').value='';
@@ -5062,7 +5062,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                     const st=document.getElementById('regularPacienteStatus');st.textContent=existente?'Paciente localizado na base':'Dados importados do SISREG · confirmar cadastro';st.className=existente?'rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold text-emerald-800':'rounded-full bg-blue-100 px-3 py-1 text-[10px] font-bold text-blue-800';
                     const resumo=document.getElementById('regularPacienteSelecionado');resumo.textContent=existente?'Cadastro existente localizado. Os dados foram preenchidos e vinculados ao paciente.':'Dados recebidos do SISREG. Confira e complete o cadastro; ao salvar, será gerado o prontuário interno do Bloco.';resumo.classList.remove('hidden');
                 };
-                await aplicarDadosSISREG();if(sisregConsultaController!==controller)return;
+                await aplicarDadosSISREG();if(sisregConsultaController!==controller)return;const campoProntuario=document.getElementById('regularProntuarioAmb');if(campoProntuario&&!campoProntuario.disabled)campoProntuario.focus({preventScroll:true});
                 if(sisregConsultaProgressTimer){clearInterval(sisregConsultaProgressTimer);sisregConsultaProgressTimer=null;}
                 const pbar=document.getElementById('sisregLocalProgress'),plabel=document.getElementById('sisregLocalProgressLabel');if(pbar){pbar.style.width='100%';pbar.parentElement.setAttribute('aria-valuenow','100');}if(plabel)plabel.textContent='Dados preenchidos · 100%';
                 localBox.querySelector('p').innerHTML='<i class="fa-solid fa-circle-check mr-2"></i>Dados recebidos do SISREG e preenchidos no formulário.';localBox.querySelector('button')?.remove();
@@ -5760,8 +5760,10 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const data=document.getElementById('regularDataPrevista');if(data&&!data.value)data.value=dataLocalISOAgenda(new Date());
             const busca=document.getElementById('regularBuscaPaciente');if(busca&&!busca.dataset.bound){busca.dataset.bound='1';busca.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();consultarPacienteSISREG();}});busca.addEventListener('input',()=>{busca.value=busca.value.replace(/\\D/g,'').slice(0,15);});}const cod=document.getElementById('regularCodigoOrigem');if(cod&&!cod.dataset.bound){cod.dataset.bound='1';cod.addEventListener('input',()=>{const v=cod.value.trim();if(/^\d{4,}$/.test(v)){document.getElementById('regularBuscaProcedimento').value=v;buscarProcedimentosRegular();}});}
             const cpf=document.getElementById('regularCPF');if(cpf&&!cpf.dataset.bound){cpf.dataset.bound='1';cpf.addEventListener('input',()=>{const v=cpf.value.replace(/\D/g,'').slice(0,11);cpf.value=v.length===11?v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4'):v;});}
+            const form=document.getElementById('formRegularCirurgia');if(form&&!form.dataset.enterBound){form.dataset.enterBound='1';form.addEventListener('keydown',evento=>{if(evento.key!=='Enter'||evento.isComposing)return;const atual=evento.target;if(!(atual instanceof HTMLElement)||!['INPUT','SELECT','TEXTAREA'].includes(atual.tagName))return;evento.preventDefault();const campos=Array.from(form.querySelectorAll('input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled]),button[type=submit]:not([disabled])')).filter(el=>el.offsetParent!==null&&!el.readOnly);const indice=campos.indexOf(atual);if(indice>=0&&indice<campos.length-1)campos[indice+1].focus({preventScroll:true});else if(indice===campos.length-1){const salvar=document.getElementById('btnSalvarAgendamentoRegular');if(salvar)salvar.focus({preventScroll:true});}});}
         }
-        function limparPacienteRegular(){
+        async function limparPacienteRegular(confirmar=true){
+            if(confirmar){const ok=await confirmarDialogo({titulo:'Limpar seleção do paciente?',mensagem:'Deseja realmente limpar os dados do paciente deste formulário?',detalhes:'Os dados do paciente serão removidos, mas os demais dados do agendamento serão mantidos.',tipo:'atencao',textoConfirmar:'Sim, limpar paciente',textoCancelar:'Voltar'});if(!ok)return;}
             regularPacienteAtual=null;regularDadosSISREG=false;
             ['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularProntuarioAmb','regularNomeMae','regularTelefone','regularEndereco','regularNumeroEndereco','regularBairro','regularMunicipio','regularCEP'].forEach(id=>{const el=document.getElementById(id);if(el){el.value='';el.readOnly=false;}});
             const st=document.getElementById('regularPacienteStatus');st.textContent='Novo paciente';st.className='rounded-full bg-amber-100 px-3 py-1 text-[10px] font-bold text-amber-800';
@@ -5785,10 +5787,10 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const valor=tipo==='cpf'||tipo==='cns'?termo.replace(/\D/g,''):termo;
             if(tipo==='cpf'&&valor.length!==11){exibirToast('Informe um CPF com 11 números.','erro');return;}
             if(tipo==='cns'&&valor.length!==15){exibirToast('Confira o número do Cartão SUS (CNS).','erro');return;}
-            limparPacienteRegular();const box=document.getElementById('regularResultadosPaciente');box.classList.remove('hidden');box.textContent='Pesquisando paciente...';
+            limparPacienteRegular(false);const box=document.getElementById('regularResultadosPaciente');box.classList.remove('hidden');box.textContent='Pesquisando paciente...';
             try{
                 const {data,error}=await supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cpf,cns,numero_cadastro_ambulatorio,nome_mae,telefone,endereco,numero,bairro,cep,municipio').eq(tipo,valor).limit(10);if(error)throw error;box.innerHTML='';
-                if(!data||!data.length){limparPacienteRegular();box.classList.remove('hidden');box.textContent='Nenhum paciente encontrado. Preencha os dados abaixo para cadastrar um novo paciente.';return;}
+                if(!data||!data.length){limparPacienteRegular(false);box.classList.remove('hidden');box.textContent='Nenhum paciente encontrado. Preencha os dados abaixo para cadastrar um novo paciente.';return;}
                 if(data.length===1){selecionarPacienteRegular(data[0]);return;}
                 data.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='block w-full rounded-xl border border-slate-200 bg-white p-3 text-left text-xs hover:border-emerald-500 hover:bg-emerald-50';const n=document.createElement('strong');n.className='block text-slate-800';n.textContent=p.nome_paciente;const d=document.createElement('span');d.className='mt-1 block text-slate-500';d.textContent='Prontuário ambulatorial: '+(p.numero_cadastro_ambulatorio||'não informado')+' · Nascimento: '+(p.data_nascimento||'não informado');b.append(n,d);b.addEventListener('click',()=>selecionarPacienteRegular(p));box.appendChild(b);});
             }catch(error){console.error(error);box.textContent='Não foi possível pesquisar o paciente: '+error.message;exibirToast('Falha ao pesquisar paciente.','erro');}
@@ -5810,7 +5812,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(!nome||!procedimento||!codigo||!data){exibirToast('Preencha nome, procedimento e data prevista. O prontuário ambulatorial pode ser informado quando disponível.','erro');return;}
             if(!regularPacienteAtual&&!cpf&&!cns){exibirToast('Para cadastrar um novo paciente, informe CPF ou Cartão SUS (CNS).','erro');return;}
             if(cpf&&cpf.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}
-            if(!confirm('Confirma o salvamento deste agendamento?\\n\\nPaciente: '+nome+'\\nProcedimento: '+procedimento+'\\nData prevista: '+data+'\\n\\nSe for um novo paciente, o cadastro definitivo e o prontuário interno do Bloco serão gerados agora.'))return;
+            const confirmou=await confirmarDialogo({titulo:'Confirmar agendamento',mensagem:'Deseja realmente salvar este agendamento cirúrgico eletivo?',detalhes:'Paciente: '+nome+'\\nProcedimento: '+procedimento+'\\nData prevista: '+data+'\\n\\nSe for um novo paciente, o cadastro definitivo e o prontuário interno do Bloco serão gerados agora.',tipo:'atencao',textoConfirmar:'Sim, salvar',textoCancelar:'Revisar dados'});if(!confirmou)return;
             const btn=document.getElementById('btnSalvarAgendamentoRegular');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
             try{
                 let pacienteId=regularPacienteAtual?regularPacienteAtual.id:null,codigoBlocoGerado=regularPacienteAtual?.codigo_paciente||null;
@@ -5823,11 +5825,12 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 }
                 if(regularPacienteAtual&&regularDadosSISREG){const upd={};for(const [col,id] of [['telefone','regularTelefone'],['endereco','regularEndereco'],['numero','regularNumeroEndereco'],['bairro','regularBairro'],['cep','regularCEP'],['municipio','regularMunicipio'],['numero_cadastro_ambulatorio','regularProntuarioAmb'],['nome_mae','regularNomeMae'],['cpf','regularCPF'],['cns','regularCNS']]){const v=document.getElementById(id).value.trim();if(v&&!regularPacienteAtual[col])upd[col]=v;}if(Object.keys(upd).length){const {error:eu}=await supabaseClient.from('pacientes').update(upd).eq('id',pacienteId);if(eu)throw eu;}}
                 const payload={paciente_id:pacienteId,procedimento_catalogo_codigo:codigo,procedimento_nome:procedimento,procedimento_codigo_origem:document.getElementById('regularCodigoOrigem').value.trim()||codigo,identificacao_origem:'REGULACAO',id_ss:document.getElementById('regularIdSisreg').value.trim()||null,prontuario_legado:amb||null,data_prevista:data,turno_atend:null,turno_cirurgico:null,local:null,dados_origem:{origem:regularDadosSISREG?'sisreg':'cadastro_manual_regulacao',observacao:document.getElementById('regularObservacao').value.trim()||null}};
-                const {error}=await supabaseClient.from('agendamentos_eletivos').insert(payload);if(error)throw error;exibirToast('Agendamento salvo. Paciente definitivo vinculado · Prontuário interno do Bloco #'+String(codigoBlocoGerado||'').padStart(7,'0')+'.','sucesso');limparFormularioRegular();
+                const {error}=await supabaseClient.from('agendamentos_eletivos').insert(payload);if(error)throw error;exibirToast('Agendamento salvo. Paciente definitivo vinculado · Prontuário interno do Bloco #'+String(codigoBlocoGerado||'').padStart(7,'0')+'.','sucesso');await limparFormularioRegular(false);
             }catch(error){console.error('Erro ao salvar agendamento eletivo:',error);exibirToast('Não foi possível salvar o agendamento: '+(error.message||'erro inesperado'),'erro');}
             finally{btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar agendamento';}
         }
-        function limparFormularioRegular(){
+        async function limparFormularioRegular(confirmar=true){
+            if(confirmar){const ok=await confirmarDialogo({titulo:'Limpar formulário?',mensagem:'Deseja realmente limpar os dados preenchidos neste agendamento?',detalhes:'As informações ainda não salvas serão perdidas.',tipo:'atencao',textoConfirmar:'Sim, limpar',textoCancelar:'Continuar preenchendo'});if(!ok)return;}
             document.getElementById('formRegularCirurgia').reset();regularPacienteAtual=null;['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularProntuarioAmb','regularNomeMae','regularTelefone'].forEach(id=>document.getElementById(id).readOnly=false);['regularProcedimentoCodigo','regularProcedimentoNome'].forEach(id=>document.getElementById(id).value='');
             const st=document.getElementById('regularPacienteStatus');st.textContent='Nenhum paciente selecionado';st.className='rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-600';
             document.getElementById('regularPacienteSelecionado').classList.add('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');document.getElementById('regularResultadosSISREG')?.classList.add('hidden');document.getElementById('sisregLocalResultado')?.classList.add('hidden');document.getElementById('regularResultadosProcedimento').classList.add('hidden');document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');inicializarFormularioRegular();
