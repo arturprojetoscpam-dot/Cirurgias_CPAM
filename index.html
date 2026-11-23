@@ -3585,6 +3585,25 @@
         </div>
     </div>
 
+
+
+    <!-- Configuração segura do acesso SISREG: credenciais criptografadas no Supabase por usuário -->
+    <div id="modalConfigSISREG" class="hidden fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/55 p-4" role="dialog" aria-modal="true" aria-labelledby="tituloModalSISREG">
+      <div class="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
+        <div class="flex items-start justify-between gap-3 border-b border-slate-200 bg-[#E2ECE4] px-5 py-4">
+          <div><p class="text-[10px] font-extrabold uppercase tracking-[.16em] text-[#315F43]">Integração segura</p><h2 id="tituloModalSISREG" class="mt-1 text-lg font-extrabold text-slate-900">Acesso SISREG III</h2><p class="mt-1 text-xs text-slate-600">Configure uma vez. O CPAM valida o acesso e reutiliza sua sessão automaticamente.</p></div>
+          <button type="button" onclick="fecharModalSISREG()" class="rounded-lg p-2 text-slate-500 hover:bg-white" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <form id="formConfigSISREG" onsubmit="salvarCredenciaisSISREG(event)" class="space-y-4 p-5">
+          <div class="rounded-xl border border-blue-200 bg-blue-50 p-3 text-[11px] leading-relaxed text-blue-900"><i class="fa-solid fa-shield-halved mr-1"></i>As credenciais são enviadas diretamente ao Supabase, criptografadas e vinculadas somente ao seu usuário CPAM. A senha não será exibida novamente.</div>
+          <div><label for="sisregUsuario" class="mb-1.5 block text-xs font-bold text-slate-700">Usuário SISREG</label><input id="sisregUsuario" autocomplete="username" required maxlength="200" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm outline-none focus:border-emerald-600" placeholder="Digite seu usuário SISREG"></div>
+          <div><label for="sisregSenha" class="mb-1.5 block text-xs font-bold text-slate-700">Senha SISREG</label><input id="sisregSenha" type="password" autocomplete="current-password" required maxlength="500" class="w-full rounded-xl border border-slate-300 px-3 py-3 text-sm outline-none focus:border-emerald-600" placeholder="Digite sua senha SISREG"></div>
+          <p id="sisregConfigAjuda" class="text-[11px] leading-relaxed text-slate-500">Se já houver acesso salvo, informe novamente somente para substituir as credenciais.</p>
+          <div class="flex flex-col-reverse gap-2 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end"><button type="button" onclick="fecharModalSISREG()" class="rounded-xl border border-slate-300 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button><button id="btnSalvarCredenciaisSISREG" type="submit" class="rounded-xl bg-[#245B3B] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#17452C]"><i class="fa-solid fa-shield-halved mr-2"></i>Salvar e validar acesso</button></div>
+        </form>
+      </div>
+    </div>
+
     <!-- Conteúdo Principal -->
     <div class="flex min-h-[calc(100vh-4.5rem)]">
         <div id="sidebarBackdrop" onclick="fecharMenuLateral()" class="fixed inset-0 z-40 hidden bg-slate-950/50 backdrop-blur-[1px] lg:hidden"></div>
@@ -3974,7 +3993,7 @@
           <div class="overflow-hidden rounded-2xl border border-[#123C32] bg-white shadow-sm">
             <div class="bg-[#123C32] px-5 py-5 text-white sm:px-7"><div class="flex flex-wrap items-center justify-between gap-3"><div><p class="text-[10px] font-extrabold uppercase tracking-[.2em] text-emerald-200">Área da Regulação</p><h2 class="mt-1 text-xl font-extrabold tracking-tight sm:text-2xl">Regular Cirurgia</h2><p class="mt-1 text-xs text-emerald-50/80">Cadastro de novos agendamentos cirúrgicos eletivos</p></div><span class="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-white"><i class="fa-solid fa-shield-halved"></i> Regulação</span></div></div>
             <div class="h-1 w-full bg-[#FACC15]" aria-hidden="true"></div>
-            <div class="flex flex-wrap items-center justify-between gap-2 bg-emerald-50/70 px-5 py-3 sm:px-7"><div class="flex items-center gap-2 text-xs font-bold text-[#123C32]"><i class="fa-solid fa-link"></i><span>Integração SISREG III</span></div><span class="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[9px] font-bold uppercase tracking-wide text-amber-800">Preparada para integração</span></div>
+            <div class="flex flex-wrap items-center justify-between gap-2 bg-emerald-50/70 px-5 py-3 sm:px-7"><div class="flex flex-wrap items-center gap-2 text-xs font-bold text-[#123C32]"><i class="fa-solid fa-link"></i><span>Integração SISREG III</span><span id="sisregStatusIntegracao" class="rounded-full bg-slate-100 px-3 py-1 text-[9px] font-bold uppercase tracking-wide text-slate-600">Verificando conexão</span></div><button type="button" onclick="abrirModalSISREG()" class="rounded-lg border border-[#123C32]/20 bg-white px-3 py-2 text-[10px] font-bold text-[#123C32] hover:bg-emerald-50"><i class="fa-solid fa-user-lock mr-1"></i>Configurar meu acesso</button></div>
           </div>
           <form id="formRegularCirurgia" class="space-y-5" onsubmit="salvarAgendamentoRegular(event)">
             <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
@@ -3982,8 +4001,9 @@
               <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[180px_minmax(0,1fr)_auto]">
                 <div><label for="regularTipoBusca" class="label-cirurgia">Pesquisar por</label><select id="regularTipoBusca" class="campo-cirurgia"><option value="cpf">CPF</option><option value="cns">Cartão SUS (CNS)</option><option value="numero_cadastro_ambulatorio">Prontuário ambulatorial</option></select></div>
                 <div><label for="regularBuscaPaciente" class="label-cirurgia">Identificador</label><input id="regularBuscaPaciente" class="campo-cirurgia" autocomplete="off" placeholder="Digite CPF, CNS ou prontuário ambulatorial"></div>
-                <div class="flex items-end"><button type="button" onclick="buscarPacienteRegular()" class="w-full rounded-xl bg-[#123C32] px-5 py-3 text-xs font-bold text-white hover:bg-[#1b5948] sm:w-auto"><i class="fa-solid fa-magnifying-glass mr-2"></i>Buscar paciente</button></div>
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-end"><button type="button" onclick="buscarPacienteRegular()" class="w-full rounded-xl bg-[#123C32] px-5 py-3 text-xs font-bold text-white hover:bg-[#1b5948] sm:w-auto"><i class="fa-solid fa-magnifying-glass mr-2"></i>Buscar no CPAM</button><button id="btnConsultarSISREG" type="button" onclick="consultarPacienteSISREG()" class="w-full rounded-xl border border-emerald-700 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-900 hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-arrow-right-to-bracket mr-2"></i>Consultar SISREG</button></div>
               </div>
+              <div id="regularResultadosSISREG" class="mt-3 hidden space-y-2" aria-live="polite"></div>
               <div id="regularResultadosPaciente" class="mt-3 hidden space-y-2" aria-live="polite"></div><div id="regularPacienteSelecionado" class="mt-3 hidden rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900" aria-live="polite"></div>
               <div class="mt-5 border-t border-slate-100 pt-4">
                 <div class="mb-3 flex flex-wrap items-center justify-between gap-2"><div><h4 class="text-xs font-bold text-slate-700">Dados do paciente</h4><p class="mt-1 text-[10px] text-slate-500">Se não encontrar, preencha os dados para cadastrar um novo paciente.</p></div><button type="button" onclick="limparPacienteRegular()" class="text-[10px] font-bold text-[#123C32] underline">Limpar seleção / novo paciente</button></div>
@@ -4363,7 +4383,7 @@
                 document.getElementById('navDashboards')?.classList.remove('hidden');
                 document.getElementById('secPacientes').classList.add('hidden');document.getElementById('secHistoricoCirurgias').classList.add('hidden');
                 document.getElementById('secCadastroPaciente').classList.add('hidden');document.getElementById('secFormulario').classList.add('hidden');
-                atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);resolverRotaAtual();
+                atualizarBadgeConexao(true,'Sessão autenticada');void verificarStatusVITAI(true);void verificarStatusSISREG(true);resolverRotaAtual();
             }catch(error){console.error(error);await supabaseClient.auth.signOut();mostrarLogin();mostrarMensagemAuth('Não foi possível validar seu perfil: '+error.message);}
             finally{carregandoPerfil=false;}
         }
@@ -4936,6 +4956,69 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(!resposta.ok)throw new Error(dados.error||'Falha ao comunicar com a integração VITAI ('+resposta.status+').');
             return dados;
         }
+
+        let sisregConfigurado=false,sisregVerificacaoEmAndamento=false,sisregEstado='desconhecido';
+        async function chamarRelaySISREG(rota,corpo={}){
+            const {data,error}=await supabaseClient.auth.getSession();
+            if(error)throw error;
+            const token=data.session&&data.session.access_token;
+            if(!token)throw new Error('Sua sessão CPAM expirou. Entre novamente no sistema.');
+            const resposta=await fetch(SUPABASE_URL+'/functions/v1/sisreg-direct/'+rota,{method:'POST',headers:{'Authorization':'Bearer '+token,'apikey':SUPABASE_PUBLISHABLE_KEY,'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify(corpo)});
+            let dados={};try{dados=await resposta.json();}catch(e){}
+            if(!resposta.ok)throw new Error(dados.error||'Falha ao comunicar com a integração SISREG ('+resposta.status+').');
+            return dados;
+        }
+        function atualizarBadgeSISREG(estado){
+            sisregEstado=estado;
+            const el=document.getElementById('sisregStatusIntegracao');
+            if(!el)return;
+            const cfg={verificando:['Verificando conexão','bg-amber-100 text-amber-800'],conectado:['Conectado','bg-emerald-100 text-emerald-800'],aguardando:['Login automático na próxima consulta','bg-blue-100 text-blue-800'],desconectado:['Não configurado','bg-slate-100 text-slate-600'],erro:['Falha na conexão','bg-rose-100 text-rose-800']}[estado]||['Não configurado','bg-slate-100 text-slate-600'];
+            el.textContent=cfg[0];el.className='rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-wide '+cfg[1];
+        }
+        function abrirModalSISREG(){
+            document.getElementById('sisregUsuario').value='';document.getElementById('sisregSenha').value='';
+            document.getElementById('sisregConfigAjuda').textContent=sisregConfigurado?'Seu acesso já está salvo. Informe usuário e senha somente se quiser substituir as credenciais atuais.':'Informe seu usuário e senha SISREG. O Supabase validará e guardará o acesso criptografado.';
+            document.getElementById('modalConfigSISREG').classList.remove('hidden');document.getElementById('sisregUsuario').focus();
+        }
+        function fecharModalSISREG(){document.getElementById('modalConfigSISREG')?.classList.add('hidden');document.getElementById('formConfigSISREG')?.reset();}
+        async function verificarStatusSISREG(silencioso=true){
+            if(!usuarioAtual||sisregVerificacaoEmAndamento)return;
+            sisregVerificacaoEmAndamento=true;atualizarBadgeSISREG('verificando');
+            try{const r=await chamarRelaySISREG('status');sisregConfigurado=!!r.configured;atualizarBadgeSISREG(!sisregConfigurado?'desconectado':(r.connected?'conectado':'aguardando'));if(!silencioso)exibirToast(r.connected?'Conexão SISREG pronta para uso.':(r.configured?'Acesso salvo. O login será refeito automaticamente na próxima consulta.':'Configure seu acesso SISREG para habilitar a consulta.'),r.configured?'sucesso':'info');}
+            catch(e){atualizarBadgeSISREG('erro');if(!silencioso)exibirToast(e.message,'erro');else console.warn('Status SISREG:',e.message);}
+            finally{sisregVerificacaoEmAndamento=false;}
+        }
+        async function salvarCredenciaisSISREG(evento){
+            evento.preventDefault();const usuario=timedTexto(document.getElementById('sisregUsuario').value),senha=document.getElementById('sisregSenha').value;
+            if(!usuario||!senha){exibirToast('Informe usuário e senha SISREG.','erro');return;}
+            const botao=document.getElementById('btnSalvarCredenciaisSISREG'),original=botao.innerHTML;botao.disabled=true;botao.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Validando acesso...';atualizarBadgeSISREG('verificando');
+            try{const r=await chamarRelaySISREG('configure',{usuario,senha});document.getElementById('sisregSenha').value='';if(!r.ok||!r.connected)throw new Error(r.error||'O SISREG não confirmou a autenticação.');sisregConfigurado=true;atualizarBadgeSISREG('conectado');fecharModalSISREG();exibirToast('Acesso SISREG validado e salvo com segurança. Nas próximas consultas o login será automático.','sucesso');}
+            catch(e){atualizarBadgeSISREG(sisregConfigurado?'erro':'desconectado');exibirToast(e.message,'erro');}
+            finally{botao.disabled=false;botao.innerHTML=original;}
+        }
+        async function consultarPacienteSISREG(){
+            const tipo=document.getElementById('regularTipoBusca').value,valor=document.getElementById('regularBuscaPaciente').value.trim().replace(/\D/g,''),box=document.getElementById('regularResultadosSISREG');
+            if(!['cpf','cns'].includes(tipo)){exibirToast('Para consultar o SISREG, selecione CPF ou Cartão SUS (CNS).','erro');return;}
+            if((tipo==='cpf'&&valor.length!==11)||(tipo==='cns'&&valor.length!==15)){exibirToast(tipo==='cpf'?'Informe um CPF com 11 números.':'Informe um CNS com 15 números.','erro');return;}
+            if(!sisregConfigurado){abrirModalSISREG();exibirToast('Configure seu acesso SISREG uma única vez para continuar.','info');return;}
+            box.classList.remove('hidden');box.innerHTML='<p class="rounded-xl border border-blue-200 bg-blue-50 p-3 text-xs text-blue-900"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Consultando o SISREG e verificando sua sessão...</p>';
+            const btn=document.getElementById('btnConsultarSISREG');if(btn)btn.disabled=true;
+            try{
+                const r=await chamarRelaySISREG('search',{tipo,identificador:valor}),p=r.paciente||{};
+                const card=document.createElement('div');card.className='rounded-xl border border-emerald-200 bg-emerald-50 p-3';
+                const title=document.createElement('strong');title.className='block text-sm text-emerald-950';title.textContent=p.nome||'Paciente localizado no SISREG';
+                const details=document.createElement('p');details.className='mt-1 text-xs leading-relaxed text-emerald-900';details.textContent=['Nascimento: '+(p.nascimento||'não informado'),'CPF: '+(p.cpf||'não informado'),'CNS: '+(p.cns||'não informado'),'Mãe: '+(p.mae||'não informado')].join(' · ');
+                const note=document.createElement('p');note.className='mt-2 text-[10px] text-emerald-800';note.textContent='Confira os dados antes de utilizar. A consulta não cria paciente nem gera prontuário interno.';
+                const use=document.createElement('button');use.type='button';use.className='mt-3 rounded-lg bg-[#123C32] px-4 py-2 text-xs font-bold text-white';use.textContent='Usar dados deste paciente';
+                use.addEventListener('click',()=>{limparPacienteRegular();document.getElementById('regularNomePaciente').value=p.nome||'';document.getElementById('regularNascimento').value=normalizarDataSISREG(p.nascimento);document.getElementById('regularCPF').value=p.cpf||'';document.getElementById('regularCNS').value=p.cns||'';document.getElementById('regularNomeMae').value=p.mae||'';['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularNomeMae'].forEach(id=>document.getElementById(id).readOnly=false);const st=document.getElementById('regularPacienteStatus');st.textContent='Dados importados do SISREG · confirmar cadastro';st.className='rounded-full bg-blue-100 px-3 py-1 text-[10px] font-bold text-blue-800';document.getElementById('regularPacienteSelecionado').textContent='Dados recebidos do SISREG. Confira e complete o prontuário ambulatorial antes de salvar.';document.getElementById('regularPacienteSelecionado').classList.remove('hidden');box.classList.add('hidden');});
+                card.append(title,details,note,use);box.replaceChildren(card);atualizarBadgeSISREG('conectado');
+            }catch(e){box.textContent='Não foi possível consultar o SISREG: '+e.message;atualizarBadgeSISREG('erro');exibirToast(e.message,'erro');}
+            finally{if(btn)btn.disabled=false;}
+        }
+        function normalizarDataSISREG(valor){
+            const v=String(valor||'').trim();let m=v.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(m)return m[3]+'-'+m[2]+'-'+m[1];m=v.match(/^(\d{4})-(\d{2})-(\d{2})/);return m?m[0]:'';
+        }
+
         function aguardarIntervaloVITAI(ms,signal){
             return new Promise((resolve,reject)=>{
                 if(signal&&signal.aborted){reject(new DOMException('Consulta cancelada.','AbortError'));return;}
@@ -5684,7 +5767,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         function limparFormularioRegular(){
             document.getElementById('formRegularCirurgia').reset();regularPacienteAtual=null;['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularProntuarioAmb','regularNomeMae','regularTelefone'].forEach(id=>document.getElementById(id).readOnly=false);['regularProcedimentoCodigo','regularProcedimentoNome'].forEach(id=>document.getElementById(id).value='');
             const st=document.getElementById('regularPacienteStatus');st.textContent='Nenhum paciente selecionado';st.className='rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-600';
-            document.getElementById('regularPacienteSelecionado').classList.add('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');document.getElementById('regularResultadosProcedimento').classList.add('hidden');document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');inicializarFormularioRegular();
+            document.getElementById('regularPacienteSelecionado').classList.add('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');document.getElementById('regularResultadosSISREG')?.classList.add('hidden');document.getElementById('regularResultadosProcedimento').classList.add('hidden');document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');inicializarFormularioRegular();
         }
 
         function dataLocalISOAgenda(data){return data.getFullYear()+'-'+String(data.getMonth()+1).padStart(2,'0')+'-'+String(data.getDate()).padStart(2,'0');}
