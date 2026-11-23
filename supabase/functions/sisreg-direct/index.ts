@@ -167,7 +167,6 @@ function decodeEntities(value: string) {
     ndash: "–", mdash: "—", bull: "•", hellip: "…",
   };
   let decoded = value;
-  // O CADWEB pode devolver entidades numéricas hexadecimais e conteúdo duplamente codificado.
   for (let pass = 0; pass < 3; pass++) {
     const next = decoded.replace(/&(#x[0-9a-f]+|#\\d+|[a-z][a-z0-9]+);/gi, (entity, code) => {
       if (code[0] === "#") {
@@ -272,14 +271,16 @@ function extractPatient(html: string, requested: string) {
   const pick = (key: string) => {
     const names = aliases[key];
     for (const alias of names) {
-      const found = pares.find((p) => p.label === alias || p.label.startsWith(alias + " "));
+      const found = pares.find((p) => p.label === alias ||
+        (key !== "nome" && p.label.startsWith(alias + " ")));
       if (found?.value) return found.value.trim();
     }
-    // Fallback para rótulos e valores dispostos em linhas separadas na tela CADWEB.
-    const lines = dados.texto.split(/\n+/).map((v) => v.trim()).filter(Boolean);
+    const lines = dados.texto.split(/\\n+/).map((v) => v.trim()).filter(Boolean);
     for (let i = 0; i < lines.length; i++) {
       const line = normalizeLabel(lines[i]).replace(/:$/, "");
-      if (names.some((alias) => line === alias || line.startsWith(alias + " "))) {
+      const matches = names.some((alias) => line === alias ||
+        (key !== "nome" && line.startsWith(alias + " ")));
+      if (matches) {
         const inline = lines[i].split(/[:：]/).slice(1).join(":").trim();
         if (inline) return inline;
         if (lines[i + 1]) return lines[i + 1].trim();
