@@ -3665,13 +3665,7 @@
       <span class="cpam-home-action">Abrir módulo <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
     </a>
   </div>
-  <section id="homeAgendamentosHoje" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4">
-      <div><h3 class="text-base font-extrabold text-slate-800"><i class="fa-solid fa-calendar-day mr-2 text-emerald-700"></i>Pacientes agendados para hoje</h3><p id="homeAgendamentosHojeData" class="mt-1 text-xs text-slate-500">Programação do dia</p></div>
-      <div class="flex items-center gap-2"><span id="homeAgendamentosHojeTotal" class="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800">0 pacientes</span><button type="button" onclick="carregarAgendamentosHoje()" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-rotate-right mr-1"></i>Atualizar</button></div>
-    </div>
-    <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left text-xs"><thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Paciente</th><th class="px-4 py-3">Prontuário</th><th class="px-4 py-3">Procedimento</th><th class="px-4 py-3">Turno</th><th class="px-4 py-3">Local</th><th class="px-4 py-3">Situação</th></tr></thead><tbody id="homeAgendamentosHojeLista"><tr><td colspan="6" class="p-6 text-center text-slate-400">Carregando programação de hoje...</td></tr></tbody></table></div>
-  </section>
+
 </section>
 
 
@@ -5321,44 +5315,6 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
 
         function formatarCodigoPaciente(codigo){return codigo==null||codigo===''?'':String(codigo).padStart(7,'0');}
         function dataInputParaBanco(valor){if(!valor)return '';const p=valor.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
-        async function carregarAgendamentosHoje(){
-            const lista=document.getElementById('homeAgendamentosHojeLista');
-            if(!lista||!usuarioAtual||!perfilAtual)return;
-            const hoje=dataLocalISOAgenda(new Date());
-            const rotulo=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-            const dataEl=document.getElementById('homeAgendamentosHojeData');
-            if(dataEl)dataEl.textContent=rotulo.charAt(0).toLocaleUpperCase('pt-BR')+rotulo.slice(1);
-            lista.innerHTML='<tr><td colspan="6" class="p-6 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando pacientes agendados...</td></tr>';
-            try{
-                const {data,error}=await supabaseClient.from('agendamentos_eletivos')
-                    .select('id,paciente_id,procedimento_nome,procedimento_codigo_origem,data_prevista,turno_atend,turno_cirurgico,local,situacao,pacientes!agendamentos_eletivos_paciente_id_fkey(id,codigo_paciente,nome_paciente)')
-                    .eq('data_prevista',hoje).neq('situacao','cancelada').neq('situacao','remarcada')
-                    .order('turno_cirurgico',{ascending:true}).order('turno_atend',{ascending:true}).order('procedimento_nome',{ascending:true});
-                if(error)throw error;
-                const itens=data||[];
-                const total=document.getElementById('homeAgendamentosHojeTotal');
-                if(total)total.textContent=itens.length+' '+(itens.length===1?'paciente':'pacientes');
-                if(!itens.length){
-                    lista.innerHTML='<tr><td colspan="6" class="p-7 text-center text-slate-500"><i class="fa-regular fa-calendar-check mb-2 block text-2xl text-slate-300"></i>Nenhum paciente com agendamento ativo para hoje.</td></tr>';
-                    return;
-                }
-                lista.innerHTML=itens.map(a=>{
-                    const p=a.pacientes||{};
-                    const turno=a.turno_cirurgico||a.turno_atend||'-';
-                    const situacao=a.situacao==='realizada'?'Realizada':a.situacao==='aguardando_bloco'?'Aguardando Bloco':(a.situacao||'').replace(/_/g,' ');
-                    return '<tr data-paciente-id="'+escaparHtml(p.id||a.paciente_id||'')+'" tabindex="0" role="link" class="cursor-pointer border-t border-slate-100 hover:bg-emerald-50 focus:bg-emerald-50"><td class="px-4 py-3 font-bold text-slate-800">'+escaparHtml(p.nome_paciente||'Paciente sem nome')+'</td><td class="px-4 py-3 font-mono font-semibold text-emerald-800">'+formatarCodigoPaciente(p.codigo_paciente)+'</td><td class="px-4 py-3">'+escaparHtml(a.procedimento_nome||'-')+(a.procedimento_codigo_origem?'<span class="mt-1 block text-[10px] text-slate-400">Código '+escaparHtml(a.procedimento_codigo_origem)+'</span>':'')+'</td><td class="px-4 py-3">'+escaparHtml(turno)+'</td><td class="px-4 py-3">'+escaparHtml(a.local||'-')+'</td><td class="px-4 py-3"><span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold text-amber-800">'+escaparHtml(situacao)+'</span></td></tr>';
-                }).join('');
-                lista.querySelectorAll('tr[data-paciente-id]').forEach(row=>{
-                    const abrir=()=>{const id=row.getAttribute('data-paciente-id');if(id)abrirHistoricoPaciente(id);};
-                    row.addEventListener('click',abrir);
-                    row.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();abrir();}});
-                });
-            }catch(error){
-                console.error('Erro ao carregar agendamentos de hoje:',error);
-                lista.innerHTML='<tr><td colspan="6" class="p-6 text-center text-rose-600">Não foi possível carregar os agendamentos de hoje: '+escaparHtml(error.message||'erro inesperado')+'</td></tr>';
-                const total=document.getElementById('homeAgendamentosHojeTotal');if(total)total.textContent='Indisponível';
-            }
-        }
         async function carregarPacientes(){
             if(!usuarioAtual||!perfilAtual)return;
             const tbody=document.getElementById('gridPacientes');
@@ -6389,7 +6345,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
             ['secInicio','secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos','secRegularCirurgia','secGastro'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-            if(destino==='inicio'){document.getElementById('secInicio').classList.remove('hidden');carregarAgendamentosHoje();}
+            if(destino==='inicio'){document.getElementById('secInicio').classList.remove('hidden');}
             else if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');inicializarAgendaEletiva();}
             else if(destino==='regularCirurgia'){document.getElementById('secRegularCirurgia').classList.remove('hidden');inicializarFormularioRegular();}
             else if(destino==='gastro'){document.getElementById('secGastro').classList.remove('hidden');document.getElementById('gastroPainelPrincipal').classList.remove('hidden');document.getElementById('gastroPesquisaPacientes').classList.add('hidden');document.getElementById('gastroProntuarioPaciente').classList.add('hidden');document.getElementById('gastroListaPacientesRoute').classList.remove('hidden');document.getElementById('gastroAdminVinculos').classList.remove('hidden');document.getElementById('gastroFluxoTrabalho').classList.remove('hidden');carregarGastro();}
