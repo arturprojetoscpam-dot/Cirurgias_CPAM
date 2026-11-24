@@ -3634,7 +3634,7 @@
     <div><p class="text-[11px] font-bold uppercase tracking-[.18em] text-emerald-700">Bloco Cirúrgico · CPAM</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-800 sm:text-3xl">Acesso rápido</h2><p class="mt-2 text-sm text-slate-500">Selecione o módulo desejado para iniciar sua atividade no sistema.</p></div>
   </div>
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    <a href="/pacientes" onclick="event.preventDefault();navegarSistema('pesquisa')" class="cpam-home-card group">
+    <a href="/pesquisar-paciente" onclick="event.preventDefault();navegarSistema('pesquisa')" class="cpam-home-card group">
       <span class="cpam-home-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
       <span class="cpam-home-title">Pesquisar Pacientes</span>
       <span class="cpam-home-description">Localize pacientes, consulte seus dados e acesse o histórico de cirurgias.</span>
@@ -5310,16 +5310,15 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         function dataInputParaBanco(valor){if(!valor)return '';const p=valor.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:'';}
         async function carregarPacientes(){
             if(!usuarioAtual||!perfilAtual)return;
-            await carregarCatalogoCancelamentos();
             const tbody=document.getElementById('gridPacientes');
             tbody.innerHTML='<tr><td colspan="6" class="p-8 text-center text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2 text-teal-600"></i>Carregando pacientes...</td></tr>';
             try{
                 let consulta=supabaseClient.from('pacientes').select('id,codigo_paciente,nome_paciente,data_nascimento,cns,nome_mae,sexo,numero_cadastro_ambulatorio,cpf',{count:'exact'}).order('nome_paciente',{ascending:true}).order('id',{ascending:true}).range((paginaPacientes-1)*50,paginaPacientes*50-1);
                 if(termoListaPacientes){
                     if(/^\d+$/.test(termoListaPacientes)){
-                        consulta=consulta.or('numero_cadastro_ambulatorio.eq.'+termoListaPacientes+',cns.eq.'+termoListaPacientes+',cpf.eq.'+termoListaPacientes+',codigo_paciente.eq.'+Number(termoListaPacientes));
+                        consulta=consulta.or('numero_cadastro_ambulatorio.ilike.%'+termoListaPacientes+'%,numero_be_vitai.ilike.%'+termoListaPacientes+'%,cns.ilike.%'+termoListaPacientes+'%,cpf.ilike.%'+termoListaPacientes+'%,codigo_paciente.eq.'+Number(termoListaPacientes));
                     }else{
-                        const busca=termoListaPacientes.replace(/[%_,()]/g,'');consulta=consulta.or('nome_paciente.ilike.%'+busca+'%');
+                        const busca=termoListaPacientes.replace(/[%,()]/g,'').trim();consulta=consulta.or('nome_paciente.ilike.%'+busca+'%,nome_mae.ilike.%'+busca+'%,numero_cadastro_ambulatorio.ilike.%'+busca+'%,numero_be_vitai.ilike.%'+busca+'%,cns.ilike.%'+busca+'%,cpf.ilike.%'+busca+'%');
                     }
                 }
                 const dataNascimentoLista=dataInputParaBanco(document.getElementById('buscaDataNascimentoLista').value);
@@ -5353,7 +5352,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             }todosRegistros=todos;aplicarFiltros();}
             catch(error){console.error(error);document.getElementById('gridCirurgias').innerHTML='<tr><td colspan="6" class="p-8 text-center text-rose-600">Falha ao buscar histórico: '+escaparHtml(error.message)+'</td></tr>';exibirToast('Erro ao carregar histórico: '+error.message,'erro');}
         }
-        function voltarListaPacientes(){document.getElementById('secHistoricoCirurgias').classList.add('hidden');document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];definirRota('/pacientes',false);}
+        function voltarListaPacientes(){document.getElementById('secHistoricoCirurgias').classList.add('hidden');document.getElementById('secPacientes').classList.remove('hidden');pacienteHistoricoAtual=null;todosRegistros=[];registrosFiltrados=[];definirRota('/pesquisar-paciente',false);}
         function atualizarDashboard(){
             const total=todosRegistros.length;
             const realizadas=todosRegistros.filter(r=>(r.Situaçao||'').toUpperCase()==='REALIZADA').length;
@@ -5772,6 +5771,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         }
         function resolverRotaAtual(){
             const caminho=caminhoAtual();
+            if(caminho==='/pesquisar-paciente'){if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}navegarSistema('pesquisa',false);return;}
             if(caminho==='/login'||caminho==='/'){
                 if(perfilAtual){definirRota('/inicio',true);navegarSistema('inicio',false);}
                 else mostrarLogin(false);
@@ -6203,14 +6203,14 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(destino==='regularCirurgia'&&(!perfilAtual||!['administrador','regulacao','coordenacao'].includes(perfilAtual.role))){exibirToast('A tela Regular Cirurgia é exclusiva da Regulação, com acesso excepcional do Coordenador e Administrador.','erro');return;}
             if(destino==='gastro'&&!acessoGastroAtual){exibirToast('Seu usuário ainda não possui acesso à Gastroenterologia.','erro');return;}
             if(destino==='medicos'&&!podeEditar){exibirToast('Seu perfil não permite acessar os profissionais.','erro');return;}
-            if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pacientes',false);
+            if(destino==='pesquisa'&&atualizarHistorico)definirRota('/pesquisar-paciente',false);
             if(destino==='novoPaciente'&&atualizarHistorico)definirRota('/pacientes/novo',false);
             const rotasDestino={'inicio':'/inicio','agendamentos':'/agendamentos-eletivos','regularCirurgia':'/regular-cirurgia','gastro':'/gastroenterologia','cancelamentos':'/cancelamentos','dashboards':'/dashboards','auditoria':'/auditoria','usuarios':'/usuarios','medicos':'/profissionais'};
             if(atualizarHistorico&&rotasDestino[destino])definirRota(rotasDestino[destino],false);
             if(destino!=='novoPaciente'&&location.hash.startsWith('#/pacientes/novo'))history.replaceState({tela:'app'},'',location.pathname+location.search);
             if(['registro','medicos','novoPaciente'].includes(destino)&&!podeEditar){exibirToast('Seu perfil não permite acessar esta função.','erro');fecharMenuLateral();return;}
             ['secInicio','secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos','secRegularCirurgia','secGastro'].forEach(function(id){const el=document.getElementById(id);if(el)el.classList.add('hidden');});
-            if(destino==='inicio'){document.getElementById('secInicio').classList.remove('hidden');}
+            if(destino==='inicio'){document.getElementById('secInicio').classList.remove('hidden');carregarAgendamentosHoje();}
             else if(destino==='agendamentos'){document.getElementById('secAgendamentosEletivos').classList.remove('hidden');inicializarAgendaEletiva();}
             else if(destino==='regularCirurgia'){document.getElementById('secRegularCirurgia').classList.remove('hidden');inicializarFormularioRegular();}
             else if(destino==='gastro'){document.getElementById('secGastro').classList.remove('hidden');carregarGastro();}
