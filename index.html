@@ -3544,6 +3544,28 @@
     min-width:52px!important;
   }
 }
+
+/* Título da página inicial: apresentação institucional e discreta */
+#appShell #secInicio .cpam-home-heading{
+ display:flex!important;align-items:center!important;gap:10px!important;
+ width:auto!important;max-width:none!important;padding:0!important;
+ border:0!important;border-radius:0!important;
+ background:transparent!important;background-color:transparent!important;
+ color:#26332f!important;box-shadow:none!important;
+ font-size:1.5rem!important;font-weight:650!important;
+ letter-spacing:-.03em!important;line-height:1.2!important;
+}
+#appShell #secInicio .cpam-home-heading-icon{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ width:34px!important;height:34px!important;flex:0 0 34px!important;
+ border:1px solid #d9e9e2!important;border-radius:10px!important;
+ background:#edf6f1!important;color:#477765!important;
+ font-size:15px!important;box-shadow:none!important;
+}
+@media(max-width:640px){
+ #appShell #secInicio .cpam-home-heading{font-size:1.35rem!important;gap:9px!important;}
+ #appShell #secInicio .cpam-home-heading-icon{width:32px!important;height:32px!important;flex-basis:32px!important;}
+}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -3760,7 +3782,7 @@
 
         <section id="secInicio" class="space-y-6">
   <div class="flex flex-wrap items-end justify-between gap-3">
-    <div><p class="text-[11px] font-bold uppercase tracking-[.18em] text-emerald-700">Bloco Cirúrgico · CPAM</p><h2 class="mt-1 text-2xl font-extrabold tracking-tight text-slate-800 sm:text-3xl">Acesso rápido</h2><p class="mt-2 text-sm text-slate-500">Selecione o módulo desejado para iniciar sua atividade no sistema.</p></div>
+    <div><p class="text-[11px] font-bold uppercase tracking-[.18em] text-emerald-700">Bloco Cirúrgico · CPAM</p><h2 class="cpam-home-heading mt-1 text-2xl font-semibold tracking-tight text-slate-800 sm:text-3xl"><i class="fa-solid fa-bolt cpam-home-heading-icon" aria-hidden="true"></i><span>Acesso rápido</span></h2><p class="mt-2 text-sm text-slate-500">Selecione o módulo desejado para iniciar sua atividade no sistema.</p></div>
   </div>
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
     <a href="/pesquisar-paciente" onclick="event.preventDefault();navegarSistema('pesquisa')" class="cpam-home-card group">
