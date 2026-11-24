@@ -4191,7 +4191,7 @@
           <section id="regularPainelAgendaMedicos" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <div class="flex flex-wrap items-end justify-between gap-3">
               <div><h3 class="text-sm font-extrabold text-slate-800"><i class="fa-solid fa-calendar-days mr-2 text-[#123C32]"></i>Agenda dos médicos</h3><p class="mt-1 text-xs text-slate-500">Quantidade de pacientes agendados e procedimentos por médico na data selecionada.</p></div>
-              <div class="w-full sm:w-52"><label for="regularAgendaData" class="label-cirurgia">Consultar data</label><input id="regularAgendaData" type="date" class="campo-cirurgia" onchange="regularAgendaSincronizarData(this.value)"></div>
+              <div class="w-full sm:w-52"><label for="regularAgendaData" class="label-cirurgia">Consultar data</label><input id="regularAgendaData" type="date" class="campo-cirurgia" onchange="regularAgendaSincronizarData(this.value)"></div><button id="regularAgendaConfigSenhaBtn" type="button" onclick="regularConfigurarSenhaAgenda()" class="hidden h-10 rounded-lg border border-slate-300 bg-white px-3 text-[10px] font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-key mr-1"></i>Configurar senha de exceção</button>
             </div>
             <div class="mt-3 flex flex-wrap items-center justify-between gap-2"><span id="regularAgendaTotalMedicos" class="text-[10px] font-semibold text-slate-500">Carregando médicos...</span><input id="regularAgendaBuscaMedico" type="search" oninput="regularAgendaRenderizar()" placeholder="Filtrar médico..." class="h-9 w-full rounded-lg border border-slate-200 px-3 text-xs sm:w-64"></div>
             <div id="regularAgendaListaMedicos" class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3"><p class="col-span-full py-4 text-center text-xs text-slate-400">Carregando agenda...</p></div>
@@ -6112,7 +6112,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         }
         async function limparFormularioRegular(confirmar=true){
             if(confirmar){const ok=await confirmarDialogo({titulo:'Limpar formulário?',mensagem:'Deseja realmente limpar os dados preenchidos neste agendamento?',detalhes:'As informações ainda não salvas serão perdidas.',tipo:'atencao',textoConfirmar:'Sim, limpar',textoCancelar:'Continuar preenchendo'});if(!ok)return;}
-            document.getElementById('formRegularCirurgia').reset();gastroLimparMedicoRegular();regularPacienteAtual=null;['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularProntuarioAmb','regularNomeMae','regularTelefone'].forEach(id=>document.getElementById(id).readOnly=false);['regularProcedimentoCodigo','regularProcedimentoNome'].forEach(id=>document.getElementById(id).value='');
+            document.getElementById('formRegularCirurgia').reset();gastroLimparMedicoRegular();void gastroAtualizarMedicoRegular();regularPacienteAtual=null;['regularNomePaciente','regularNascimento','regularCPF','regularCNS','regularProntuarioAmb','regularNomeMae','regularTelefone'].forEach(id=>document.getElementById(id).readOnly=false);['regularProcedimentoCodigo','regularProcedimentoNome'].forEach(id=>document.getElementById(id).value='');
             const st=document.getElementById('regularPacienteStatus');st.textContent='Nenhum paciente selecionado';st.className='rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold text-slate-600';
             document.getElementById('regularPacienteSelecionado').classList.add('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');document.getElementById('regularResultadosSISREG')?.classList.add('hidden');document.getElementById('sisregLocalResultado')?.classList.add('hidden');document.getElementById('regularResultadosProcedimento').classList.add('hidden');document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');inicializarFormularioRegular();
         }
@@ -6705,6 +6705,8 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
 <script>
 let regularAgendaMedicosCache=[];
 let regularAgendaRegistrosCache=[];
+let regularAgendaConfigsCache=[];
+let regularAgendaLimitesCache=[];
 let regularAgendaDataCarregada='';
 function regularAgendaSincronizarData(valor){
   if(!valor)return;
@@ -6726,9 +6728,13 @@ async function regularCarregarAgendaMedicos(){
       if(r.error)throw r.error;
       regularAgendaMedicosCache=r.data||[];
     }
-    const r=await supabaseClient.from('agendamentos_eletivos').select('id,profissional_responsavel_id,procedimento_nome,data_prevista,situacao').eq('data_prevista',data).neq('situacao','cancelada').not('profissional_responsavel_id','is',null).limit(3000);
+    const r=await supabaseClient.from('agendamentos_eletivos').select('id,profissional_responsavel_id,procedimento_nome,data_prevista,situacao').eq('data_prevista',data).eq('situacao','aguardando_bloco').not('profissional_responsavel_id','is',null).limit(3000);
     if(r.error)throw r.error;
     regularAgendaRegistrosCache=r.data||[];
+    const cfg=await Promise.all([supabaseClient.from('gastro_agenda_profissionais').select('profissional_id,dias_semana,consultorio,turno,hora_inicio').eq('ativo',true),supabaseClient.from('gastro_agenda_limites').select('profissional_id,exame_tipo,limite_diario').eq('ativo',true)]);
+    cfg.forEach(x=>{if(x.error)throw x.error;});
+    regularAgendaConfigsCache=cfg[0].data||[];regularAgendaLimitesCache=cfg[1].data||[];
+    const adminBtn=document.getElementById('regularAgendaConfigSenhaBtn');if(adminBtn)adminBtn.classList.toggle('hidden',perfilAtual?.role!=='administrador');
     regularAgendaDataCarregada=data;
     regularAgendaRenderizar();
   }catch(error){
@@ -6742,16 +6748,51 @@ function regularAgendaRenderizar(){
   if(!lista)return;
   const busca=(document.getElementById('regularAgendaBuscaMedico')?.value||'').trim().toLocaleLowerCase('pt-BR');
   const medicos=regularAgendaMedicosCache.filter(p=>(p.nome||'').toLocaleLowerCase('pt-BR').includes(busca)||(p.crm||'').includes(busca));
-  document.getElementById('regularAgendaTotalMedicos').textContent=medicos.length+' médicos · '+regularAgendaRegistrosCache.length+' agendamento(s) na data';
+  document.getElementById('regularAgendaTotalMedicos').textContent=medicos.length+' médicos · '+regularAgendaRegistrosCache.length+' agendamento(s) ativos na data';
   lista.innerHTML=medicos.map(p=>{
     const regs=regularAgendaRegistrosCache.filter(x=>x.profissional_responsavel_id===p.id);
     const procedimentos={};
     regs.forEach(x=>{const n=x.procedimento_nome||'Procedimento não informado';procedimentos[n]=(procedimentos[n]||0)+1;});
     const resumo=Object.entries(procedimentos).map(([n,q])=>'<li class="flex items-start justify-between gap-2 py-1"><span class="min-w-0">'+escaparHtml(n)+'</span><strong class="shrink-0 text-slate-700">×'+q+'</strong></li>').join('');
-    const gastro=/gastro/i.test(p.especialidade||'');
-    return '<article class="min-w-0 rounded-lg border border-slate-200 bg-slate-50/70 p-3"><div class="flex items-start justify-between gap-2"><div class="min-w-0"><strong class="block truncate text-xs text-slate-800">'+escaparHtml(p.nome)+'</strong><span class="mt-0.5 block text-[10px] text-slate-500">CRM '+escaparHtml(p.crm||'—')+(p.especialidade?' · '+escaparHtml(p.especialidade):'')+'</span></div><span class="shrink-0 rounded-full '+(gastro?'bg-amber-50 text-amber-800':'bg-emerald-50 text-emerald-800')+' px-2 py-1 text-[10px] font-bold">'+regs.length+' agendado(s)</span></div><div class="mt-2 border-t border-slate-200 pt-2">'+(resumo?'<ul class="divide-y divide-slate-200 text-[10px] text-slate-600">'+resumo+'</ul>':'<p class="text-[10px] text-slate-400">Nenhum procedimento agendado nesta data.</p>')+'</div></article>';
+    const config=regularAgendaConfigsCache.find(x=>x.profissional_id===p.id);
+    const limites=regularAgendaLimitesCache.filter(x=>x.profissional_id===p.id);
+    const diasNomes=['','Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+    const regra=config?'<div class="mb-2 rounded-md bg-amber-50 px-2 py-1.5 text-[9px] font-semibold text-amber-900">Agenda Gastro: '+(config.dias_semana||[]).map(d=>diasNomes[d]||'').filter(Boolean).join(' / ')+' · '+limites.map(x=>x.exame_tipo+': '+(x.limite_diario===0?'não realiza':x.limite_diario+'/dia')).join(' · ')+'</div>':'<div class="mb-2 rounded-md bg-emerald-50 px-2 py-1.5 text-[9px] font-semibold text-emerald-800">Agenda livre · sem limite diário</div>';
+    return '<article class="min-w-0 rounded-lg border border-slate-200 bg-slate-50/70 p-3"><div class="flex items-start justify-between gap-2"><div class="min-w-0"><strong class="block truncate text-xs text-slate-800">'+escaparHtml(p.nome)+'</strong><span class="mt-0.5 block text-[10px] text-slate-500">CRM '+escaparHtml(p.crm||'—')+(p.especialidade?' · '+escaparHtml(p.especialidade):'')+'</span></div><span class="shrink-0 rounded-full '+(config?'bg-amber-50 text-amber-800':'bg-emerald-50 text-emerald-800')+' px-2 py-1 text-[10px] font-bold">'+regs.length+' agendado(s)</span></div><div class="mt-2 border-t border-slate-200 pt-2">'+regra+(resumo?'<ul class="divide-y divide-slate-200 text-[10px] text-slate-600">'+resumo+'</ul>':'<p class="text-[10px] text-slate-400">Nenhum procedimento agendado nesta data.</p>')+'</div></article>';
   }).join('')||'<p class="col-span-full py-5 text-center text-xs text-slate-400">Nenhum médico encontrado.</p>';
 }
+
+async function regulacaoDialogoNovaSenha(){
+  return new Promise(resolve=>{
+    const anterior=document.activeElement,overlay=document.createElement('div');overlay.className='cpam-dialog-backdrop';
+    const card=document.createElement('section');card.className='cpam-dialog-card';card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
+    const topo=document.createElement('div');topo.className='flex gap-4 p-5 sm:p-6';
+    const icone=document.createElement('div');icone.className='cpam-dialog-icon';icone.innerHTML='<i class="fa-solid fa-key"></i>';
+    const conteudo=document.createElement('div');conteudo.className='min-w-0 flex-1';
+    const titulo=document.createElement('h2');titulo.className='text-base font-bold tracking-tight text-slate-900';titulo.textContent='Configurar senha de autorização';
+    const texto=document.createElement('p');texto.className='mt-2 text-sm leading-relaxed text-slate-600';texto.textContent='Defina a senha que a Coordenação utilizará quando precisar ultrapassar o limite diário configurado.';
+    const label=document.createElement('label');label.className='mt-4 block text-xs font-semibold text-slate-700';label.textContent='Nova senha (mínimo 5 caracteres)';
+    const input=document.createElement('input');input.type='password';input.autocomplete='new-password';input.minLength=5;input.className='mt-1 h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100';input.placeholder='Digite a nova senha';
+    const erro=document.createElement('p');erro.className='mt-1 hidden text-xs text-rose-600';erro.textContent='A senha deve ter pelo menos 5 caracteres.';
+    label.appendChild(input);conteudo.append(titulo,text,label,erro);topo.append(icone,conteudo);
+    const acoes=document.createElement('div');acoes.className='cpam-dialog-actions';
+    const salvar=document.createElement('button');salvar.type='button';salvar.className='cpam-dialog-btn cpam-dialog-confirm';salvar.textContent='Salvar senha';
+    const cancelar=document.createElement('button');cancelar.type='button';cancelar.className='cpam-dialog-btn cpam-dialog-cancel';cancelar.textContent='Cancelar';
+    acoes.append(salvar,cancelar);card.append(topo,acoes);overlay.appendChild(card);document.body.appendChild(overlay);
+    let fim=false;function fechar(v){if(fim)return;fim=true;document.removeEventListener('keydown',tecla);overlay.remove();if(anterior&&anterior.focus)anterior.focus({preventScroll:true});resolve(v);}
+    function tecla(e){if(e.key==='Escape'){e.preventDefault();fechar(null);}else if(e.key==='Enter'){e.preventDefault();salvar.click();}}
+    salvar.addEventListener('click',()=>{if(input.value.length<5){erro.classList.remove('hidden');input.focus();return;}fechar(input.value);});
+    cancelar.addEventListener('click',()=>fechar(null));document.addEventListener('keydown',tecla);input.focus();
+  });
+}
+async function regularConfigurarSenhaAgenda(){
+  if(perfilAtual?.role!=='administrador')return;
+  const senha=await regulacaoDialogoNovaSenha();if(senha===null)return;
+  const {error}=await supabaseClient.rpc('gastro_agenda_definir_senha_excecao',{p_senha:senha});
+  if(error){exibirToast(mensagemErroAmigavel(error,'Não foi possível configurar a senha de autorização.'),'erro');return;}
+  exibirToast('Senha de autorização configurada com sucesso.','sucesso');
+}
+
 function regulacaoDialogoSenhaLimite(mensagem){
   return new Promise(resolve=>{
     const anterior=document.activeElement,overlay=document.createElement('div');
