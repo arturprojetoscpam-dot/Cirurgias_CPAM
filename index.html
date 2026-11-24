@@ -3415,6 +3415,42 @@
         #authScreen #authCadastro .login-title,#authScreen #authGoogleNickname .login-title{font-size:28px}
         @media(max-width:480px){#authScreen #authCadastro .login-title,#authScreen #authGoogleNickname .login-title{font-size:25px}#authScreen .login-google-btn{min-height:47px}}
 
+
+/* Ajustes específicos do painel Gastro: neutraliza regras globais responsivas do app */
+#appShell #gastroPainelPrincipal .gastro-kpi-grid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:8px!important;
+  overflow-x:auto!important;
+}
+#appShell #gastroPainelPrincipal .gastro-kpi-grid>div{
+  min-width:0!important;
+  border:1px solid rgba(20,84,71,.14)!important;
+  border-radius:12px!important;
+  box-shadow:0 2px 7px rgba(15,45,39,.06)!important;
+}
+#appShell #gastroPainelPrincipal header h2{
+  display:block!important;
+  width:auto!important;
+  max-width:none!important;
+  padding:0!important;
+  margin:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  background-color:transparent!important;
+  color:#172b27!important;
+  box-shadow:none!important;
+}
+#appShell #gastroPainelPrincipal>header,
+#appShell #gastroPainelPrincipal>section,
+#appShell #gastroPainelPrincipal>details,
+#appShell #gastroPainelPrincipal>#gastroFluxoTrabalho{
+  border-color:rgba(20,84,71,.14)!important;
+  box-shadow:0 2px 8px rgba(15,45,39,.06)!important;
+}
+#appShell #gastroPainelPrincipal>section{
+  border-width:1px!important;
+}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
@@ -4325,13 +4361,13 @@
         <section id="secGastro" class="hidden space-y-5">
           <div id="gastroPainelPrincipal" class="space-y-5">
           <header class="flex flex-col gap-3 rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5"><div class="flex min-w-0 items-center gap-3"><span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-xl text-emerald-800"><i class="fa-solid fa-stethoscope"></i></span><div><p class="text-[10px] font-bold uppercase tracking-[.18em] text-emerald-800">CPAM • Assistência especializada</p><h2 class="mt-0.5 text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">Ambulatório de Gastroenterologia</h2><p class="mt-1 text-xs text-slate-500 sm:text-sm">Gestão de exames regulados, agenda clínica e prontuário especializado</p></div></div><div class="flex shrink-0 flex-wrap gap-2"><button type="button" onclick="gastroAbrirPesquisaPacientes()" class="rounded-lg bg-emerald-700 px-3 py-2 text-xs font-bold text-white hover:bg-emerald-800"><i class="fa-solid fa-magnifying-glass mr-1.5"></i>Pesquisar pacientes</button><button type="button" onclick="carregarGastro()" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-1.5"></i>Atualizar</button></div></header>
-          <div class="grid grid-cols-4 gap-2 overflow-x-auto">
+          <div class="gastro-kpi-grid grid grid-cols-4 gap-2 overflow-x-auto">
             <div class="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-emerald-900/10 bg-white px-3 py-2 shadow-sm"><div class="min-w-0"><span class="block truncate text-[9px] font-semibold uppercase tracking-wide text-slate-500">Exames</span><strong id="gastroTotalAgendados" class="block text-lg font-bold leading-tight text-slate-800">0</strong></div><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs text-emerald-700"><i class="fa-solid fa-calendar-days"></i></span></div>
             <div class="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-emerald-900/10 bg-white px-3 py-2 shadow-sm"><div class="min-w-0"><span class="block truncate text-[9px] font-semibold uppercase tracking-wide text-slate-500">Pendentes</span><strong id="gastroTotalPendentes" class="block text-lg font-bold leading-tight text-slate-800">0</strong></div><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-50 text-xs text-amber-700"><i class="fa-solid fa-hourglass-half"></i></span></div>
             <div class="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-emerald-900/10 bg-white px-3 py-2 shadow-sm"><div class="min-w-0"><span class="block truncate text-[9px] font-semibold uppercase tracking-wide text-slate-500">Realizados</span><strong id="gastroTotalRealizados" class="block text-lg font-bold leading-tight text-emerald-800">0</strong></div><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs text-emerald-700"><i class="fa-solid fa-circle-check"></i></span></div>
             <div class="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-emerald-900/10 bg-white px-3 py-2 shadow-sm"><div class="min-w-0"><span class="block truncate text-[9px] font-semibold uppercase tracking-wide text-slate-500">Hoje</span><strong id="gastroTotalHoje" class="block text-lg font-bold leading-tight text-slate-800">0</strong></div><span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-50 text-xs text-sky-700"><i class="fa-solid fa-clock"></i></span></div>
           </div>
-          <section class="overflow-hidden rounded-2xl border border-emerald-900/10 bg-white shadow-sm"><div class="border-b border-emerald-900/10 p-4 sm:p-5"><div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="text-sm font-extrabold text-slate-900">Exames encaminhados pela Regulação</h3><p class="mt-1 text-xs text-slate-500">A Gastroenterologia consulta os encaminhamentos; inclusão, médico responsável e data permanecem sob responsabilidade da Regulação.</p></div><span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[10px] font-bold text-emerald-800">Consulta assistencial</span></div><div class="mt-4 grid grid-cols-1 gap-2 rounded-xl border border-emerald-900/10 bg-slate-50/70 p-2 sm:grid-cols-2 xl:grid-cols-4"><input id="gastroBusca" oninput="gastroRenderizarLista()" placeholder="Buscar paciente, CPF, exame ou médico..." class="h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"><select id="gastroFiltroStatus" onchange="gastroRenderizarLista()" class="h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"><option value="">Todas as situações</option><option value="aguardando_bloco">Aguardando atendimento</option><option value="realizado">Realizado</option><option value="cancelado">Cancelado</option><option value="remarcacao_solicitada">Remarcação solicitada</option><option value="nao_compareceu">Não compareceu</option></select><select id="gastroFiltroMedico" onchange="gastroRenderizarLista()" class="h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"><option value="">Todos os médicos</option></select><label class="relative block"><span class="sr-only">Filtrar por data do exame</span><input id="gastroFiltroData" type="date" aria-label="Filtrar por data do exame" title="Filtrar por data do exame" onchange="gastroRenderizarLista()" class="h-10 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"></label></div></div><div id="gastroListaAtendimentos"><div class="p-8 text-center text-sm text-slate-500">Abra o módulo para carregar os encaminhamentos da Regulação.</div></div></section>
+          <section class="overflow-hidden rounded-2xl border border-emerald-900/10 bg-white shadow-sm"><div class="border-b border-emerald-900/10 p-4 sm:p-5"><div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="text-sm font-extrabold text-slate-900">Exames encaminhados pela Regulação</h3><p class="mt-1 text-xs text-slate-500">A Gastroenterologia consulta os encaminhamentos; inclusão, médico responsável e data permanecem sob responsabilidade da Regulação.</p></div><span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-[10px] font-bold text-emerald-800">Consulta assistencial</span></div><div class="mt-4 grid grid-cols-1 gap-2 rounded-xl border border-emerald-900/10 bg-slate-50/70 p-2 sm:grid-cols-2 xl:grid-cols-4"><input id="gastroBusca" oninput="gastroRenderizarLista()" placeholder="Buscar paciente, CPF, exame ou médico..." class="h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"><select id="gastroFiltroStatus" onchange="gastroRenderizarLista()" class="h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"><option value="">Todas as situações</option><option value="aguardando_bloco">Aguardando atendimento</option><option value="realizado">Realizado</option><option value="cancelado">Cancelado</option><option value="remarcacao_solicitada">Remarcação solicitada</option><option value="nao_compareceu">Não compareceu</option></select><select id="gastroFiltroMedico" onchange="gastroRenderizarLista()" class="h-10 min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-xs outline-none transition focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"><option value="">Todos os médicos</option></select><label class="relative flex h-10 min-w-0 items-center rounded-lg border border-slate-200 bg-white px-3 transition focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/20"><span class="mr-2 shrink-0 text-[11px] text-slate-500">Data:</span><input id="gastroFiltroData" type="date" aria-label="Filtrar por data do exame" title="Data do exame" onchange="gastroRenderizarLista()" class="h-full w-full min-w-0 border-0 bg-transparent p-0 text-xs text-slate-700 outline-none"></label></div></div><div id="gastroListaAtendimentos"><div class="p-8 text-center text-sm text-slate-500">Abra o módulo para carregar os encaminhamentos da Regulação.</div></div></section>
           </div>
           <section id="gastroPesquisaPacientes" class="hidden space-y-4">
             <header class="flex flex-wrap items-center justify-between gap-3"><div><p class="text-[10px] font-extrabold uppercase tracking-[.16em] text-emerald-800">Gastroenterologia · Cadastro assistencial</p><h3 class="mt-1 text-xl font-extrabold text-slate-900">Pesquisar pacientes</h3><p class="mt-1 text-xs text-slate-500">Pacientes com exames regulados, documentos gastroenterológicos ou laudos históricos vinculados.</p></div><button type="button" onclick="navegarSistema('gastro')" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-arrow-left mr-2"></i>Voltar à Gastroenterologia</button></header>
