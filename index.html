@@ -6105,7 +6105,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             const termos=termo.split(/\s+/).filter(Boolean);
             const filtrados=gastroPacientesPesquisaCache.filter(p=>{
                 const campos=[p.nome_paciente,p.nome_mae,p.codigo_paciente,p.cpf,p.cns,p.telefone].map(gastroNormalizarPesquisa);
-                return termos.every(t=>/^\\d+$/.test(t)?campos.some(c=>c.replace(/\\D/g,'').includes(t)):campos.some(c=>c.includes(t)));
+                return termos.every(t=>/^\d+$/.test(t)?campos.some(c=>c.replace(/\D/g,'').includes(t)):campos.some(c=>c.includes(t)));
             });
             const total=document.getElementById('gastroPesquisaTotal');if(total)total.textContent=filtrados.length+' '+(filtrados.length===1?'paciente':'pacientes');
             const porPagina=50,totalPaginas=Math.max(1,Math.ceil(filtrados.length/porPagina));gastroPaginaPesquisa=Math.min(gastroPaginaPesquisa,totalPaginas);
