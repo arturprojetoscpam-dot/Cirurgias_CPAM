@@ -6206,7 +6206,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         function gastroFecharProntuario(){document.getElementById('gastroProntuarioPaciente')?.classList.add('hidden');document.getElementById('gastroListaPacientesRoute')?.classList.remove('hidden');}
 
         let gastroEDAAtual=null,gastroEDADocumento=null;
-        const gastroEDA_campos=[['indicacao_clinica','Indicação clínica'],['sedacao','Sedação / anestesia'],['qualidade_exame','Qualidade do exame'],['esofago','Esôfago'],['estomago','Estômago'],['duodeno','Duodeno'],['biopsias','Biópsias / materiais coletados'],['urease','Teste de urease'],['outros_procedimentos','Outros procedimentos / intercorrências'],['conclusao','Impressão diagnóstica / conclusão']];
+        const gastroEDA_campos=[['indicacao_clinica','Indicação clínica'],['sedacao','Sedação / anestesia'],['qualidade_exame','Qualidade do exame'],['esofago','Esôfago'],['estomago','Estômago'],['duodeno','Duodeno'],['biopsias','Biópsias / materiais coletados'],['urease','Teste de urease'],['outros_procedimentos','Outros procedimentos / intercorrências'],['conclusao','Impressão diagnóstica / conclusão'],['observacoes','Observações / recomendações clínicas']];
         function gastroEDALerConteudo(){const c={};gastroEDA_campos.forEach(([id])=>c[id]=document.getElementById('gastroEDA_'+id)?.value.trim()||'');c.data_exame=document.getElementById('gastroEDA_data')?.value||'';c.medico_nome=gastroEDAAtual?.medico_nome||'';c.medico_crm=gastroEDAAtual?.medico_crm||'';return c;}
         async function gastroAbrirEditorEDA(atendimentoId){
           const painel=document.getElementById('gastroEditorEDA');painel.classList.remove('hidden');painel.innerHTML='<div class="p-6 text-center text-sm text-slate-500">Carregando editor do laudo...</div>';painel.scrollIntoView({behavior:'smooth',block:'start'});
@@ -6237,12 +6237,12 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
           }catch(error){console.error('Não foi possível carregar a identificação completa do paciente para impressão:',error);}
           const esc=v=>escaparHtml(String(v??'').trim()||'Não informado');
           const dataBR=v=>{if(!v)return 'Não informada';const d=String(v).slice(0,10).split('-');return d.length===3?d[2]+'/'+d[1]+'/'+d[0]:'Não informada';};
-          const idade=v=>{
-            if(!v)return 'Não informada';
-            const a=String(v).slice(0,10).split('-').map(Number);if(a.length!==3||!a[0]||!a[1]||!a[2])return 'Não informada';
-            const nasc=new Date(a[0],a[1]-1,a[2]),hoje=new Date();if(nasc>hoje)return 'Não informada';
-            let anos=hoje.getFullYear()-nasc.getFullYear(),meses=hoje.getMonth()-nasc.getMonth();
-            if(hoje.getDate()<nasc.getDate())meses--;if(meses<0){anos--;meses+=12;}
+          const idade=(v,referencia)=>{
+            if(!v||!referencia)return 'Não calculada (data ausente)';
+            const a=String(v).slice(0,10).split('-').map(Number),b=String(referencia).slice(0,10).split('-').map(Number);if(a.length!==3||b.length!==3||!a[0]||!a[1]||!a[2]||!b[0]||!b[1]||!b[2])return 'Não informada';
+            const nasc=new Date(a[0],a[1]-1,a[2]),ref=new Date(b[0],b[1]-1,b[2]);if(nasc>ref)return 'Não informada';
+            let anos=ref.getFullYear()-nasc.getFullYear(),meses=ref.getMonth()-nasc.getMonth();
+            if(ref.getDate()<nasc.getDate())meses--;if(meses<0){anos--;meses+=12;}
             return anos+' ano(s) e '+meses+' mês(es)';
           };
           const valor=(v)=>String(v||'').trim()?esc(v):'<span class="nao-informado">Não informado</span>';
@@ -6259,7 +6259,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             campo('Data do exame',esc(dataBR(c.data_exame)))+
             campo('Prontuário Nº',esc(p.codigo_paciente??gastroEDAAtual.codigo_paciente??'Não informado'))+
             campo('Data de nascimento',esc(dataBR(p.data_nascimento)))+
-            campo('Idade',esc(idade(p.data_nascimento)))+
+            campo('Idade na data do exame',esc(idade(p.data_nascimento,c.data_exame)))+
             campo('CNS',valor(p.cns))+
             campo('Nome da mãe',valor(p.nome_mae),'largo')+
             campo('Indicação clínica',valor(c.indicacao_clinica))+
@@ -6276,7 +6276,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             '<ol class="diagnostico"><li><strong>Esôfago:</strong> '+valor(c.esofago)+'</li><li><strong>Estômago:</strong> '+valor(c.estomago)+'</li><li><strong>Duodeno:</strong> '+valor(c.duodeno)+'</li></ol>'+
             (String(c.biopsias||'').trim()?'<p class="bloco"><strong>Histopatológico:</strong> Material enviado para análise anatomopatológica; aguarda resultado.</p>':'')+
             '<div class="bloco"><strong>Teste da urease:</strong><div class="urease"><span>('+marcado('Positivo')+') Positivo</span><span>('+marcado('Negativo')+') Negativo</span><span>('+marcado('Não realizado / Não aplicável')+') Não realizado / Não aplicável</span></div>'+(String(c.urease||'').trim()?'<div class="nao-informado">Registro no formulário: '+esc(c.urease)+'</div>':'<div class="nao-informado">Resultado não registrado no formulário.</div>')+'</div>'+
-            bloco('Observação',valor(c.observacoes||c.outros_procedimentos))+
+            bloco('Observação',valor(c.observacoes))+
             bloco('Conclusão / impressão diagnóstica',valor(c.conclusao))+
             '</section><section class="assinatura"><div class="linha-assinatura"></div><strong>'+esc(gastroEDAAtual.medico_nome||'Médico executante não informado')+'</strong><div>Especialidade: não informada'+(gastroEDAAtual.medico_crm?' · CRM '+esc(gastroEDAAtual.medico_crm):' · CRM não informado')+'</div><div>RQE: não informado</div></section>'+
             '<footer class="rodape"><div class="endereco">Complexo Pediátrico Arlinda Marques · Endereço e telefone institucionais: não cadastrados no sistema.</div><strong>Página 1 de 1</strong></footer><div class="status">'+status+'</div></main><script>window.addEventListener("load",()=>setTimeout(()=>window.print(),250));<\/script></body></html>';
