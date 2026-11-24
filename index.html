@@ -3506,6 +3506,44 @@
   #appShell #gastroPainelPrincipal .gastro-filters-grid{grid-template-columns:minmax(0,1fr)!important;}
   #appShell #gastroPainelPrincipal .gastro-date-filter{padding-left:10px!important;padding-right:10px!important;}
 }
+
+/* Refinamento pontual da tela Agenda Cirúrgica Eletiva */
+#appShell #secAgendamentosEletivos>div:first-child h2{
+  display:block!important;
+  width:auto!important;
+  max-width:none!important;
+  padding:0!important;
+  margin-top:4px!important;
+  border-radius:0!important;
+  background:transparent!important;
+  background-color:transparent!important;
+  color:#26332f!important;
+  box-shadow:none!important;
+  font-size:1.25rem!important;
+  font-weight:650!important;
+  letter-spacing:-.025em!important;
+  line-height:1.25!important;
+}
+#appShell #secAgendamentosEletivos>div:first-child h2 i{
+  color:#64756e!important;
+  font-size:.95em!important;
+}
+#appShell #secAgendamentosEletivos #agendaSemanaCards{
+  display:grid!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  overflow-x:auto!important;
+  overscroll-behavior-x:contain;
+}
+@media(max-width:640px){
+  #appShell #secAgendamentosEletivos #agendaSemanaCards{
+    grid-template-columns:repeat(7,minmax(52px,1fr))!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #appShell #secAgendamentosEletivos #agendaSemanaCards .agenda-dia-card{
+    min-width:52px!important;
+  }
+}
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
