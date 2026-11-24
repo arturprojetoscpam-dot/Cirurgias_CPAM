@@ -3665,6 +3665,13 @@
       <span class="cpam-home-action">Abrir módulo <i class="fa-solid fa-arrow-up-right-from-square"></i></span>
     </a>
   </div>
+  <section id="homeAgendamentosHoje" class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-slate-50/70 px-5 py-4">
+      <div><h3 class="text-base font-extrabold text-slate-800"><i class="fa-solid fa-calendar-day mr-2 text-emerald-700"></i>Pacientes agendados para hoje</h3><p id="homeAgendamentosHojeData" class="mt-1 text-xs text-slate-500">Programação do dia</p></div>
+      <div class="flex items-center gap-2"><span id="homeAgendamentosHojeTotal" class="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800">0 pacientes</span><button type="button" onclick="carregarAgendamentosHoje()" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-rotate-right mr-1"></i>Atualizar</button></div>
+    </div>
+    <div class="overflow-x-auto"><table class="w-full min-w-[760px] text-left text-xs"><thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500"><tr><th class="px-4 py-3">Paciente</th><th class="px-4 py-3">Prontuário</th><th class="px-4 py-3">Procedimento</th><th class="px-4 py-3">Turno</th><th class="px-4 py-3">Local</th><th class="px-4 py-3">Situação</th></tr></thead><tbody id="homeAgendamentosHojeLista"><tr><td colspan="6" class="p-6 text-center text-slate-400">Carregando programação de hoje...</td></tr></tbody></table></div>
+  </section>
 </section>
 
 
