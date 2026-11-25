@@ -3612,6 +3612,9 @@
  #appShell #regularResumoAgendaProcedimento{padding-top:10px}
  #appShell #regularResumoAgendaConteudo .cpam-summary-limits{grid-template-columns:1fr}
 }
+@media(min-width:360px) and (max-width:640px){
+ #appShell #regularResumoAgendaConteudo .cpam-summary-limits{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
+}
 @media(min-width:641px){
  #appShell .cpam-date-actions{flex-direction:row;align-items:center;justify-content:space-between}
  #appShell .cpam-next-slot{width:auto;min-width:150px}
