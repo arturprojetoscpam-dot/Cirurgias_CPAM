@@ -4489,6 +4489,58 @@
 }
 </style>
 
+
+<style id="cpam-date-row2-final">
+/* Linha inferior: atalhos com cor sólida e alinhamento exato ao botão azul */
+#appShell .cpam-date-selected{
+  align-content:stretch!important;
+  grid-template-rows:22px 70px 36px!important;
+  gap:6px!important;
+}
+#appShell .cpam-date-shortcut-group{
+  align-self:stretch!important;
+  height:36px!important;
+  min-height:36px!important;
+  margin:0!important;
+  transform:none!important;
+}
+#appShell .cpam-date-shortcut-group button{
+  height:36px!important;
+  min-height:36px!important;
+  border:1px solid transparent!important;
+  border-radius:9px!important;
+  color:#fff!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  box-shadow:0 2px 4px rgba(15,23,42,.12)!important;
+}
+#appShell .cpam-date-shortcut-back button{
+  background:#991b1b!important;
+  border-color:#7f1d1d!important;
+  color:#fff!important;
+}
+#appShell .cpam-date-shortcut-forward button{
+  background:#166534!important;
+  border-color:#14532d!important;
+  color:#fff!important;
+}
+@media(max-width:640px){
+  #appShell .cpam-date-selected{
+    grid-template-rows:21px 54px 32px!important;
+    gap:4px!important;
+  }
+  #appShell .cpam-date-shortcut-group,
+  #appShell .cpam-date-shortcut-group button{
+    height:32px!important;
+    min-height:32px!important;
+  }
+  #appShell .cpam-date-shortcut-group button{
+    font-size:11px!important;
+    border-radius:8px!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
