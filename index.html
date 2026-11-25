@@ -5303,6 +5303,22 @@
             <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div class="mb-3 flex flex-wrap items-end gap-3"><div><label for="filtroDashInicio" class="mb-1 block text-[11px] font-semibold text-slate-600">Data inicial</label><input id="filtroDashInicio" type="date" onchange="renderizarDashboard()" class="rounded-lg border border-slate-300 px-3 py-2 text-xs"></div><div><label for="filtroDashFim" class="mb-1 block text-[11px] font-semibold text-slate-600">Data final</label><input id="filtroDashFim" type="date" onchange="renderizarDashboard()" class="rounded-lg border border-slate-300 px-3 py-2 text-xs"></div><button type="button" onclick="limparFiltrosDashboard()" class="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-600">Todo o período</button></div><p id="dashPeriodoLabel" class="mb-4 text-[11px] text-slate-500">Todos os registros disponíveis</p><div class="grid grid-cols-1 gap-5 lg:grid-cols-2"><div><h3 class="mb-3 text-sm font-bold text-slate-700">Situação das cirurgias</h3><div id="graficoSituacoes" class="space-y-3"></div></div><div><h3 class="mb-3 text-sm font-bold text-slate-700">Cancelamentos por responsabilidade</h3><div id="graficoResponsabilidade" class="space-y-3"></div></div><div class="lg:col-span-2"><h3 class="mb-3 text-sm font-bold text-slate-700">Volume por ano</h3><div id="graficoAnos" class="space-y-3"></div></div><div class="lg:col-span-2"><h3 class="mb-3 text-sm font-bold text-slate-700">Principais motivos de cancelamento</h3><div id="graficoMotivos" class="space-y-3"></div></div></div></div>
             <p id="dashFonteInfo" class="text-[10px] text-slate-400">Os indicadores não alteram registros e não incluem dados clínicos identificáveis.</p>
         </section>
+    <section id="secConfirmacaoCirurgia" class="hidden w-full max-w-3xl mx-auto py-8 sm:py-14" aria-labelledby="tituloConfirmacaoCirurgia">
+      <div class="rounded-2xl border border-emerald-200 bg-white p-6 text-center shadow-sm sm:p-10">
+        <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><i class="fa-solid fa-check text-3xl"></i></div>
+        <p class="text-xs font-bold uppercase tracking-widest text-emerald-700">Registro concluído</p>
+        <h1 id="tituloConfirmacaoCirurgia" class="mt-2 text-2xl font-extrabold text-slate-900">Cirurgia salva com sucesso!</h1>
+        <p class="mt-2 text-sm text-slate-600">O registro foi gravado no prontuário do paciente e vinculado à solicitação da agenda.</p>
+        <div class="mt-7 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left"><div class="grid gap-4 sm:grid-cols-2">
+          <div><span class="block text-[10px] font-bold uppercase text-slate-500">Paciente</span><strong id="confirmacaoCirurgiaPaciente" class="mt-1 block text-sm text-slate-900">-</strong></div>
+          <div><span class="block text-[10px] font-bold uppercase text-slate-500">Prontuário Bloco</span><strong id="confirmacaoCirurgiaCodigo" class="mt-1 block text-sm text-slate-900">-</strong></div>
+          <div><span class="block text-[10px] font-bold uppercase text-slate-500">Procedimento</span><strong id="confirmacaoCirurgiaProcedimento" class="mt-1 block text-sm text-slate-900">-</strong></div>
+          <div><span class="block text-[10px] font-bold uppercase text-slate-500">Data</span><strong id="confirmacaoCirurgiaData" class="mt-1 block text-sm text-slate-900">-</strong></div>
+          <div class="sm:col-span-2"><span class="block text-[10px] font-bold uppercase text-slate-500">Situação</span><strong id="confirmacaoCirurgiaSituacao" class="mt-1 block text-sm text-emerald-800">-</strong></div>
+        </div></div>
+        <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row"><button id="btnVerCirurgiaConfirmada" type="button" class="rounded-lg bg-emerald-700 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-800"><i class="fa-solid fa-file-medical mr-2"></i>Visualizar registro</button><button type="button" onclick="definirRota('/agendamentos-eletivos',false);navegarSistema('agendamentos',false)" class="rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-calendar-days mr-2"></i>Voltar à programação</button></div>
+      </div>
+    </section>
     <!-- PÁGINA DEDICADA DE REGISTRO E EDIÇÃO DE CIRURGIA -->
     <section id="secCadastroCirurgia" class="hidden w-full space-y-4" aria-labelledby="tituloModalCirurgia">
       <div class="w-full rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -6506,12 +6522,12 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                     if(erroAgenda)throw new Error('Registro cirúrgico salvo, mas a agenda não foi atualizada: '+erroAgenda.message);
                     if(!agendaAtualizada)throw new Error('O registro cirúrgico foi salvo, mas a solicitação já não estava aguardando resposta na agenda. A coordenação deverá conferir o vínculo.');
                 }
-                const veioDaAgenda=!!agendamentoEletivoAtual;fecharModalCirurgia();if(telaAnteriorCirurgia==='detalhes')fecharModalDetalhes();exibirToast(veioDaAgenda?'Registro cirúrgico salvo e solicitação atualizada.':(cirurgiaModalAtual?'Cirurgia atualizada com sucesso.':'Cirurgia registrada e vinculada ao paciente.'),'sucesso');
-                if(veioDaAgenda){await carregarDadosAgendaEletiva();}else if(telaAnteriorCirurgia==='cadastroPaciente'||(telaAnteriorCirurgia==='detalhes'&&telaAnteriorDetalhes==='cadastroPaciente')){await carregarHistoricoPacienteModal(p.id);document.getElementById('secCadastroPaciente').classList.remove('hidden');}else{await abrirHistoricoPaciente(p.id);}
+                const veioDaAgenda=!!agendamentoEletivoAtual;if(veioDaAgenda){agendamentoEletivoAtual=null;definirRota('/cirurgias/'+encodeURIComponent(resposta.data.id)+'/confirmacao',false);resolverRotaAtual();}else{fecharModalCirurgia();if(telaAnteriorCirurgia==='detalhes')fecharModalDetalhes();exibirToast(cirurgiaModalAtual?'Cirurgia atualizada com sucesso.':'Cirurgia registrada e vinculada ao paciente.','sucesso');if(telaAnteriorCirurgia==='cadastroPaciente'||(telaAnteriorCirurgia==='detalhes'&&telaAnteriorDetalhes==='cadastroPaciente')){await carregarHistoricoPacienteModal(p.id);document.getElementById('secCadastroPaciente').classList.remove('hidden');}else{await abrirHistoricoPaciente(p.id);}}
             }catch(error){console.error(error);exibirToast(mensagemErroAmigavel(error,'Não foi possível salvar o registro cirúrgico. Confira os dados e tente novamente.'),'erro');}
             finally{botao.disabled=false;botao.innerHTML='<i class="fa-solid fa-floppy-disk mr-2"></i>Salvar Cirurgia';}
         }
         async function abrirRegistroCirurgiaDoAgendamento(id){
+            if(caminhoAtual()!=='/cirurgias/agendamento/'+encodeURIComponent(id))definirRota('/cirurgias/agendamento/'+encodeURIComponent(id),false);
             if(!['administrador','bloco'].includes(perfilAtual?.role)){exibirToast('Apenas o Bloco ou o administrador pode responder à solicitação.','erro');return;}
             const registro=agendaEletivaRegistros.find(x=>String(x.id)===String(id));
             if(!registro||registro.situacao!=='aguardando_bloco'){exibirToast('Esta solicitação não está mais aguardando resposta. Atualize a agenda.','erro');return;}
@@ -7054,6 +7070,36 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                         else await abrirHistoricoPaciente(data.id,false);
                     }catch(error){console.error(error);exibirToast(mensagemErroAmigavel(error,'Não foi possível abrir o prontuário do paciente. Tente novamente.'),'erro');definirRota('/pacientes',true);navegarSistema('pesquisa',false);}
                 })();
+                return;
+            }
+            if(caminho.startsWith('/cirurgias/agendamento/')){
+                const idAgendamento=decodeURIComponent(caminho.split('/')[3]||'');
+                if(!perfilAtual||!['administrador','bloco'].includes(perfilAtual.role)){definirRota('/agendamentos-eletivos',true);navegarSistema('agendamentos',false);return;}
+                void (async function(){try{
+                    const {data:registro,error}=await supabaseClient.from('agendamentos_eletivos').select('*').eq('id',idAgendamento).single();
+                    if(error||!registro)throw error||new Error('Solicitação não encontrada.');
+                    if(registro.situacao!=='aguardando_bloco'||registro.cirurgia_id)throw new Error('Esta solicitação já foi respondida ou não está mais disponível.');
+                    const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').select('id,nome_paciente,data_nascimento,codigo_paciente,cns,cpf,nome_mae,numero_cadastro_ambulatorio,telefone,municipio,endereco,bairro,cep,numero,sexo').eq('id',registro.paciente_id).single();
+                    if(erroPaciente||!paciente)throw erroPaciente||new Error('Paciente não encontrado.');
+                    agendaEletivaRegistros=[registro];agendaEletivaPacientes={[paciente.id]:paciente};agendaEletivaProfissionais={};
+                    if(registro.profissional_responsavel_id){const prof=await supabaseClient.from('profissionais').select('id,nome,nome_abreviado,crm').eq('id',registro.profissional_responsavel_id).maybeSingle();if(prof.error)throw prof.error;if(prof.data)agendaEletivaProfissionais[prof.data.id]=prof.data;}
+                    await abrirRegistroCirurgiaDoAgendamento(registro.id);
+                }catch(error){console.error(error);exibirToast(mensagemErroAmigavel(error,'Não foi possível abrir esta solicitação.'),'erro');definirRota('/agendamentos-eletivos',true);navegarSistema('agendamentos',false);}})();
+                return;
+            }
+            if(caminho.includes('/confirmacao')){
+                const partes=caminho.split('/');const idConfirmacao=decodeURIComponent(partes[2]||'');
+                if(!perfilAtual){definirRota('/login',true);mostrarLogin(false);return;}
+                void (async function(){try{
+                    const {data:registro,error}=await supabaseClient.from('cirurgias').select('*').eq('id',idConfirmacao).single();
+                    if(error||!registro)throw error||new Error('Registro cirúrgico não encontrado.');
+                    const {data:paciente,error:erroPaciente}=await supabaseClient.from('pacientes').select('id,nome_paciente,codigo_paciente').eq('id',registro.paciente_id).single();
+                    if(erroPaciente||!paciente)throw erroPaciente||new Error('Paciente não encontrado.');
+                    ['secInicio','secFormulario','secProfissionais','secCadastroProfissional','secCadastroCirurgia','secDetalhesCirurgia','secPacientes','secHistoricoCirurgias','secCadastroPaciente','secAdmin','secAuditoria','secCancelamentos','secDashboards','secAgendamentosEletivos','secAgendaProcedimentos','secRegularCirurgia','secGastro'].forEach(id=>document.getElementById(id)?.classList.add('hidden'));
+                    document.getElementById('secConfirmacaoCirurgia').classList.remove('hidden');
+                    preencherTexto('confirmacaoCirurgiaPaciente',paciente.nome_paciente||'Paciente');preencherTexto('confirmacaoCirurgiaCodigo',formatarCodigoPaciente(paciente.codigo_paciente));preencherTexto('confirmacaoCirurgiaProcedimento',registro.Procedimento1||'Procedimento não informado');preencherTexto('confirmacaoCirurgiaData',formatarData(normalizarDataParaInput(registro.Data_da_Cirurgia))||'Data não informada');preencherTexto('confirmacaoCirurgiaSituacao',registro.Situaçao||'Registrada');
+                    document.getElementById('btnVerCirurgiaConfirmada').onclick=()=>{definirRota('/cirurgias/'+encodeURIComponent(registro.id),false);resolverRotaAtual();};window.scrollTo({top:0,behavior:'auto'});
+                }catch(error){console.error(error);exibirToast(mensagemErroAmigavel(error,'Não foi possível confirmar o registro cirúrgico.'),'erro');definirRota('/agendamentos-eletivos',true);navegarSistema('agendamentos',false);}})();
                 return;
             }
             const rotaCirurgia=caminho.match(/^\/cirurgias\/([^/]+)(\/editar)?$/);
