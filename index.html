@@ -3739,6 +3739,142 @@
 }
 </style>
 
+
+<style>
+/* Seletor de data inspirado na referência visual enviada */
+#appShell .cpam-date-control{
+  width:min(100%,900px);
+  grid-template-columns:minmax(0,1fr) minmax(0,1.18fr) minmax(0,1fr);
+  grid-template-rows: minmax(42px,1fr) minmax(36px,.82fr);
+  gap:8px 10px;
+  align-items:stretch;
+}
+#appShell .cpam-date-selected{
+  grid-column:2;
+  grid-row:1 / span 2;
+  height:100%;
+  justify-content:center;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  padding:0;
+  gap:9px;
+}
+#appShell .cpam-date-selected-label{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  color:#14532D;
+  font-size:clamp(12px,1.35vw,16px);
+  font-weight:800;
+  letter-spacing:.015em;
+  white-space:nowrap;
+}
+#appShell .cpam-date-selected-label:before,
+#appShell .cpam-date-selected-label:after{
+  content:"";
+  display:block;
+  flex:1 1 24px;
+  min-width:18px;
+  height:3px;
+  border-radius:99px;
+  background:#166534;
+}
+#appShell .cpam-date-input{
+  min-height:62px;
+  border:1px solid #CBD5E1!important;
+  border-radius:15px!important;
+  background:#FFFFFF!important;
+  color:#0F172A!important;
+  padding:8px 10px!important;
+  font-size:clamp(23px,2.6vw,32px)!important;
+  font-weight:800!important;
+  box-shadow:0 1px 3px rgba(15,23,42,.06);
+}
+#appShell .cpam-next-slot{
+  min-height:40px;
+  border:1px solid #1D4ED8;
+  border-radius:12px;
+  background:#2563EB;
+  padding:7px 10px;
+  color:#FFFFFF;
+  font-size:clamp(10px,1.05vw,12px);
+  font-weight:750;
+  box-shadow:0 2px 5px rgba(37,99,235,.18);
+}
+#appShell .cpam-date-arrow{
+  min-height:42px;
+  align-self:center;
+  border:1px solid #14532D;
+  border-radius:11px;
+  background:#166534;
+  color:#FFFFFF;
+  padding:6px 5px;
+  font-size:clamp(10px,1.05vw,12px);
+  font-weight:750;
+  box-shadow:0 2px 4px rgba(15,23,42,.10);
+}
+#appShell .cpam-date-back{grid-column:1;grid-row:1}
+#appShell .cpam-date-forward{
+  grid-column:3;
+  grid-row:1;
+  border-color:#7F1D1D;
+  background:#991B1B;
+  color:#FFFFFF;
+}
+#appShell .cpam-date-shortcut-group{
+  grid-column:1;
+  grid-row:2;
+  gap:6px;
+}
+#appShell .cpam-date-shortcut-forward{
+  grid-column:3;
+  grid-row:2;
+}
+#appShell .cpam-date-shortcut-group button{
+  min-height:36px;
+  border:1px solid #14532D;
+  border-radius:9px;
+  background:#166534;
+  color:#FFFFFF;
+  font-size:clamp(9px,1vw,11px);
+  font-weight:750;
+  box-shadow:0 1px 3px rgba(15,23,42,.08);
+}
+#appShell .cpam-date-shortcut-forward button{
+  border-color:#7F1D1D;
+  background:#991B1B;
+  color:#FFFFFF;
+}
+#appShell .cpam-date-arrow:hover:not(:disabled){filter:brightness(1.08)}
+#appShell .cpam-date-shortcut-group button:hover:not(:disabled){filter:brightness(1.08)}
+@media(max-width:640px){
+  #appShell .cpam-date-control{
+    width:100%;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);
+    grid-template-rows:minmax(38px,1fr) minmax(32px,.82fr);
+    gap:5px;
+  }
+  #appShell .cpam-date-selected{padding:0;gap:7px}
+  #appShell .cpam-date-selected-label{font-size:7px;gap:4px;letter-spacing:.04em}
+  #appShell .cpam-date-selected-label:before,
+  #appShell .cpam-date-selected-label:after{height:2px;min-width:8px}
+  #appShell .cpam-date-input{min-height:48px;padding:5px 2px!important;font-size:clamp(20px,5vw,26px)!important}
+  #appShell .cpam-next-slot{min-height:34px;padding:5px 3px;font-size:clamp(8px,2.1vw,10px)}
+  #appShell .cpam-date-arrow{min-height:38px;padding:5px 2px;font-size:clamp(8px,2.2vw,10px)}
+  #appShell .cpam-date-shortcut-group{gap:3px}
+  #appShell .cpam-date-shortcut-group button{min-height:32px;padding:0 1px;font-size:clamp(8px,2.1vw,10px)}
+}
+@media(max-width:359px){
+  #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:4px}
+  #appShell .cpam-date-selected-label{font-size:6px}
+  #appShell .cpam-date-arrow{font-size:7px}
+  #appShell .cpam-date-shortcut-group button{font-size:7px;min-height:30px}
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
