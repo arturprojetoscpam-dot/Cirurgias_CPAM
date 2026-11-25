@@ -6727,7 +6727,7 @@ async function regularAtualizarResumoProcedimento(){
  box.classList.remove('hidden');conteudo.innerHTML='<span class="text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Consultando disponibilidade...</span>';status.textContent='';
  try{
   await regularAgendaCarregarBases();const medico=regularAgendaMedicosCache.find(x=>x.id===medicoId);if(!medico){conteudo.textContent='Médico não encontrado ou inativo.';return;}
-  const config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId&&x.ativo),tipo=agendaTipoProcedimento(procedimento);
+  const config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId),tipo=agendaTipoProcedimento(procedimento);
   const {data:registros,error}=await supabaseClient.from('agendamentos_eletivos').select('id,paciente_id,procedimento_nome').eq('profissional_responsavel_id',medicoId).eq('data_prevista',data).eq('situacao','aguardando_bloco').limit(500);if(error)throw error;
   const ids=[...new Set((registros||[]).map(x=>x.paciente_id).filter(Boolean))];let pacientes={};
   if(ids.length){const p=await supabaseClient.from('pacientes').select('id,nome_paciente').in('id',ids);if(p.error)throw p.error;for(const x of p.data||[])pacientes[x.id]=x.nome_paciente;}
@@ -6737,7 +6737,8 @@ async function regularAtualizarResumoProcedimento(){
   const dow=new Date(data+'T12:00:00').getDay(),iso=dow===0?7:dow,diaPermitido=!config||(config.dias_semana||[]).includes(iso);
   const lista=(registros||[]).map(x=>'<li class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 py-1.5"><span class="min-w-0"><strong class="font-semibold text-slate-700">'+escaparHtml(pacientes[x.paciente_id]||'Paciente não identificado')+'</strong><span class="block text-[10px] text-slate-500">'+escaparHtml(x.procedimento_nome||'Procedimento não informado')+'</span></span></li>').join('');
   let regra='';
-  if(config){
+  if(config&&!config.ativo){regra='<p class="mt-2 rounded-md bg-rose-50 px-2 py-1.5 text-[10px] font-bold text-rose-700">A agenda deste médico Gastro está desativada. Consulte a Coordenação.</p>';}
+  else if(config){
    regra='<div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-slate-600"><span><i class="fa-regular fa-clock mr-1"></i>'+escaparHtml(config.turno||'TARDE')+' · '+escaparHtml(String(config.hora_inicio||'13:00').slice(0,5))+'</span><span><i class="fa-solid fa-location-dot mr-1"></i>'+escaparHtml(config.consultorio||'Hospital Gastro')+'</span><span><i class="fa-regular fa-calendar mr-1"></i>'+((config.dias_semana||[]).map(agendaDiaSemanaNome).join(', ')||'Dias não definidos')+'</span></div>';
    if(!diaPermitido)regra+='<p class="mt-2 rounded-md bg-rose-50 px-2 py-1.5 text-[10px] font-bold text-rose-700">Este dia não faz parte da agenda configurada. Escolha outra data.</p>';
    if(procedimento){if(!tipo)regra+='<p class="mt-2 text-[10px] font-semibold text-amber-800">Não há limite cadastrado para este procedimento da equipe Gastro. Verifique a configuração.</p>';
@@ -6767,8 +6768,8 @@ async function agendaProcedimentosCarregarDia(){
   const cards=regularAgendaMedicosCache.map(m=>{
    const itens=agendaProcedimentosRegistros.filter(x=>x.profissional_responsavel_id===m.id);
    const nomes=itens.map(x=>'<li class="border-t border-slate-100 py-1.5"><strong class="block text-[10px] text-slate-700">'+escaparHtml(agendaProcedimentosPacientes[x.paciente_id]||'Paciente não identificado')+'</strong><span class="text-[10px] text-slate-500">'+escaparHtml(x.procedimento_nome||'Procedimento não informado')+'</span>'+(x.classificacao_bloco?'<span class="ml-1 text-[9px] font-semibold text-emerald-700">· '+escaparHtml(x.classificacao_bloco)+'</span>':'')+'</li>').join('');
-   const gastro=regularAgendaConfigsCache.find(x=>x.profissional_id===m.id&&x.ativo);
-   return '<article class="rounded-xl border border-slate-200 bg-slate-50/70 p-3"><div class="flex items-start justify-between gap-2"><div class="min-w-0"><strong class="block truncate text-xs text-slate-800">'+escaparHtml(m.nome)+'</strong><span class="text-[10px] text-slate-500">CRM '+escaparHtml(m.crm||'—')+'</span></div><span class="shrink-0 rounded-full bg-slate-200 px-2 py-1 text-[10px] font-bold text-slate-700">'+itens.length+' agendado(s)</span></div>'+(gastro?'<p class="mt-1 text-[9px] font-semibold text-amber-800">Equipe Gastro · '+escaparHtml(gastro.turno)+' · '+escaparHtml(String(gastro.hora_inicio).slice(0,5))+'</p>':'<p class="mt-1 text-[9px] font-semibold text-emerald-800">Agenda livre · sem limite</p>')+'<ul class="mt-2">'+(nomes||'<li class="py-2 text-[10px] text-slate-400">Nenhum procedimento nesta data.</li>')+'</ul></article>';
+   const gastro=regularAgendaConfigsCache.find(x=>x.profissional_id===m.id);
+   return '<article class="rounded-xl border border-slate-200 bg-slate-50/70 p-3"><div class="flex items-start justify-between gap-2"><div class="min-w-0"><strong class="block truncate text-xs text-slate-800">'+escaparHtml(m.nome)+'</strong><span class="text-[10px] text-slate-500">CRM '+escaparHtml(m.crm||'—')+'</span></div><span class="shrink-0 rounded-full bg-slate-200 px-2 py-1 text-[10px] font-bold text-slate-700">'+itens.length+' agendado(s)</span></div>'+(gastro?(gastro.ativo?'<p class="mt-1 text-[9px] font-semibold text-amber-800">Equipe Gastro · '+escaparHtml(gastro.turno)+' · '+escaparHtml(String(gastro.hora_inicio).slice(0,5))+'</p>':'<p class="mt-1 text-[9px] font-semibold text-rose-700">Agenda Gastro desativada</p>'):'<p class="mt-1 text-[9px] font-semibold text-emerald-800">Agenda livre · sem limite</p>')+'<ul class="mt-2">'+(nomes||'<li class="py-2 text-[10px] text-slate-400">Nenhum procedimento nesta data.</li>')+'</ul></article>';
   }).join('');box.innerHTML=cards||'<p class="col-span-full py-5 text-center text-xs text-slate-400">Nenhum médico ativo cadastrado.</p>';
  }catch(error){console.error(error);box.innerHTML='<p class="col-span-full rounded-lg bg-rose-50 p-3 text-xs text-rose-700">Não foi possível carregar a agenda: '+escaparHtml(error.message||'')+'</p>';}
 }
@@ -6787,7 +6788,7 @@ async function agendaProcedimentosSalvarConfiguracao(){
  const limites=AGENDA_PROCEDIMENTOS_TIPOS.map(([tipo,campo])=>({profissional_id:id,exame_tipo:tipo,limite_diario:Number(document.getElementById(campo).value),ativo:true}));
  if(limites.some(x=>!Number.isInteger(x.limite_diario)||x.limite_diario<0)){exibirToast('Os limites devem ser números inteiros iguais ou maiores que zero.','erro');return;}
  const config={profissional_id:id,dias_semana:dias,consultorio:local,turno:document.getElementById('agendaConfigTurno').value,hora_inicio:hora,ativo:document.getElementById('agendaConfigAtivo').checked,atualizado_em:new Date().toISOString()};
- try{const a=await supabaseClient.from('gastro_agenda_profissionais').upsert(config,{onConflict:'profissional_id'});if(a.error)throw a.error;const b=await supabaseClient.from('gastro_agenda_limites').upsert(limites,{onConflict:'profissional_id,exame_tipo'});if(b.error)throw b.error;
+ try{const {error}=await supabaseClient.rpc('gastro_agenda_configurar',{p_profissional_id:id,p_dias_semana:dias,p_consultorio:local,p_turno:config.turno,p_hora_inicio:hora,p_ativo:config.ativo,p_limites:limites.map(x=>({exame_tipo:x.exame_tipo,limite_diario:x.limite_diario}))});if(error)throw error;
   regularAgendaConfigsCache=[];regularAgendaLimitesCache=[];await regularAgendaCarregarBases();await agendaProcedimentosCarregarDia();await regularAtualizarResumoProcedimento();exibirToast('Configuração da agenda salva com sucesso.','sucesso');
  }catch(error){console.error(error);exibirToast(mensagemErroAmigavel(error,'Não foi possível salvar a configuração da agenda.'),'erro');}
 }
