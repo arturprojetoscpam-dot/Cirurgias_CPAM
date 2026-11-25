@@ -3587,15 +3587,15 @@
 #appShell .cpam-regular-week>span{display:flex;flex-direction:column;min-width:0;min-height:31px;align-items:center;justify-content:center;gap:1px;padding:3px 1px;border-radius:7px;font-size:9px;font-weight:800;line-height:1.05;white-space:nowrap}
 #appShell .cpam-regular-week>span small{font-size:8px;line-height:1}
 #appShell .cpam-regular-week>span:only-child{grid-column:1/-1;flex-direction:row;white-space:normal}
-#appShell .cpam-date-control{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);grid-template-rows:auto auto;gap:8px;align-items:stretch}
+#appShell .cpam-date-control{display:grid;width:min(100%,820px);margin-left:auto;margin-right:auto;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);grid-template-rows:auto auto;gap:10px;align-items:stretch}
 #appShell .cpam-date-arrow{display:flex;grid-row:1;min-width:0;min-height:40px;width:100%;height:auto;flex-direction:row;gap:5px;align-items:center;justify-content:center;border:1px solid #14532D;border-radius:10px;padding:7px 4px;background:#166534;color:#fff;font-size:clamp(9px,1.05vw,11px);font-weight:800;text-align:center;box-shadow:0 1px 2px rgba(15,23,42,.12)}
 #appShell .cpam-date-arrow i{font-size:12px}
 #appShell .cpam-date-back{grid-column:1}
 #appShell .cpam-date-forward{grid-column:3;background:#991B1B;border-color:#7F1D1D;color:#fff}
 #appShell .cpam-date-arrow:disabled,#appShell .cpam-date-shortcut-group button:disabled,#appShell .cpam-next-slot:disabled{cursor:not-allowed;opacity:.42;filter:grayscale(.35)}
 #appShell .cpam-date-selected{grid-column:2;grid-row:1 / span 2;display:flex;min-width:0;width:100%;height:100%;flex-direction:column;gap:8px;align-items:center;justify-content:center;border:1px solid #123C32;border-radius:13px;background:#123C32;padding:8px;box-shadow:0 3px 10px rgba(18,60,50,.14);text-align:center}
-#appShell .cpam-date-selected-label{display:block;width:100%;color:#fff;font-size:10px;font-weight:900;letter-spacing:.12em;text-align:center}
-#appShell .cpam-date-input{display:block;width:100%;min-width:0!important;margin:0 auto!important;border:0!important;border-radius:9px!important;background:#fff!important;color:#173F32!important;font-size:clamp(19px,4.8vw,25px)!important;font-weight:900!important;line-height:1.15!important;text-align:center!important;text-align-last:center!important}
+#appShell .cpam-date-selected-label{display:block;width:100%;color:#fff;font-size:12px;font-weight:900;letter-spacing:.12em;text-align:center}
+#appShell .cpam-date-input{display:block;width:100%;min-width:0!important;margin:0 auto!important;border:0!important;border-radius:9px!important;background:#fff!important;color:#173F32!important;font-size:clamp(23px,3vw,32px)!important;font-weight:900!important;line-height:1.15!important;text-align:center!important;text-align-last:center!important}
 #appShell .cpam-next-slot{display:flex;min-height:34px;width:100%;align-items:center;justify-content:center;gap:5px;border:1px solid #1D4ED8;border-radius:9px;background:#2563EB;padding:6px 7px;color:#fff;font-size:clamp(9px,1.05vw,11px);font-weight:800;box-shadow:none}
 #appShell .cpam-date-shortcut-group{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-column:1;grid-row:2;gap:4px;min-width:0;width:100%;height:auto;min-height:34px;align-items:stretch;border:0;border-radius:9px;background:transparent;padding:0}
 #appShell .cpam-date-shortcut-forward{grid-column:3;grid-row:2}
@@ -3616,11 +3616,12 @@
  #appShell .cpam-agenda-topline{display:block}
  #appShell .cpam-regular-week{width:100%;margin-top:9px;gap:3px}
  #appShell .cpam-regular-week>span{min-height:29px;font-size:8px}
- #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);grid-template-rows:auto auto;gap:5px}
+ #appShell .cpam-date-control{width:100%;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);grid-template-rows:auto auto;gap:5px}
  #appShell .cpam-date-arrow{min-height:38px;gap:3px;padding:5px 2px;font-size:clamp(8px,2.2vw,10px);flex-direction:column}
  #appShell .cpam-date-arrow i{font-size:11px}
  #appShell .cpam-date-selected{padding:7px 4px;gap:7px}
  #appShell .cpam-date-selected-label{font-size:7px;letter-spacing:.08em}
+ #appShell .cpam-date-input{font-size:clamp(20px,5vw,26px)!important}
  #appShell .cpam-next-slot{min-height:34px;padding:5px 3px;font-size:clamp(8px,2.1vw,10px)}
  #appShell .cpam-date-shortcut-group{gap:3px}
  #appShell .cpam-date-shortcut-group button{min-height:32px;font-size:clamp(8px,2.1vw,10px);padding:0 1px}
