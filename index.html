@@ -4202,8 +4202,8 @@
                   <div><label for="regularProntuarioAmb" class="label-cirurgia">Prontuário ambulatorial</label><input id="regularProntuarioAmb" class="campo-cirurgia" maxlength="60" placeholder="Número do prontuário ambulatorial"></div>
                   <div class="sm:col-span-2"><label for="regularNomePaciente" class="label-cirurgia">Nome completo *</label><input id="regularNomePaciente" class="campo-cirurgia" required maxlength="180" placeholder="Nome completo do paciente"></div>
                   <div><label for="regularNascimento" class="label-cirurgia">Data de nascimento</label><input id="regularNascimento" type="date" class="campo-cirurgia"></div>
-                  <div><label for="regularCPF" class="label-cirurgia">CPF</label><input id="regularCPF" class="campo-cirurgia" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"><p id="regularCPFErro" class="regular-doc-error" aria-live="polite"></p></div>
-                  <div><label for="regularCNS" class="label-cirurgia">Cartão SUS (CNS)</label><input id="regularCNS" class="campo-cirurgia" inputmode="numeric" maxlength="18" placeholder="000 0000 0000 0000"><p id="regularCNSErro" class="regular-doc-error" aria-live="polite"></p></div>
+                  <div><label for="regularCPF" class="label-cirurgia">CPF</label><input id="regularCPF" class="campo-cirurgia" inputmode="numeric" maxlength="20" placeholder="000.000.000-00"><p id="regularCPFErro" class="regular-doc-error" aria-live="polite"></p></div>
+                  <div><label for="regularCNS" class="label-cirurgia">Cartão SUS (CNS)</label><input id="regularCNS" class="campo-cirurgia" inputmode="numeric" maxlength="24" placeholder="000 0000 0000 0000"><p id="regularCNSErro" class="regular-doc-error" aria-live="polite"></p></div>
                   
                   <div class="sm:col-span-2"><label for="regularNomeMae" class="label-cirurgia">Nome da mãe</label><input id="regularNomeMae" class="campo-cirurgia" maxlength="180" placeholder="Nome completo da mãe"></div>
                   <div><label for="regularTelefone" class="label-cirurgia">Telefone</label><input id="regularTelefone" class="campo-cirurgia" maxlength="30" placeholder="(00) 00000-0000"></div>
@@ -6029,8 +6029,8 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         let agendaModoVisualizacao='semanal';
         let regularPacienteAtual=null,regularBuscaProcedimentoTimer=null,regularDadosSISREG=false,sisregProgressTimer=null;
 
-function formatarCPFRegular(v){const d=String(v||'').replace(/\D/g,'').slice(0,11);return d.length>9?d.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4'):d.length>6?d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3'):d.length>3?d.replace(/(\d{3})(\d{0,3})/,'$1.$2'):d;}
-function formatarCNSRegular(v){const d=String(v||'').replace(/\D/g,'').slice(0,15);return d.replace(/^(\d{3})(\d{0,4})?(\d{0,4})?(\d{0,4})?$/,(m,a,b='',c='',e='')=>[a,b,c,e].filter(Boolean).join(' '));}
+function formatarCPFRegular(v){const d=String(v||'').replace(/\D/g,'');return d.length>9?d.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4'):d.length>6?d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3'):d.length>3?d.replace(/(\d{3})(\d{0,3})/,'$1.$2'):d;}
+function formatarCNSRegular(v){const d=String(v||'').replace(/\D/g,'');return d.replace(/^(\d{3})(\d{0,4})?(\d{0,4})?(\d{0,4})?$/,(m,a,b='',c='',e='')=>[a,b,c,e].filter(Boolean).join(' '));}
 function cpfRegularValido(valor){const d=String(valor||'').replace(/\D/g,'');if(d.length!==11||/^([0-9])\1{10}$/.test(d))return false;let soma=0;for(let i=0;i<9;i++)soma+=Number(d[i])*(10-i);let dig=(soma*10)%11;if(dig===10)dig=0;if(dig!==Number(d[9]))return false;soma=0;for(let i=0;i<10;i++)soma+=Number(d[i])*(11-i);dig=(soma*10)%11;if(dig===10)dig=0;return dig===Number(d[10]);}
 function cnsRegularValido(valor){
  const d=String(valor||'').replace(/\D/g,'');
@@ -6047,11 +6047,28 @@ function cnsRegularValido(valor){
  else if(dv===10){soma+=2;dv=11-(soma%11);if(dv===11)dv=0;sufixo='001';}
  return d.slice(11)===sufixo+String(dv);
 }
-function validarDocumentoRegular(id,mostrarIncompleto=true){const campo=document.getElementById(id),erro=document.getElementById(id+'Erro');if(!campo||!erro)return true;const d=campo.value.replace(/\D/g,'');let mensagem='';if(d){if(id==='regularCPF'){if(d.length!==11)mensagem='CPF incompleto: informe os 11 números.';else if(!cpfRegularValido(d))mensagem='CPF inválido. Confira os números e os dígitos verificadores.';}else{if(d.length!==15)mensagem='CNS incompleto: informe os 15 números.';else if(!cnsRegularValido(d))mensagem='CNS inválido ou fora do padrão do Cartão Nacional de Saúde.';}}erro.textContent=mensagem;erro.classList.toggle('is-visible',!!mensagem);campo.classList.toggle('regular-doc-invalid',!!mensagem);campo.classList.toggle('regular-doc-valid',!!d&&!mensagem);campo.setAttribute('aria-invalid',mensagem?'true':'false');return !mensagem;}
+function validarDocumentoRegular(id,mostrarIncompleto=true){
+ const campo=document.getElementById(id),erro=document.getElementById(id+'Erro');if(!campo||!erro)return true;
+ const d=campo.value.replace(/\D/g,'');let mensagem='';
+ if(d){
+  const esperado=id==='regularCPF'?11:15,nome=id==='regularCPF'?'CPF':'Cartão SUS (CNS)';
+  if(d.length<esperado)mensagem=nome+': quantidade insuficiente de números. Informe exatamente '+esperado+' dígitos (faltam '+(esperado-d.length)+').';
+  else if(d.length>esperado)mensagem=nome+': quantidade excedente de números. Informe exatamente '+esperado+' dígitos (há '+(d.length-esperado)+' a mais).';
+  else if(id==='regularCPF'){
+   if(/^([0-9])\1{10}$/.test(d))mensagem='CPF inválido: não são aceitos números repetidos.';
+   else if(!cpfRegularValido(d))mensagem='CPF inválido: os dígitos verificadores não conferem. Confira os dois últimos números.';
+  }else{
+   if(!['1','2','7','8','9'].includes(d[0]))mensagem='Cartão SUS inválido: o primeiro dígito deve ser 1, 2, 7, 8 ou 9.';
+   else if(/^([0-9])\1{14}$/.test(d))mensagem='Cartão SUS inválido: não são aceitos números repetidos.';
+   else if(!cnsRegularValido(d))mensagem='Cartão SUS inválido: o número não passou na validação do padrão e dos dígitos verificadores do CNS.';
+  }
+ }
+ erro.textContent=mensagem;erro.classList.toggle('is-visible',!!mensagem);campo.classList.toggle('regular-doc-invalid',!!mensagem);campo.classList.toggle('regular-doc-valid',!!d&&!mensagem);campo.setAttribute('aria-invalid',mensagem?'true':'false');return !mensagem;
+}
         function inicializarFormularioRegular(){
             const data=document.getElementById('regularDataPrevista');if(data&&!data.value)data.value=dataLocalISOAgenda(new Date());
             const busca=document.getElementById('regularBuscaPaciente');if(busca&&!busca.dataset.bound){busca.dataset.bound='1';busca.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();consultarPacienteSISREG();}});busca.addEventListener('input',()=>{busca.value=busca.value.replace(/\\D/g,'').slice(0,15);});}const cod=document.getElementById('regularCodigoOrigem');if(cod&&!cod.dataset.bound){cod.dataset.bound='1';cod.addEventListener('input',()=>{const v=cod.value.trim();if(/^\d{4,}$/.test(v)){document.getElementById('regularBuscaProcedimento').value=v;buscarProcedimentosRegular();}});}
-            ['regularCPF','regularCNS'].forEach(id=>{const campo=document.getElementById(id);if(campo&&!campo.dataset.bound){campo.dataset.bound='1';campo.addEventListener('input',()=>{const dig=campo.value.replace(/\D/g,'').slice(0,id==='regularCPF'?11:15);campo.value=id==='regularCPF'?formatarCPFRegular(dig):formatarCNSRegular(dig);validarDocumentoRegular(id,campo.dataset.touched==='1');});campo.addEventListener('blur',()=>{campo.dataset.touched='1';validarDocumentoRegular(id,true);});}});
+            ['regularCPF','regularCNS'].forEach(id=>{const campo=document.getElementById(id);if(campo&&!campo.dataset.bound){campo.dataset.bound='1';campo.addEventListener('input',()=>{const dig=campo.value.replace(/\D/g,'');campo.value=id==='regularCPF'?formatarCPFRegular(dig):formatarCNSRegular(dig);validarDocumentoRegular(id,campo.dataset.touched==='1');});campo.addEventListener('blur',()=>{campo.dataset.touched='1';validarDocumentoRegular(id,true);});}});
             const form=document.getElementById('formRegularCirurgia');if(form&&!form.dataset.enterBound){form.dataset.enterBound='1';form.addEventListener('keydown',evento=>{if(evento.key!=='Enter'||evento.isComposing)return;const atual=evento.target;if(!(atual instanceof HTMLElement)||!['INPUT','SELECT','TEXTAREA'].includes(atual.tagName))return;evento.preventDefault();const campos=Array.from(form.querySelectorAll('input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled])')).filter(el=>el.offsetParent!==null&&el.tabIndex!==-1);const indice=campos.indexOf(atual);if(indice>=0&&indice<campos.length-1){campos[indice+1].focus({preventScroll:true});}else if(indice===campos.length-1){const salvar=document.getElementById('btnSalvarAgendamentoRegular');if(typeof form.requestSubmit==='function')form.requestSubmit(salvar||undefined);else if(salvar)salvar.click();}});}
         }
         async function limparPacienteRegular(confirmar=true){
@@ -6106,7 +6123,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){const campo=document
             if(!profissionalResponsavelId){exibirToast('Selecione o médico responsável.','erro');document.getElementById('regularGastroMedico').focus();return;}
             if(!nome||!procedimento||!codigo||!data){exibirToast('Preencha nome, procedimento e data prevista. O prontuário ambulatorial pode ser informado quando disponível.','erro');return;}
             if(!regularPacienteAtual&&!cpf&&!cns){exibirToast('Para cadastrar um novo paciente, informe CPF ou Cartão SUS (CNS).','erro');return;}
-            if(cpf&&!cpfRegularValido(cpf)){validarDocumentoRegular('regularCPF',true);document.getElementById('regularCPF').focus();return;}if(cns&&!cnsRegularValido(cns)){validarDocumentoRegular('regularCNS',true);document.getElementById('regularCNS').focus();return;}
+            if(cpf&&!validarDocumentoRegular('regularCPF',true)){document.getElementById('regularCPF').focus();return;}if(cns&&!validarDocumentoRegular('regularCNS',true)){document.getElementById('regularCNS').focus();return;}
             const nascimentoRegular=regularPacienteAtual?.data_nascimento||document.getElementById('regularNascimento').value;
             const idadeRegular=idadeNaData(nascimentoRegular,data);
             if(idadeRegular===null){exibirToast('Informe uma data de nascimento válida antes de regularizar a cirurgia.','erro');if(!regularPacienteAtual)document.getElementById('regularNascimento').focus();return;}
