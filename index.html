@@ -3587,11 +3587,18 @@
 #appShell .cpam-regular-week>span{display:flex;flex-direction:column;min-width:0;min-height:31px;align-items:center;justify-content:center;gap:1px;padding:3px 1px;border-radius:7px;font-size:9px;font-weight:800;line-height:1.05;white-space:nowrap}
 #appShell .cpam-regular-week>span small{font-size:8px;line-height:1}
 #appShell .cpam-regular-week>span:only-child{grid-column:1/-1;flex-direction:row;white-space:normal}
-#appShell .cpam-date-control{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px;align-items:center}
-#appShell .cpam-date-arrow{display:flex;min-width:44px;min-height:44px;align-items:center;justify-content:center;border:1px solid #dbe3df;border-radius:10px;background:#fff;color:#315f4b}
+#appShell .cpam-date-control{display:grid;grid-template-columns:minmax(76px,.8fr) minmax(0,1.5fr) minmax(76px,.8fr);gap:clamp(10px,2.5vw,20px);align-items:center}
+#appShell .cpam-date-arrow{display:flex;min-width:0;min-height:44px;gap:5px;align-items:center;justify-content:center;border:1px solid #dbe3df;border-radius:10px;background:#fff;color:#315f4b}
+#appShell .cpam-date-tag{font-size:8px;font-weight:850;letter-spacing:.035em;white-space:nowrap}
+#appShell .cpam-date-back{justify-self:start}
+#appShell .cpam-date-forward{justify-self:end}
+#appShell .cpam-date-arrow:disabled,#appShell .cpam-date-shortcuts button:disabled,#appShell .cpam-next-slot:disabled{cursor:not-allowed;opacity:.42;filter:grayscale(.35)}
+#appShell .cpam-date-shortcut-group{display:flex;flex:0 0 auto;align-items:center;gap:6px}
+#appShell .cpam-date-shortcut-tag{padding:0 2px;color:#718078;font-size:8px;font-weight:850;letter-spacing:.04em;white-space:nowrap}
+#appShell .cpam-date-shortcut-forward{margin-left:10px;padding-left:12px;border-left:1px solid #dbe3df}
 #appShell .cpam-date-input{width:100%;min-width:0!important;font-size:clamp(14px,4vw,18px)!important}
 #appShell .cpam-date-actions{display:flex;flex-direction:column;gap:8px;margin-top:9px}
-#appShell .cpam-date-shortcuts{display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;padding:1px 0 4px;scrollbar-width:none}
+#appShell .cpam-date-shortcuts{display:flex;gap:0;overflow-x:auto;overscroll-behavior-x:contain;padding:1px 0 4px;scrollbar-width:none}
 #appShell .cpam-date-shortcuts::-webkit-scrollbar{display:none}
 #appShell .cpam-date-shortcuts button{flex:0 0 auto;min-height:36px;padding:0 11px;border:1px solid #dbe3df;border-radius:8px;background:#fff;color:#52645b;font-size:11px;font-weight:750}
 #appShell .cpam-next-slot{display:flex;min-height:44px;width:100%;align-items:center;justify-content:center;border-radius:10px;background:#123C32;padding:0 14px;color:#fff;font-size:12px;font-weight:800}
@@ -3606,8 +3613,12 @@
  #appShell .cpam-agenda-topline{display:block}
  #appShell .cpam-regular-week{width:100%;margin-top:9px;gap:3px}
  #appShell .cpam-regular-week>span{min-height:29px;font-size:8px}
- #appShell .cpam-date-control{grid-template-columns:42px minmax(0,1fr) 42px;gap:5px}
- #appShell .cpam-date-arrow{min-width:42px;min-height:44px}
+ #appShell .cpam-date-control{grid-template-columns:minmax(70px,.8fr) minmax(0,1.5fr) minmax(70px,.8fr);gap:8px}
+ #appShell .cpam-date-arrow{min-width:0;min-height:44px}
+ #appShell .cpam-date-tag{font-size:7px}
+ #appShell .cpam-date-shortcut-tag{font-size:7px}
+ #appShell .cpam-date-shortcut-group{gap:4px}
+ #appShell .cpam-date-shortcut-forward{margin-left:8px;padding-left:9px}
  #appShell .cpam-date-shortcuts button{padding:0 10px}
  #appShell #regularResumoAgendaProcedimento{padding-top:10px}
  #appShell #regularResumoAgendaConteudo .cpam-summary-limits{grid-template-columns:1fr}
@@ -4286,13 +4297,14 @@
   <div id="regularGastroMedicoWrap" class="mb-3 max-w-xl"><label for="regularGastroMedico" class="label-cirurgia">Médico responsável *</label><select id="regularGastroMedico" class="campo-cirurgia" required onchange="regularAoSelecionarMedico()"><option value="">Carregando médicos...</option></select></div>
   <div class="cpam-agenda-topline"><div><label for="regularDataPrevista" class="label-cirurgia">Data prevista *</label><div class="mt-1 flex flex-wrap items-center gap-2"><span id="regularDataSemanaLabel" class="text-xs font-bold text-slate-800">Selecione o médico</span><span id="regularDataDisponibilidade" class="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Aguardando seleção</span></div></div><div id="regularEscalaSemanal" class="cpam-regular-week" aria-label="Escala semanal do profissional"><span class="text-[10px] text-slate-400">Selecione o médico</span></div></div>
   <div class="cpam-date-control">
-    <button type="button" onclick="regularNavegarData(-1)" class="cpam-date-arrow" aria-label="Dia anterior"><i class="fa-solid fa-chevron-left"></i></button>
-    <input id="regularDataPrevista" type="date" min="\${regularAgendaHojeISO()}" class="campo-cirurgia cpam-date-input !h-11 !px-2 !text-base !font-bold !text-center text-slate-900" required onchange="regularDataManualAlterada()">
-    <button type="button" onclick="regularNavegarData(1)" class="cpam-date-arrow" aria-label="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button>
+    <button type="button" onclick="regularNavegarData(-1)" class="cpam-date-arrow cpam-date-back" aria-label="Retroceder um dia"><span class="cpam-date-tag">RETROCEDER</span><i class="fa-solid fa-chevron-left"></i></button>
+    <input id="regularDataPrevista" type="date" min="\${regularAgendaHojeISO()}" class="campo-cirurgia cpam-date-input !h-11 !px-2 !text-base !font-bold !text-center text-slate-900" required disabled onchange="regularDataManualAlterada()" aria-disabled="true">
+    <button type="button" onclick="regularNavegarData(1)" class="cpam-date-arrow cpam-date-forward" aria-label="Avançar um dia"><span class="cpam-date-tag">AVANÇAR</span><i class="fa-solid fa-chevron-right"></i></button>
   </div>
   <div class="cpam-date-actions">
     <div class="cpam-date-shortcuts">
-      <button type="button" onclick="regularNavegarData(-90)">−90d</button><button type="button" onclick="regularNavegarData(-30)">−30d</button><button type="button" onclick="regularNavegarData(-7)">−7d</button><button type="button" onclick="regularNavegarData(7)">+7d</button><button type="button" onclick="regularNavegarData(30)">+30d</button><button type="button" onclick="regularNavegarData(90)">+90d</button>
+      <div class="cpam-date-shortcut-group"><span class="cpam-date-shortcut-tag">RETROCEDER</span><button type="button" onclick="regularNavegarData(-90)">−90d</button><button type="button" onclick="regularNavegarData(-30)">−30d</button><button type="button" onclick="regularNavegarData(-7)">−7d</button></div>
+      <div class="cpam-date-shortcut-group cpam-date-shortcut-forward"><span class="cpam-date-shortcut-tag">AVANÇAR</span><button type="button" onclick="regularNavegarData(7)">+7d</button><button type="button" onclick="regularNavegarData(30)">+30d</button><button type="button" onclick="regularNavegarData(90)">+90d</button></div>
     </div>
     <button type="button" onclick="regularBuscarProximaDataDisponivel(true)" class="cpam-next-slot"><i class="fa-solid fa-calendar-check mr-1"></i>Próxima vaga</button>
   </div>
@@ -6827,6 +6839,9 @@ function regularAgendaDataFormatada(iso){if(!iso)return '—';return new Intl.Da
 function regularAtualizarNavegacaoData(){
  const input=document.getElementById('regularDataPrevista');if(!input)return;input.min=regularAgendaHojeISO();
  const data=input.value,medicoId=document.getElementById('regularGastroMedico')?.value,config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
+ const habilitar=!!medicoId;input.disabled=!habilitar;input.setAttribute('aria-disabled',String(!habilitar));
+ const agenda=document.querySelector('#appShell .cpam-regular-agenda');
+ agenda?.querySelectorAll('.cpam-date-arrow,.cpam-date-shortcuts button,.cpam-next-slot').forEach(botao=>{botao.disabled=!habilitar;botao.setAttribute('aria-disabled',String(!habilitar));});
  const label=document.getElementById('regularDataSemanaLabel'),status=document.getElementById('regularDataDisponibilidade'),escala=document.getElementById('regularEscalaSemanal');
  if(label)label.textContent=data?regularAgendaDataFormatada(data):'Selecione uma data';
  if(status){status.textContent=data?'Data selecionada':'Aguardando seleção';status.className='rounded-full px-2 py-1 text-[10px] font-semibold '+(data?'bg-emerald-50 text-emerald-800':'bg-slate-100 text-slate-600');}
@@ -6836,9 +6851,10 @@ function regularAtualizarNavegacaoData(){
  const dias=[['SEG',1],['TER',2],['QUA',3],['QUI',4],['SEX',5],['SÁB',6],['DOM',7]];
  escala.innerHTML=dias.map(([nome,n])=>{const ativo=(config.dias_semana||[]).map(Number).includes(n);return '<span class="rounded-md '+(ativo?'bg-emerald-100 text-emerald-900':'bg-slate-100 text-slate-400')+'"><b>'+nome+'</b><small>'+(ativo?String(config.turno||'ATENDE').slice(0,1):'—')+'</small></span>';}).join('');
 }
-function regularDataManualAlterada(){const input=document.getElementById('regularDataPrevista');if(input&&input.value<regularAgendaHojeISO()){input.value=regularAgendaHojeISO();exibirToast('Não é permitido selecionar datas passadas.','aviso');}regularAtualizarNavegacaoData();regularAtualizarResumoProcedimento();}
+function regularDataManualAlterada(){const input=document.getElementById('regularDataPrevista');if(!document.getElementById('regularGastroMedico')?.value){if(input)input.value='';regularAtualizarNavegacaoData();return;}if(input&&input.value<regularAgendaHojeISO()){input.value=regularAgendaHojeISO();exibirToast('Não é permitido selecionar datas passadas.','aviso');}regularAtualizarNavegacaoData();regularAtualizarResumoProcedimento();}
 function regularNavegarData(dias){
  const input=document.getElementById('regularDataPrevista');if(!input)return;
+ if(!document.getElementById('regularGastroMedico')?.value){exibirToast('Selecione o médico responsável antes de alterar a data.','aviso');regularAtualizarNavegacaoData();return;}
  const base=input.value||regularAgendaHojeISO(),medicoId=document.getElementById('regularGastroMedico')?.value;
  const config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
  let alvo=regularAgendaDataAdd(base,dias),direcao=dias<0?-1:1;
