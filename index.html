@@ -6052,7 +6052,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
  const d=campo.value.replace(/\D/g,'');let mensagem='';
  if(d){
   const esperado=id==='regularCPF'?11:15,nome=id==='regularCPF'?'CPF':'Cartão SUS (CNS)';
-  if(d.length<esperado)mensagem=nome+': quantidade insuficiente de números. Informe exatamente '+esperado+' dígitos (faltam '+(esperado-d.length)+').';
+  if(d.length<esperado&&mostrarIncompleto)mensagem=nome+': quantidade insuficiente de números. Informe exatamente '+esperado+' dígitos (faltam '+(esperado-d.length)+').';
   else if(d.length>esperado)mensagem=nome+': quantidade excedente de números. Informe exatamente '+esperado+' dígitos (há '+(d.length-esperado)+' a mais).';
   else if(id==='regularCPF'){
    if(/^([0-9])\1{10}$/.test(d))mensagem='CPF inválido: não são aceitos números repetidos.';
