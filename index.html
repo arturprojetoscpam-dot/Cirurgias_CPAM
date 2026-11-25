@@ -5253,7 +5253,7 @@
         </section>
 
         <section id="secAgendamentosEletivos" class="hidden space-y-5">
-<div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">Programação cirúrgica</p><h2 class="mt-1 text-xl font-semibold tracking-tight text-slate-800"><i class="fa-solid fa-calendar-check mr-2 text-emerald-700"></i>Agenda Cirúrgica Eletiva</h2><p class="mt-1 text-xs text-slate-500">Agenda compartilhada entre Regulação e Bloco Cirúrgico.</p></div><div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600"><i class="fa-solid fa-shield-halved text-emerald-700"></i>Acesso por setor</div></div>
+<div class="flex flex-wrap items-start justify-between gap-3"><div><p class="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">Programação cirúrgica</p><h2 class="mt-1 text-xl font-semibold tracking-tight text-slate-800"><i class="fa-solid fa-calendar-check mr-2 text-emerald-700"></i>Agenda Cirúrgica Eletiva</h2><p class="mt-1 text-xs text-slate-500">Agenda compartilhada entre Regulação e Bloco Cirúrgico.</p></div><div class="flex flex-wrap items-center gap-2"><div class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600"><i class="fa-solid fa-shield-halved text-emerald-700"></i>Acesso por setor</div><button type="button" onclick="carregarDadosAgendaEletiva()" class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50"><i class="fa-solid fa-rotate mr-1"></i>Atualizar</button></div></div>
 <div class="grid grid-cols-1 gap-3 sm:grid-cols-3"><div class="rounded-2xl border border-slate-200 bg-white p-4"><label for="filtroDataAgendaEletiva" class="block text-sm font-extrabold tracking-wide text-slate-700 sm:text-base">Data da agenda</label><input id="filtroDataAgendaEletiva" type="date" onchange="atualizarSemanaAgendaEletiva()" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-xl font-extrabold text-slate-900" aria-label="Data da agenda eletiva"></div><div class="rounded-2xl border border-slate-200 bg-white p-3 sm:col-span-2 sm:p-4"><div class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1"><p class="agenda-resumo-titulo text-sm font-extrabold uppercase tracking-[.1em] text-emerald-700">Resumo do dia</p><h3 id="agendaResumoDia" class="text-base font-semibold text-slate-700">Dia selecionado</h3></div><div class="mt-2 grid grid-cols-4 gap-1.5 sm:gap-2"><div class="min-w-0 rounded-lg bg-slate-50 px-1.5 py-2 text-center sm:rounded-xl sm:p-3"><p class="truncate text-[9px] font-medium text-slate-500 sm:text-[10px]">Total</p><p id="agendaResumoTotal" class="mt-0.5 text-base font-extrabold leading-tight text-slate-800 sm:mt-1 sm:text-xl">—</p></div><div class="min-w-0 rounded-lg bg-amber-50 px-1.5 py-2 text-center sm:rounded-xl sm:p-3"><p class="truncate text-[9px] font-medium text-amber-700 sm:text-[10px]">Pendentes</p><p id="agendaResumoPendentes" class="mt-0.5 text-base font-extrabold leading-tight text-amber-800 sm:mt-1 sm:text-xl">—</p></div><div class="min-w-0 rounded-lg bg-emerald-50 px-1.5 py-2 text-center sm:rounded-xl sm:p-3"><p class="truncate text-[9px] font-medium text-emerald-700 sm:text-[10px]">Realizadas</p><p id="agendaResumoRealizadas" class="mt-0.5 text-base font-extrabold leading-tight text-emerald-800 sm:mt-1 sm:text-xl">—</p></div><div class="min-w-0 rounded-lg bg-rose-50 px-1.5 py-2 text-center sm:rounded-xl sm:p-3"><p class="truncate text-[9px] font-medium text-rose-700 sm:text-[10px]">Canceladas</p><p id="agendaResumoCanceladas" class="mt-0.5 text-base font-extrabold leading-tight text-rose-800 sm:mt-1 sm:text-xl">—</p></div></div></div></div>
 <div class="overflow-hidden rounded-2xl border border-black bg-white shadow-sm">
   <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-4 sm:px-5">
@@ -5268,9 +5268,9 @@
   <div id="agendaLegendaMensal" class="hidden px-4 pb-4 text-[10px] text-slate-500 sm:px-5">Clique em um dia para selecionar e abrir a programação correspondente.</div>
 </div>
 <div class="grid grid-cols-1 gap-3">
-  <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div class="flex items-center justify-between gap-2"><div><p class="text-[10px] font-bold uppercase tracking-[.14em] text-amber-700">Acompanhamento do Bloco</p><h3 class="mt-1 text-base font-extrabold text-slate-800">Pendências do Bloco</h3><p class="mt-1 text-xs text-slate-500">Cirurgias agendadas que ainda não receberam resposta.</p></div><span id="agendaPendenciasTotal" class="rounded-xl bg-amber-50 px-3 py-2 text-lg font-extrabold text-amber-800">—</span></div><div id="agendaPendenciasLista" class="mt-4 space-y-2"><div class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 px-4 py-5 text-center"><i class="fa-solid fa-hourglass-half text-lg text-amber-600"></i><p class="mt-2 text-xs font-semibold text-slate-700">Aguardando integração da agenda</p><p class="mt-1 text-[11px] text-slate-500">As pendências serão listadas aqui após a publicação dos agendamentos.</p></div></div></div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"><div class="flex items-center justify-between gap-2"><div><p class="text-[10px] font-bold uppercase tracking-[.14em] text-amber-700">Acompanhamento do Bloco</p><h3 class="mt-1 text-base font-extrabold text-slate-800">Pendências do Bloco</h3><p class="mt-1 text-xs text-slate-500">Cirurgias agendadas que ainda não receberam resposta.</p></div><span id="agendaPendenciasTotal" class="rounded-xl bg-amber-50 px-3 py-2 text-lg font-extrabold text-amber-800">—</span></div><div id="agendaPendenciasLista" class="mt-4 max-h-[560px] space-y-2 overflow-y-auto pr-1"><div class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 px-4 py-5 text-center"><i class="fa-solid fa-hourglass-half text-lg text-amber-600"></i><p class="mt-2 text-xs font-semibold text-slate-700">Carregando pendências...</p></div></div></div>
 </div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white"><div class="border-b border-slate-100 bg-slate-50/70 px-4 py-3"><div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="text-sm font-bold text-slate-800">Programação do dia</h3><p id="agendaDataSelecionadaLabel" class="mt-1 text-[11px] text-slate-500">Selecione uma data.</p></div><span class="rounded-full bg-amber-50 px-3 py-1 text-[10px] font-semibold text-amber-800">Agenda em preparação</span></div></div><div class="flex flex-col items-center px-5 py-10 text-center"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700"><i class="fa-solid fa-calendar-days text-2xl"></i></div><h3 class="mt-4 text-sm font-bold text-slate-700">Não há agenda de Cirurgias Eletivas</h3><p class="mt-1 max-w-lg text-xs leading-6 text-slate-500">Ainda não há agendamentos publicados para esta data. Os 181 registros de 2027 continuam preservados na área de importação e aguardam publicação.</p></div></div>
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white"><div class="border-b border-slate-100 bg-slate-50/70 px-4 py-3"><div class="flex flex-wrap items-center justify-between gap-2"><div><h3 class="text-sm font-bold text-slate-800">Programação do dia</h3><p id="agendaDataSelecionadaLabel" class="mt-1 text-[11px] text-slate-500">Selecione uma data.</p></div><span class="rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-semibold text-emerald-800">Agenda ativa</span></div></div><div id="agendaProgramacaoDia" class="space-y-3 p-4 sm:p-5"><div class="py-10 text-center text-xs text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando programação...</div></div></div>
 </section>
 
         <section id="secCancelamentos" class="hidden space-y-4">
@@ -7046,6 +7046,10 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         }
         window.addEventListener('popstate',function(){resolverRotaAtual();});
         let agendaModoVisualizacao='semanal';
+        let agendaEletivaRegistros=[];
+        let agendaEletivaPacientes={};
+        let agendaEletivaCarregando=false;
+        let agendaEletivaRequestToken=0;
         let regularPacienteAtual=null,regularBuscaProcedimentoTimer=null,regularDadosSISREG=false,sisregProgressTimer=null;
 
 function formatarCPFRegular(v){const d=String(v||'').replace(/\D/g,'');return d.length>9?d.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4'):d.length>6?d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3'):d.length>3?d.replace(/(\d{3})(\d{0,3})/,'$1.$2'):d;}
@@ -7181,10 +7185,102 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
             document.getElementById('regularPacienteSelecionado').classList.add('hidden');document.getElementById('regularResultadosPaciente').classList.add('hidden');document.getElementById('regularResultadosSISREG')?.classList.add('hidden');document.getElementById('sisregLocalResultado')?.classList.add('hidden');document.getElementById('regularResultadosProcedimento').classList.add('hidden');document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');inicializarFormularioRegular();void regularAtualizarResumoProcedimento();
         }
 
+
+        function agendaEletivaStatusInfo(status){
+            const mapa={
+                aguardando_bloco:['Aguardando Bloco','bg-amber-50 text-amber-800 border-amber-200'],
+                realizada:['Realizada','bg-emerald-50 text-emerald-800 border-emerald-200'],
+                cancelada:['Cancelada','bg-rose-50 text-rose-800 border-rose-200'],
+                remarcada:['Remarcada','bg-sky-50 text-sky-800 border-sky-200']
+            };
+            return mapa[status]||[status||'Não informado','bg-slate-100 text-slate-700 border-slate-200'];
+        }
+        function selecionarDataAgendaEletiva(data){
+            const campo=document.getElementById('filtroDataAgendaEletiva');
+            if(campo&&data)campo.value=data;
+            atualizarSemanaAgendaEletiva();
+        }
+        async function carregarDadosAgendaEletiva(){
+            const token=++agendaEletivaRequestToken;
+            agendaEletivaCarregando=true;
+            renderizarDadosAgendaEletiva();
+            try{
+                const {data,error}=await supabaseClient.from('agendamentos_eletivos')
+                    .select('id,paciente_id,procedimento_nome,data_prevista,turno_atend,turno_cirurgico,local,situacao,prontuario_legado,identificacao_origem,nova_data_sugerida')
+                    .order('data_prevista',{ascending:true}).limit(2000);
+                if(error)throw error;
+                if(token!==agendaEletivaRequestToken)return;
+                const registros=data||[],ids=[...new Set(registros.map(x=>x.paciente_id).filter(Boolean))];
+                const pacientes={};
+                if(ids.length){
+                    const p=await supabaseClient.from('pacientes').select('id,nome_paciente,codigo_paciente').in('id',ids);
+                    if(p.error)throw p.error;
+                    for(const x of p.data||[])pacientes[x.id]=x;
+                }
+                if(token!==agendaEletivaRequestToken)return;
+                agendaEletivaRegistros=registros;
+                agendaEletivaPacientes=pacientes;
+                agendaEletivaCarregando=false;
+                atualizarSemanaAgendaEletiva();
+            }catch(error){
+                if(token!==agendaEletivaRequestToken)return;
+                console.error('Agenda Cirúrgica Eletiva:',error);
+                agendaEletivaCarregando=false;
+                const lista=document.getElementById('agendaPendenciasLista');
+                const dia=document.getElementById('agendaProgramacaoDia');
+                const mensagem=escaparHtml(error.message||'Não foi possível consultar a agenda.');
+                if(lista)lista.innerHTML='<p class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700">Falha ao carregar as pendências: '+mensagem+'</p>';
+                if(dia)dia.innerHTML='<p class="rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-700">Falha ao carregar a programação: '+mensagem+'</p>';
+                const total=document.getElementById('agendaPendenciasTotal');if(total)total.textContent='—';
+            }
+        }
+        function renderizarDadosAgendaEletiva(){
+            const totalEl=document.getElementById('agendaResumoTotal');
+            const pendEl=document.getElementById('agendaResumoPendentes');
+            const realizadasEl=document.getElementById('agendaResumoRealizadas');
+            const canceladasEl=document.getElementById('agendaResumoCanceladas');
+            const pendenciasTotal=document.getElementById('agendaPendenciasTotal');
+            const lista=document.getElementById('agendaPendenciasLista');
+            const dia=document.getElementById('agendaProgramacaoDia');
+            if(!lista||!dia)return;
+            const selecionada=document.getElementById('filtroDataAgendaEletiva')?.value||'';
+            const registrosDia=agendaEletivaRegistros.filter(x=>x.data_prevista===selecionada);
+            const pendentesDia=registrosDia.filter(x=>x.situacao==='aguardando_bloco').length;
+            const realizadasDia=registrosDia.filter(x=>x.situacao==='realizada').length;
+            const canceladasDia=registrosDia.filter(x=>x.situacao==='cancelada').length;
+            if(totalEl)totalEl.textContent=String(registrosDia.length);
+            if(pendEl)pendEl.textContent=String(pendentesDia);
+            if(realizadasEl)realizadasEl.textContent=String(realizadasDia);
+            if(canceladasEl)canceladasEl.textContent=String(canceladasDia);
+            const pendencias=agendaEletivaRegistros.filter(x=>x.situacao==='aguardando_bloco');
+            if(pendenciasTotal)pendenciasTotal.textContent=agendaEletivaCarregando?'…':String(pendencias.length);
+            if(agendaEletivaCarregando){
+                lista.innerHTML='<div class="rounded-xl border border-dashed border-amber-200 bg-amber-50/50 px-4 py-5 text-center"><i class="fa-solid fa-spinner fa-spin text-lg text-amber-600"></i><p class="mt-2 text-xs font-semibold text-slate-700">Carregando agendamentos...</p></div>';
+                dia.innerHTML='<div class="py-10 text-center text-xs text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando programação...</div>';
+                return;
+            }
+            lista.innerHTML=pendencias.length?pendencias.map(r=>{
+                const p=agendaEletivaPacientes[r.paciente_id]||{};
+                const nome=p.nome_paciente||'Paciente não identificado';
+                const codigo=p.codigo_paciente?'#'+String(p.codigo_paciente).padStart(7,'0'):'';
+                const data=gastroFormatarData(r.data_prevista);
+                return '<button type="button" onclick="selecionarDataAgendaEletiva(\''+escaparHtml(r.data_prevista)+'\')" class="w-full rounded-xl border border-amber-100 bg-white px-3 py-3 text-left transition hover:border-amber-300 hover:bg-amber-50/60"><span class="flex items-start justify-between gap-2"><strong class="min-w-0 text-xs font-bold text-slate-800">'+escaparHtml(nome)+'</strong><span class="shrink-0 rounded-full bg-amber-50 px-2 py-1 text-[9px] font-bold text-amber-800">'+data+'</span></span><span class="mt-1 block text-[10px] leading-5 text-slate-600">'+escaparHtml(r.procedimento_nome||'Procedimento não informado')+'</span><span class="mt-1 flex flex-wrap gap-x-3 text-[9px] text-slate-500">'+(codigo?'<span>Prontuário bloco '+escaparHtml(codigo)+'</span>':'')+'<span>Turno: '+escaparHtml(r.turno_atend||'—')+'</span></span></button>';
+            }).join(''):'<div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center"><i class="fa-solid fa-circle-check text-lg text-emerald-600"></i><p class="mt-2 text-xs font-semibold text-slate-700">Nenhuma pendência do Bloco</p></div>';
+            dia.innerHTML=registrosDia.length?registrosDia.map(r=>{
+                const p=agendaEletivaPacientes[r.paciente_id]||{};
+                const nome=p.nome_paciente||'Paciente não identificado';
+                const codigo=p.codigo_paciente?'#'+String(p.codigo_paciente).padStart(7,'0'):'';
+                const status=agendaEletivaStatusInfo(r.situacao);
+                const turno=r.turno_cirurgico||r.turno_atend||'Turno não informado';
+                const local=r.local||'Local a definir pelo Bloco';
+                return '<article class="rounded-xl border border-slate-200 bg-white p-4"><div class="flex flex-wrap items-start justify-between gap-2"><div class="min-w-0"><h4 class="text-sm font-extrabold text-slate-900">'+escaparHtml(nome)+'</h4><p class="mt-1 text-[10px] text-slate-500">'+(codigo?'Prontuário bloco '+escaparHtml(codigo)+' · ':'')+'Cadastro ambulatorial '+escaparHtml(r.prontuario_legado||'—')+'</p></div><span class="shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold '+status[1]+'">'+status[0]+'</span></div><p class="mt-3 text-xs font-semibold leading-5 text-slate-700">'+escaparHtml(r.procedimento_nome||'Procedimento não informado')+'</p><div class="mt-3 grid grid-cols-1 gap-2 text-[10px] text-slate-600 sm:grid-cols-2"><span><i class="fa-regular fa-clock mr-1 text-slate-400"></i>Turno: '+escaparHtml(turno)+'</span><span><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>'+escaparHtml(local)+'</span></div></article>';
+            }).join(''):'<div class="flex flex-col items-center px-5 py-10 text-center"><div class="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-500"><i class="fa-solid fa-calendar-day text-2xl"></i></div><h3 class="mt-4 text-sm font-bold text-slate-700">Nenhum agendamento nesta data</h3><p class="mt-1 max-w-lg text-xs leading-6 text-slate-500">Escolha outra data no calendário ou clique em uma pendência do Bloco para consultar a programação.</p></div>';
+        }
+
         function dataLocalISOAgenda(data){return data.getFullYear()+'-'+String(data.getMonth()+1).padStart(2,'0')+'-'+String(data.getDate()).padStart(2,'0');}
         function obterDataAgendaSelecionada(){const campo=document.getElementById('filtroDataAgendaEletiva');if(campo&&campo.value){const p=campo.value.split('-').map(Number);return new Date(p[0],p[1]-1,p[2],12);}return new Date();}
         function definirDataAgenda(data){const campo=document.getElementById('filtroDataAgendaEletiva');if(campo)campo.value=dataLocalISOAgenda(data);atualizarSemanaAgendaEletiva();}
-        function inicializarAgendaEletiva(){const campo=document.getElementById('filtroDataAgendaEletiva');if(!campo)return;if(!campo.value)campo.value=dataLocalISOAgenda(new Date());atualizarSemanaAgendaEletiva();}
+        function inicializarAgendaEletiva(){const campo=document.getElementById('filtroDataAgendaEletiva');if(!campo)return;if(!campo.value)campo.value=dataLocalISOAgenda(new Date());atualizarSemanaAgendaEletiva();carregarDadosAgendaEletiva();}
         function alterarModoAgenda(modo){agendaModoVisualizacao=modo==='mensal'?'mensal':'semanal';atualizarSemanaAgendaEletiva();}
         function navegarPeriodoAgenda(direcao){const data=obterDataAgendaSelecionada();if(agendaModoVisualizacao==='mensal')data.setMonth(data.getMonth()+direcao,1);else data.setDate(data.getDate()+(7*direcao));definirDataAgenda(data);}
         function irHojeAgenda(){definirDataAgenda(new Date());}
@@ -7204,8 +7300,9 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
             else{const primeiro=new Date(selecionada.getFullYear(),selecionada.getMonth(),1,12),inicio=new Date(primeiro);inicio.setDate(1-primeiro.getDay());for(let i=0;i<42;i++){const d=new Date(inicio);d.setDate(inicio.getDate()+i);datas.push(d);}document.getElementById('agendaIntervalo').textContent='Visão mensal · '+mesAno;}
             datas.forEach((dia,i)=>{
                 const iso=dataLocalISOAgenda(dia),ativo=iso===valor,ehHoje=iso===hojeISO,mesAtual=dia.getMonth()===selecionada.getMonth();
-                // O percentual será calculado quando os agendamentos publicados forem conectados.
-                const percentual=null;
+                const registrosDoDia=agendaEletivaRegistros.filter(r=>r.data_prevista===iso);
+                const respondidas=registrosDoDia.filter(r=>r.situacao!=='aguardando_bloco').length;
+                const percentual=registrosDoDia.length?Math.round((respondidas/registrosDoDia.length)*100):null;
                 const botao=document.createElement('button');botao.type='button';
                 botao.className='agenda-dia-card relative flex min-h-[66px] min-w-0 flex-col items-center justify-center rounded-xl border px-1 py-1.5 text-center transition-colors duration-200 '+(ativo?'border-emerald-800 bg-emerald-700 text-white shadow-sm':ehHoje?'border-sky-600 bg-sky-600 text-white shadow-sm':'border-slate-200 bg-white text-slate-700 hover:border-emerald-300 hover:bg-emerald-50')+(!semanal&&!mesAtual&&!ehHoje?' opacity-40':'');
                 botao.setAttribute('aria-pressed',ativo?'true':'false');
@@ -7219,6 +7316,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
             const dataLegivel=selecionada.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
             const resumo=document.getElementById('agendaResumoDia');if(resumo)resumo.textContent=selecionada.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
             const labelProgramacao=document.getElementById('agendaDataSelecionadaLabel');if(labelProgramacao)labelProgramacao.textContent='Programação para: '+dataLegivel;
+            renderizarDadosAgendaEletiva();
         }
         function alternarMenuPerfil(){
             const menu=document.getElementById('headerProfileMenu'),botao=document.getElementById('headerProfileButton');if(!menu||!botao)return;
