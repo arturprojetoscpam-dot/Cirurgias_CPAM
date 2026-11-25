@@ -4205,6 +4205,290 @@
 }
 </style>
 
+
+<style id="cpam-date-layout-polished">
+/* Agenda cirúrgica: hierarquia visual e alinhamento consistente */
+#appShell .cpam-date-control{
+  display:grid!important;
+  width:100%!important;
+  max-width:1120px!important;
+  margin:18px auto 22px!important;
+  padding:0 4px!important;
+  box-sizing:border-box!important;
+  grid-template-columns:minmax(0,1fr) minmax(280px,1.12fr) minmax(0,1fr)!important;
+  grid-template-rows:96px 36px!important;
+  column-gap:12px!important;
+  row-gap:8px!important;
+  align-items:stretch!important;
+}
+#appShell .cpam-date-selected{
+  grid-column:2!important;
+  grid-row:1 / span 2!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:18px 70px 36px!important;
+  align-content:center!important;
+  align-items:stretch!important;
+  justify-items:stretch!important;
+  gap:6px!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#appShell .cpam-date-selected-label{
+  grid-row:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:12px!important;
+  width:100%!important;
+  margin:0!important;
+  color:#14532d!important;
+  font-size:13px!important;
+  font-weight:800!important;
+  letter-spacing:.07em!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+#appShell .cpam-date-selected-label:before,
+#appShell .cpam-date-selected-label:after{
+  content:""!important;
+  display:block!important;
+  flex:1 1 20px!important;
+  min-width:12px!important;
+  height:2px!important;
+  border-radius:99px!important;
+  background:#b7d5c1!important;
+}
+#appShell #regularDataPrevista,
+#appShell .cpam-date-input{
+  grid-row:2!important;
+  display:block!important;
+  width:100%!important;
+  height:70px!important;
+  min-height:70px!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:5px 8px!important;
+  border:1px solid #d5e0e8!important;
+  border-radius:14px!important;
+  background:#fff!important;
+  color:#111827!important;
+  font-size:clamp(27px,3vw,36px)!important;
+  font-weight:800!important;
+  line-height:1.1!important;
+  text-align:center!important;
+  text-align-last:center!important;
+  box-shadow:0 2px 7px rgba(15,23,42,.06)!important;
+}
+#appShell #regularDataPrevista::-webkit-datetime-edit,
+#appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
+#appShell #regularDataPrevista::-webkit-datetime-edit-text,
+#appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
+#appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
+#appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
+  font-size:inherit!important;
+  font-weight:inherit!important;
+  line-height:inherit!important;
+}
+#appShell .cpam-next-slot{
+  grid-row:3!important;
+  width:100%!important;
+  height:36px!important;
+  min-height:36px!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:5px 8px!important;
+  border:1px solid #1d4ed8!important;
+  border-radius:10px!important;
+  background:#2563eb!important;
+  color:#fff!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1!important;
+  box-shadow:0 2px 5px rgba(37,99,235,.16)!important;
+}
+#appShell .cpam-date-arrow{
+  display:flex!important;
+  align-self:end!important;
+  justify-self:stretch!important;
+  width:100%!important;
+  height:70px!important;
+  min-height:70px!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:8px 12px!important;
+  transform:none!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  border:1px solid transparent!important;
+  border-radius:12px!important;
+  color:#fff!important;
+  font-size:clamp(12px,1.15vw,14px)!important;
+  font-weight:750!important;
+  line-height:1.2!important;
+  box-shadow:0 2px 5px rgba(15,23,42,.12)!important;
+}
+#appShell .cpam-date-arrow i{font-size:15px!important}
+#appShell .cpam-date-back{
+  grid-column:1!important;
+  grid-row:1!important;
+  background:#991b1b!important;
+  border-color:#7f1d1d!important;
+}
+#appShell .cpam-date-forward{
+  grid-column:3!important;
+  grid-row:1!important;
+  background:#166534!important;
+  border-color:#14532d!important;
+}
+#appShell .cpam-date-shortcut-group{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-self:stretch!important;
+  width:100%!important;
+  height:36px!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:0!important;
+  gap:6px!important;
+  border:0!important;
+  background:transparent!important;
+}
+#appShell .cpam-date-shortcut-back{
+  grid-column:1!important;
+  grid-row:2!important;
+}
+#appShell .cpam-date-shortcut-forward{
+  grid-column:3!important;
+  grid-row:2!important;
+}
+#appShell .cpam-date-shortcut-group button{
+  width:100%!important;
+  height:36px!important;
+  min-height:36px!important;
+  box-sizing:border-box!important;
+  margin:0!important;
+  padding:0 5px!important;
+  border:1px solid #e2e8f0!important;
+  border-radius:9px!important;
+  background:#f1f5f9!important;
+  color:#334155!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1!important;
+  box-shadow:none!important;
+}
+#appShell .cpam-date-shortcut-back button{
+  border-color:#ead1d1!important;
+  background:#fff5f5!important;
+  color:#991b1b!important;
+}
+#appShell .cpam-date-shortcut-forward button{
+  border-color:#cde5d4!important;
+  background:#f0fdf4!important;
+  color:#166534!important;
+}
+#appShell .cpam-date-arrow:focus,
+#appShell .cpam-date-arrow:active,
+#appShell .cpam-date-shortcut-group button:focus,
+#appShell .cpam-date-shortcut-group button:active{
+  opacity:1!important;
+  filter:brightness(.94)!important;
+}
+#appShell .cpam-date-arrow:focus-visible,
+#appShell .cpam-date-shortcut-group button:focus-visible,
+#appShell .cpam-next-slot:focus-visible,
+#appShell #regularDataPrevista:focus-visible{
+  outline:3px solid #93c5fd!important;
+  outline-offset:2px!important;
+}
+@media(max-width:640px){
+  #appShell .cpam-date-control{
+    max-width:none!important;
+    margin:12px auto 18px!important;
+    padding:0!important;
+    grid-template-columns:minmax(0,.92fr) minmax(0,1.65fr) minmax(0,.92fr)!important;
+    grid-template-rows:76px 32px!important;
+    column-gap:5px!important;
+    row-gap:7px!important;
+  }
+  #appShell .cpam-date-selected{
+    grid-template-rows:14px 54px 32px!important;
+    gap:4px!important;
+  }
+  #appShell .cpam-date-selected-label{
+    gap:4px!important;
+    font-size:clamp(8px,2.6vw,11px)!important;
+    letter-spacing:.025em!important;
+  }
+  #appShell .cpam-date-selected-label:before,
+  #appShell .cpam-date-selected-label:after{
+    min-width:5px!important;
+    height:2px!important;
+  }
+  #appShell #regularDataPrevista,
+  #appShell .cpam-date-input{
+    height:54px!important;
+    min-height:54px!important;
+    padding:3px 1px!important;
+    border-radius:11px!important;
+    font-size:clamp(19px,5.1vw,25px)!important;
+  }
+  #appShell .cpam-date-arrow{
+    height:54px!important;
+    min-height:54px!important;
+    align-self:end!important;
+    padding:5px 2px!important;
+    flex-direction:column!important;
+    gap:4px!important;
+    border-radius:10px!important;
+    font-size:clamp(8px,2.35vw,10px)!important;
+  }
+  #appShell .cpam-date-arrow i{font-size:12px!important}
+  #appShell .cpam-date-shortcut-group,
+  #appShell .cpam-date-shortcut-group button{
+    height:32px!important;
+    min-height:32px!important;
+  }
+  #appShell .cpam-date-shortcut-group{gap:3px!important}
+  #appShell .cpam-date-shortcut-group button{
+    padding:0 1px!important;
+    border-radius:8px!important;
+    font-size:11px!important;
+  }
+  #appShell .cpam-next-slot{
+    height:32px!important;
+    min-height:32px!important;
+    padding:3px 1px!important;
+    border-radius:8px!important;
+    font-size:clamp(8px,2.1vw,10px)!important;
+    white-space:nowrap!important;
+  }
+}
+@media(max-width:359px){
+  #appShell .cpam-date-control{
+    grid-template-columns:minmax(0,.82fr) minmax(0,1.7fr) minmax(0,.82fr)!important;
+    column-gap:3px!important;
+  }
+  #appShell .cpam-date-selected-label{font-size:7px!important}
+  #appShell .cpam-date-arrow{font-size:7px!important}
+  #appShell #regularDataPrevista,
+  #appShell .cpam-date-input{font-size:17px!important}
+  #appShell .cpam-date-shortcut-group button{font-size:10px!important}
+  #appShell .cpam-next-slot{font-size:7px!important}
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
