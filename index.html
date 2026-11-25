@@ -3885,7 +3885,7 @@
 
 
 <style>
-/* Hierarquia final: título mais evidente, data equilibrada e setas alinhadas ao campo */
+/* Hierarquia desktop preservada; ajuste mobile com legibilidade e foco acessível */
 #appShell .cpam-date-selected-label{
   font-size:16px!important;
   font-weight:800!important;
@@ -3907,6 +3907,7 @@
 }
 #appShell #regularDataPrevista,
 #appShell .cpam-date-input{
+  box-sizing:border-box!important;
   height:76px!important;
   min-height:76px!important;
   font-size:36px!important;
@@ -3923,26 +3924,67 @@
   font-weight:800!important;
   line-height:1.2!important;
 }
+/* Foco consistente, visível e sem salto estranho ao tocar */
+#appShell .cpam-date-arrow:focus-visible,
+#appShell .cpam-date-shortcut-group button:focus-visible,
+#appShell .cpam-next-slot:focus-visible,
+#appShell #regularDataPrevista:focus-visible{
+  outline:3px solid #93C5FD!important;
+  outline-offset:2px!important;
+  box-shadow:0 0 0 2px #1E3A8A!important;
+}
+#appShell .cpam-date-arrow:active,
+#appShell .cpam-date-shortcut-group button:active,
+#appShell .cpam-next-slot:active{
+  filter:brightness(.88)!important;
+}
 @media(max-width:640px){
+  #appShell .cpam-date-control{
+    grid-template-columns:minmax(0,.92fr) minmax(0,1.5fr) minmax(0,.92fr)!important;
+    column-gap:5px!important;
+    row-gap:6px!important;
+  }
+  #appShell .cpam-date-selected{
+    min-width:0!important;
+    padding:7px 3px!important;
+    gap:6px!important;
+  }
   #appShell .cpam-date-selected-label{
-    font-size:13px!important;
-    letter-spacing:.06em!important;
+    font-size:12px!important;
+    letter-spacing:.045em!important;
+    line-height:1.2!important;
+    white-space:nowrap!important;
   }
   #appShell .cpam-date-arrow{
-    min-height:62px!important;
-    height:62px!important;
-    transform:translateY(27px);
+    box-sizing:border-box!important;
+    min-width:0!important;
+    min-height:48px!important;
+    height:48px!important;
+    padding:5px 2px!important;
+    transform:translateY(23px)!important;
+    flex-direction:column!important;
+    gap:3px!important;
+    border-width:1px!important;
+    border-radius:9px!important;
+    font-size:clamp(8px,2.5vw,10px)!important;
+    line-height:1.1!important;
+    white-space:normal!important;
   }
-  #appShell .cpam-date-shortcut-group button,
-  #appShell .cpam-next-slot{
-    height:34px!important;
-    min-height:34px!important;
-  }
+  #appShell .cpam-date-arrow i{font-size:11px!important}
   #appShell #regularDataPrevista,
   #appShell .cpam-date-input{
-    height:62px!important;
-    min-height:62px!important;
-    font-size:30px!important;
+    display:block!important;
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:54px!important;
+    min-height:54px!important;
+    padding:4px 1px!important;
+    font-size:clamp(19px,5.8vw,23px)!important;
+    font-weight:800!important;
+    line-height:1.15!important;
+    text-align:center!important;
   }
   #appShell #regularDataPrevista::-webkit-datetime-edit,
   #appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
@@ -3950,22 +3992,47 @@
   #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
-    font-size:30px!important;
+    font-size:clamp(19px,5.8vw,23px)!important;
+    font-weight:800!important;
+  }
+  #appShell .cpam-date-shortcut-group button,
+  #appShell .cpam-next-slot{
+    box-sizing:border-box!important;
+    height:34px!important;
+    min-height:34px!important;
+    border-width:1px!important;
+  }
+  #appShell #regularDataPrevista:focus,
+  #appShell #regularDataPrevista:focus-visible{
+    outline:3px solid #93C5FD!important;
+    outline-offset:1px!important;
+    box-shadow:0 0 0 2px #1E3A8A!important;
   }
 }
 @media(max-width:359px){
-  #appShell .cpam-date-selected-label{font-size:11px!important}
-  #appShell .cpam-date-arrow{min-height:58px!important;height:58px!important;transform:translateY(25px)}
-  #appShell .cpam-date-shortcut-group button{height:32px!important;min-height:32px!important}
-  #appShell .cpam-next-slot{height:32px!important;min-height:32px!important}
+  #appShell .cpam-date-control{
+    grid-template-columns:minmax(0,.88fr) minmax(0,1.55fr) minmax(0,.88fr)!important;
+    column-gap:3px!important;
+  }
+  #appShell .cpam-date-selected-label{font-size:10px!important;letter-spacing:.025em!important}
+  #appShell .cpam-date-arrow{
+    min-height:44px!important;
+    height:44px!important;
+    transform:translateY(22px)!important;
+    font-size:7px!important;
+  }
   #appShell #regularDataPrevista,
-  #appShell .cpam-date-input{font-size:28px!important}
+  #appShell .cpam-date-input{
+    height:50px!important;
+    min-height:50px!important;
+    font-size:19px!important;
+  }
   #appShell #regularDataPrevista::-webkit-datetime-edit,
   #appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
   #appShell #regularDataPrevista::-webkit-datetime-edit-text,
   #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
-  #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{font-size:28px!important}
+  #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{font-size:19px!important}
 }</style>
 
 </head>
