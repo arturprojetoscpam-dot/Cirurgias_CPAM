@@ -4024,7 +4024,33 @@
   #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{font-size:16px!important}
   #appShell .cpam-date-shortcut-group button{font-size:10px!important}
-}</style>
+}/* Recupera exatamente a proporção aprovada no desktop */
+@media(min-width:641px){
+  #appShell .cpam-date-arrow{
+    min-height:76px!important;
+    height:76px!important;
+    transform:translateY(30px)!important;
+  }
+  #appShell #regularDataPrevista,
+  #appShell .cpam-date-input{
+    height:76px!important;
+    min-height:76px!important;
+    font-size:36px!important;
+    font-weight:800!important;
+    line-height:1.2!important;
+  }
+  #appShell #regularDataPrevista::-webkit-datetime-edit,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-text,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
+    font-size:36px!important;
+    font-weight:800!important;
+    line-height:1.2!important;
+  }
+}
+</style>
 
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
