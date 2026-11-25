@@ -3584,7 +3584,8 @@
 #appShell .cpam-regular-agenda{min-width:0;padding:0}
 #appShell .cpam-agenda-topline{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
 #appShell .cpam-regular-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px;width:min(100%,360px)}
-#appShell .cpam-regular-week>span{display:flex;min-width:0;min-height:31px;align-items:center;justify-content:center;gap:2px;padding:4px 1px;border-radius:7px;font-size:9px;font-weight:800;white-space:nowrap}
+#appShell .cpam-regular-week>span{display:flex;flex-direction:column;min-width:0;min-height:31px;align-items:center;justify-content:center;gap:1px;padding:3px 1px;border-radius:7px;font-size:9px;font-weight:800;line-height:1.05;white-space:nowrap}
+#appShell .cpam-regular-week>span small{font-size:8px;line-height:1}
 #appShell .cpam-date-control{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px;align-items:center}
 #appShell .cpam-date-arrow{display:flex;min-width:44px;min-height:44px;align-items:center;justify-content:center;border:1px solid #dbe3df;border-radius:10px;background:#fff;color:#315f4b}
 #appShell .cpam-date-input{width:100%;min-width:0!important;font-size:clamp(14px,4vw,18px)!important}
@@ -3600,8 +3601,6 @@
 #appShell #regularResumoAgendaConteudo .cpam-summary-limit{display:flex;min-width:0;align-items:center;justify-content:space-between;gap:5px;padding:8px 0;border-bottom:1px solid #e9eeeb;font-size:10px}
 #appShell #regularResumoAgendaConteudo .cpam-summary-limit strong{flex:0 0 auto;font-size:10px}
 @media(max-width:640px){
- #appShell #secRegularNovoAgendamento .rounded-2xl.border.bg-white.p-4,
- #appShell #secRegularNovoAgendamento .rounded-xl.border.bg-white.p-3{box-shadow:none}
  #appShell .cpam-regular-agenda{margin-left:-2px;margin-right:-2px}
  #appShell .cpam-agenda-topline{display:block}
  #appShell .cpam-regular-week{width:100%;margin-top:9px;gap:3px}
@@ -6924,7 +6923,7 @@ async function regularAtualizarResumoProcedimento(){
   let regra='';
   if(config&&!config.ativo){regra='<p class="mt-2 rounded-md bg-rose-50 px-2 py-1.5 text-[10px] font-bold text-rose-700">A agenda deste médico Gastro está desativada. Consulte a Coordenação.</p>';}
   else if(config){
-   regra='<div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-slate-600"><span><i class="fa-regular fa-clock mr-1"></i>'+escaparHtml(config.turno||'TARDE')+' · '+escaparHtml(String(config.hora_inicio||'13:00').slice(0,5))+'</span><span><i class="fa-solid fa-location-dot mr-1"></i>'+escaparHtml(config.consultorio||'Hospital Gastro')+'</span><span><i class="fa-regular fa-calendar mr-1"></i>'+((config.dias_semana||[]).map(agendaDiaSemanaNome).join(', ')||'Dias não definidos')+'</span></div>';
+   regra='<div class="cpam-summary-meta text-[10px] text-slate-600"><span><i class="fa-regular fa-clock mr-1 text-slate-400"></i>'+escaparHtml(config.turno||'TARDE')+' · '+escaparHtml(String(config.hora_inicio||'13:00').slice(0,5))+'</span><span class="min-w-0 truncate"><i class="fa-solid fa-location-dot mr-1 text-slate-400"></i>'+escaparHtml(config.consultorio||'Hospital Gastro')+'</span><span class="col-span-2"><i class="fa-regular fa-calendar mr-1 text-slate-400"></i>'+((config.dias_semana||[]).map(agendaDiaSemanaNome).join(', ')||'Dias não definidos')+'</span></div>';
    if(!diaPermitido)regra+='<p class="mt-2 rounded-md bg-rose-50 px-2 py-1.5 text-[10px] font-bold text-rose-700">Este dia não faz parte da agenda configurada. Escolha outra data.</p>';
    const limitesHoje=regularAgendaLimitesCache.filter(x=>x.profissional_id===medicoId&&x.ativo).map(x=>{const qtd=(registros||[]).filter(r=>agendaTipoProcedimento(r.procedimento_nome)===x.exame_tipo).length;const atual=tipo===x.exame_tipo;const zero=Number(x.limite_diario)===0,cheio=!zero&&qtd>=Number(x.limite_diario);return '<div class="cpam-summary-limit '+(zero?'text-slate-500':cheio?'text-rose-800':atual?'text-emerald-900':'text-slate-700')+'"><span class="min-w-0 truncate font-semibold">'+escaparHtml(x.exame_tipo)+'</span><strong class="font-extrabold">'+(zero?'Não realiza':qtd+'/'+x.limite_diario+(cheio?' · lotado':''))+'</strong></div>';}).join('');
    regra+='<div class="mt-2"><p class="mb-1 text-[10px] font-bold text-slate-600">Limites e ocupação</p><div class="cpam-summary-limits">'+(limitesHoje||'<span class="py-2 text-[10px] text-amber-800">Nenhum limite configurado.</span>')+'</div></div>';
