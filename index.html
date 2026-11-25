@@ -6714,14 +6714,14 @@ function regularAgendaHojeISO(){const d=new Date();return [d.getFullYear(),Strin
 function regularAgendaDataAdd(iso,dias){const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+dias);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function regularAgendaDataFormatada(iso){if(!iso)return '—';return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(iso+'T12:00:00'));}
 function regularAtualizarNavegacaoData(){
- const input=document.getElementById('regularDataPrevista');if(!input)return;
+ const input=document.getElementById('regularDataPrevista');if(!input)return;input.min=regularAgendaHojeISO();
  const data=input.value,medicoId=document.getElementById('regularGastroMedico')?.value,config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
  const label=document.getElementById('regularDataSemanaLabel'),status=document.getElementById('regularDataDisponibilidade'),escala=document.getElementById('regularEscalaSemanal');
  if(label)label.textContent=data?regularAgendaDataFormatada(data):'Selecione uma data';
  if(status){status.textContent=data?'Data selecionada':'Aguardando seleção';status.className='rounded-full px-2 py-1 text-[10px] font-semibold '+(data?'bg-emerald-50 text-emerald-800':'bg-slate-100 text-slate-600');}
  if(!escala)return;
  if(!medicoId){escala.innerHTML='<span class="text-[10px] text-slate-400">A escala será exibida após selecionar o médico</span>';return;}
- if(!config){escala.innerHTML=['SEG','TER','QUA','QUI','SEX'].map(x=>'<span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-800">'+x+' · LIVRE</span>').join('');return;}
+ if(!config){escala.innerHTML='<span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold text-emerald-800">AGENDA LIVRE · QUALQUER DATA</span>';return;}
  const dias=[['SEG',1],['TER',2],['QUA',3],['QUI',4],['SEX',5],['SÁB',6],['DOM',7]];
  escala.innerHTML=dias.map(([nome,n])=>{const ativo=(config.dias_semana||[]).includes(n);return '<span class="rounded-full px-2 py-1 text-[9px] font-bold '+(ativo?'bg-emerald-100 text-emerald-900':'bg-slate-100 text-slate-400')+'">'+nome+(ativo?' · '+String(config.turno||'ATENDE').slice(0,1):' · —')+'</span>';}).join('');
 }
