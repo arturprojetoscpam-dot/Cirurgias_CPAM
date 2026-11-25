@@ -3587,23 +3587,20 @@
 #appShell .cpam-regular-week>span{display:flex;flex-direction:column;min-width:0;min-height:31px;align-items:center;justify-content:center;gap:1px;padding:3px 1px;border-radius:7px;font-size:9px;font-weight:800;line-height:1.05;white-space:nowrap}
 #appShell .cpam-regular-week>span small{font-size:8px;line-height:1}
 #appShell .cpam-regular-week>span:only-child{grid-column:1/-1;flex-direction:row;white-space:normal}
-#appShell .cpam-date-control{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);grid-template-rows:minmax(88px,auto) minmax(58px,auto);gap:10px;align-items:stretch}
-#appShell .cpam-date-arrow{display:flex;min-width:0;min-height:0;width:100%;height:100%;flex-direction:row;gap:7px;align-items:center;justify-content:center;border:1.5px solid #191A23;border-radius:14px;padding:8px;background:#FCEBEC;color:#9F343B;font-size:clamp(10px,1.2vw,12px);font-weight:800;text-align:center;box-shadow:0 2px 0 rgba(25,26,35,.08)}
-#appShell .cpam-date-arrow i{font-size:15px}
-#appShell .cpam-date-back{grid-column:1;grid-row:1}
-#appShell .cpam-date-forward{grid-column:3;grid-row:1;background:#E8F5EB;color:#247442}
+#appShell .cpam-date-control{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);grid-template-rows:auto auto;gap:8px;align-items:stretch}
+#appShell .cpam-date-arrow{display:flex;grid-row:1;min-width:0;min-height:40px;width:100%;height:auto;flex-direction:row;gap:5px;align-items:center;justify-content:center;border:1px solid #14532D;border-radius:10px;padding:7px 4px;background:#166534;color:#fff;font-size:clamp(9px,1.05vw,11px);font-weight:800;text-align:center;box-shadow:0 1px 2px rgba(15,23,42,.12)}
+#appShell .cpam-date-arrow i{font-size:12px}
+#appShell .cpam-date-back{grid-column:1}
+#appShell .cpam-date-forward{grid-column:3;background:#991B1B;border-color:#7F1D1D;color:#fff}
 #appShell .cpam-date-arrow:disabled,#appShell .cpam-date-shortcut-group button:disabled,#appShell .cpam-next-slot:disabled{cursor:not-allowed;opacity:.42;filter:grayscale(.35)}
-#appShell .cpam-date-selected{grid-column:2;grid-row:1;display:flex;min-width:0;width:100%;height:100%;flex-direction:column;gap:7px;align-items:center;justify-content:center;border:2px solid #245B48;border-radius:16px;background:linear-gradient(145deg,#F0F7F2 0%,#E4F0E8 100%);padding:9px 10px;box-shadow:0 3px 10px rgba(18,60,50,.12);text-align:center}
-#appShell .cpam-date-selected-label{color:#315D49;font-size:9px;font-weight:900;letter-spacing:.14em;text-align:center}
-#appShell .cpam-date-input{display:block;width:100%;min-width:0!important;margin:0 auto!important;border:0!important;background:transparent!important;color:#173F32!important;font-size:clamp(19px,4.8vw,25px)!important;font-weight:900!important;line-height:1.15!important;text-align:center!important;text-align-last:center!important}
-#appShell .cpam-next-slot{grid-column:2;grid-row:2;display:flex;min-height:0;width:100%;height:100%;align-items:center;justify-content:center;gap:5px;border:1px solid #A9C9B5;border-radius:10px;background:#EEF6F0;padding:5px 8px;color:#245B40;font-size:clamp(9px,1.05vw,11px);font-weight:750;box-shadow:none}
-#appShell .cpam-date-shortcut-group{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto 1fr;gap:6px;min-width:0;width:100%;height:100%;align-items:stretch;border:1px solid #e3bfc2;border-radius:13px;background:#FFF5F5;padding:8px}
-#appShell .cpam-date-shortcut-back{grid-column:1;grid-row:2}
-#appShell .cpam-date-shortcut-forward{grid-column:3;grid-row:2;margin:0;padding:8px;border:1px solid #b9d8c1;border-radius:13px;background:#F1FAF3}
-#appShell .cpam-date-shortcut-tag{grid-column:1/-1;padding:0 2px;color:#9F343B;font-size:9px;font-weight:900;letter-spacing:.12em;text-align:center}
-#appShell .cpam-date-shortcut-group button{min-width:0;min-height:0;width:100%;height:100%;padding:0 3px;border:1px solid #191A23;border-radius:8px;background:#fff;color:#7f3037;font-size:clamp(9px,1.05vw,11px);font-weight:800;white-space:nowrap}
-#appShell .cpam-date-shortcut-forward .cpam-date-shortcut-tag{color:#247442}
-#appShell .cpam-date-shortcut-forward button{color:#24643a}
+#appShell .cpam-date-selected{grid-column:2;grid-row:1 / span 2;display:flex;min-width:0;width:100%;height:100%;flex-direction:column;gap:8px;align-items:center;justify-content:center;border:1px solid #123C32;border-radius:13px;background:#123C32;padding:8px;box-shadow:0 3px 10px rgba(18,60,50,.14);text-align:center}
+#appShell .cpam-date-selected-label{display:block;width:100%;color:#fff;font-size:10px;font-weight:900;letter-spacing:.12em;text-align:center}
+#appShell .cpam-date-input{display:block;width:100%;min-width:0!important;margin:0 auto!important;border:0!important;border-radius:9px!important;background:#fff!important;color:#173F32!important;font-size:clamp(19px,4.8vw,25px)!important;font-weight:900!important;line-height:1.15!important;text-align:center!important;text-align-last:center!important}
+#appShell .cpam-next-slot{display:flex;min-height:34px;width:100%;align-items:center;justify-content:center;gap:5px;border:1px solid #1D4ED8;border-radius:9px;background:#2563EB;padding:6px 7px;color:#fff;font-size:clamp(9px,1.05vw,11px);font-weight:800;box-shadow:none}
+#appShell .cpam-date-shortcut-group{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-column:1;grid-row:2;gap:4px;min-width:0;width:100%;height:auto;min-height:34px;align-items:stretch;border:0;border-radius:9px;background:transparent;padding:0}
+#appShell .cpam-date-shortcut-forward{grid-column:3;grid-row:2}
+#appShell .cpam-date-shortcut-group button{min-width:0;min-height:34px;width:100%;height:100%;padding:3px 1px;border:1px solid #14532D;border-radius:8px;background:#166534;color:#fff;font-size:clamp(9px,1.05vw,11px);font-weight:800;white-space:nowrap}
+#appShell .cpam-date-shortcut-forward button{border-color:#7F1D1D;background:#991B1B;color:#fff}
 #appShell .cpam-agenda-summary{min-width:0;border-top:1px solid #e6ece8;background:#f8faf9;padding:12px 0 0}
 #appShell #regularResumoAgendaConteudo .cpam-summary-doctor{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px 10px;padding-bottom:9px;border-bottom:1px solid #e5ebe7}
 #appShell #regularResumoAgendaConteudo .cpam-summary-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px;padding:8px 0}
@@ -3619,15 +3616,14 @@
  #appShell .cpam-agenda-topline{display:block}
  #appShell .cpam-regular-week{width:100%;margin-top:9px;gap:3px}
  #appShell .cpam-regular-week>span{min-height:29px;font-size:8px}
- #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);grid-template-rows:minmax(68px,auto) minmax(72px,auto);gap:7px}
- #appShell .cpam-date-arrow{gap:4px;padding:5px 3px;font-size:9px;flex-direction:column}
- #appShell .cpam-date-arrow i{font-size:13px}
- #appShell .cpam-date-selected{padding:7px 4px}
- #appShell .cpam-date-selected-label{font-size:7px}
- #appShell .cpam-next-slot{padding:6px 4px;font-size:9px}
- #appShell .cpam-date-shortcut-group{gap:4px;padding:7px 4px}
- #appShell .cpam-date-shortcut-tag{font-size:8px}
- #appShell .cpam-date-shortcut-group button{font-size:clamp(8px,2.3vw,9px);padding:0 1px}
+ #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) minmax(0,1fr);grid-template-rows:auto auto;gap:5px}
+ #appShell .cpam-date-arrow{min-height:38px;gap:3px;padding:5px 2px;font-size:clamp(8px,2.2vw,10px);flex-direction:column}
+ #appShell .cpam-date-arrow i{font-size:11px}
+ #appShell .cpam-date-selected{padding:7px 4px;gap:7px}
+ #appShell .cpam-date-selected-label{font-size:7px;letter-spacing:.08em}
+ #appShell .cpam-next-slot{min-height:34px;padding:5px 3px;font-size:clamp(8px,2.1vw,10px)}
+ #appShell .cpam-date-shortcut-group{gap:3px}
+ #appShell .cpam-date-shortcut-group button{min-height:32px;font-size:clamp(8px,2.1vw,10px);padding:0 1px}
  #appShell #regularResumoAgendaProcedimento{padding-top:10px}
  #appShell #regularResumoAgendaConteudo .cpam-summary-limits{grid-template-columns:1fr}
 }
@@ -3635,10 +3631,10 @@
  #appShell #regularResumoAgendaConteudo .cpam-summary-limits{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}
 }
 @media(max-width:359px){
- #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr) minmax(0,1fr);gap:5px}
- #appShell .cpam-date-arrow{font-size:8px}
- #appShell .cpam-date-shortcut-group{padding:6px 3px;gap:3px}
- #appShell .cpam-date-shortcut-group button{font-size:7px}
+ #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:4px}
+ #appShell .cpam-date-arrow{font-size:7px}
+ #appShell .cpam-date-shortcut-group{gap:2px}
+ #appShell .cpam-date-shortcut-group button{font-size:7px;min-height:30px}
 }
 </style>
 
@@ -4306,15 +4302,15 @@
   <div id="regularGastroMedicoWrap" class="mb-3 max-w-xl"><label for="regularGastroMedico" class="label-cirurgia">Médico responsável *</label><select id="regularGastroMedico" class="campo-cirurgia" required onchange="regularAoSelecionarMedico()"><option value="">Carregando médicos...</option></select></div>
   <div class="cpam-agenda-topline"><div><label for="regularDataPrevista" class="label-cirurgia">Data prevista *</label><div class="mt-1 flex flex-wrap items-center gap-2"><span id="regularDataSemanaLabel" class="text-xs font-bold text-slate-800">Selecione o médico</span><span id="regularDataDisponibilidade" class="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Aguardando seleção</span></div></div><div id="regularEscalaSemanal" class="cpam-regular-week" aria-label="Escala semanal do profissional"><span class="text-[10px] text-slate-400">Selecione o médico</span></div></div>
   <div class="cpam-date-control">
-    <button type="button" onclick="regularNavegarData(-1)" class="cpam-date-arrow cpam-date-back" aria-label="Data anterior"><i class="fa-solid fa-chevron-left"></i><span>Data Anterior</span></button>
+    <button type="button" onclick="regularNavegarData(-1)" class="cpam-date-arrow cpam-date-back" aria-label="Data anterior"><i class="fa-solid fa-chevron-left"></i><span>Data anterior</span></button>
     <div class="cpam-date-selected">
       <span class="cpam-date-selected-label">DATA SELECIONADA</span>
       <input id="regularDataPrevista" type="date" min="\${regularAgendaHojeISO()}" class="campo-cirurgia cpam-date-input !h-11 !px-2 !text-base !font-bold !text-center text-slate-900" required disabled onchange="regularDataManualAlterada()" aria-disabled="true">
+      <button type="button" onclick="regularBuscarProximaDataDisponivel(true)" class="cpam-next-slot"><i class="fa-solid fa-calendar-check mr-1"></i>Encontrar próxima data</button>
     </div>
-    <button type="button" onclick="regularNavegarData(1)" class="cpam-date-arrow cpam-date-forward" aria-label="Próxima data"><i class="fa-solid fa-chevron-right"></i><span>Próxima Data</span></button>
-    <div class="cpam-date-shortcut-group cpam-date-shortcut-back"><span class="cpam-date-shortcut-tag">VOLTAR</span><button type="button" onclick="regularNavegarData(-7)">−7 dias</button><button type="button" onclick="regularNavegarData(-30)">−30 dias</button><button type="button" onclick="regularNavegarData(-90)">−90 dias</button></div>
-    <button type="button" onclick="regularBuscarProximaDataDisponivel(true)" class="cpam-next-slot"><i class="fa-solid fa-calendar-check mr-1"></i>Próxima data disponível</button>
-    <div class="cpam-date-shortcut-group cpam-date-shortcut-forward"><span class="cpam-date-shortcut-tag">AVANÇAR</span><button type="button" onclick="regularNavegarData(7)">+7 dias</button><button type="button" onclick="regularNavegarData(30)">+30 dias</button><button type="button" onclick="regularNavegarData(90)">+90 dias</button></div>
+    <button type="button" onclick="regularNavegarData(1)" class="cpam-date-arrow cpam-date-forward" aria-label="Próxima data"><i class="fa-solid fa-chevron-right"></i><span>Próxima data</span></button>
+    <div class="cpam-date-shortcut-group cpam-date-shortcut-back"><button type="button" onclick="regularNavegarData(-7)">−7</button><button type="button" onclick="regularNavegarData(-30)">−30</button><button type="button" onclick="regularNavegarData(-90)">−90</button></div>
+    <div class="cpam-date-shortcut-group cpam-date-shortcut-forward"><button type="button" onclick="regularNavegarData(7)">+7</button><button type="button" onclick="regularNavegarData(30)">+30</button><button type="button" onclick="regularNavegarData(90)">+90</button></div>
   </div>
   <div id="regularResumoAgendaProcedimento" class="mt-3 hidden cpam-agenda-summary" aria-live="polite"><div class="flex items-center justify-between gap-2"><strong class="text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar-check mr-1.5 text-[#123C32]"></i>Resumo da agenda do médico</strong><span id="regularResumoAgendaStatus" class="text-[10px] font-semibold text-slate-500"></span></div><div id="regularResumoAgendaConteudo" class="mt-2 text-xs text-slate-600">Selecione o médico e a data para consultar a disponibilidade.</div></div>
 </div>
