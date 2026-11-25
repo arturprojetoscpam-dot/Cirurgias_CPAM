@@ -3885,11 +3885,16 @@
 
 
 <style>
-/* Refinamento final: setas maiores e ligeiramente rebaixadas; data com mais destaque */
+/* Hierarquia final: título mais evidente, data equilibrada e setas alinhadas ao campo */
+#appShell .cpam-date-selected-label{
+  font-size:16px!important;
+  font-weight:800!important;
+  letter-spacing:.10em!important;
+}
 #appShell .cpam-date-arrow{
-  min-height:60px!important;
-  height:60px!important;
-  transform:translateY(6px);
+  min-height:76px!important;
+  height:76px!important;
+  transform:translateY(30px);
 }
 #appShell .cpam-date-shortcut-group button{
   height:40px!important;
@@ -3904,7 +3909,7 @@
 #appShell .cpam-date-input{
   height:76px!important;
   min-height:76px!important;
-  font-size:40px!important;
+  font-size:36px!important;
   font-weight:800!important;
   line-height:1.2!important;
 }
@@ -3914,15 +3919,19 @@
 #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
 #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
 #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
-  font-size:40px!important;
+  font-size:36px!important;
   font-weight:800!important;
   line-height:1.2!important;
 }
 @media(max-width:640px){
+  #appShell .cpam-date-selected-label{
+    font-size:13px!important;
+    letter-spacing:.06em!important;
+  }
   #appShell .cpam-date-arrow{
-    min-height:52px!important;
-    height:52px!important;
-    transform:translateY(5px);
+    min-height:62px!important;
+    height:62px!important;
+    transform:translateY(27px);
   }
   #appShell .cpam-date-shortcut-group button,
   #appShell .cpam-next-slot{
@@ -3933,7 +3942,7 @@
   #appShell .cpam-date-input{
     height:62px!important;
     min-height:62px!important;
-    font-size:34px!important;
+    font-size:30px!important;
   }
   #appShell #regularDataPrevista::-webkit-datetime-edit,
   #appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
@@ -3941,17 +3950,23 @@
   #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
-    font-size:34px!important;
+    font-size:30px!important;
   }
 }
 @media(max-width:359px){
-  #appShell .cpam-date-arrow{min-height:48px!important;height:48px!important}
+  #appShell .cpam-date-selected-label{font-size:11px!important}
+  #appShell .cpam-date-arrow{min-height:58px!important;height:58px!important;transform:translateY(25px)}
   #appShell .cpam-date-shortcut-group button{height:32px!important;min-height:32px!important}
   #appShell .cpam-next-slot{height:32px!important;min-height:32px!important}
   #appShell #regularDataPrevista,
-  #appShell .cpam-date-input{font-size:30px!important}
-}
-</style>
+  #appShell .cpam-date-input{font-size:28px!important}
+  #appShell #regularDataPrevista::-webkit-datetime-edit,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-text,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
+  #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{font-size:28px!important}
+}</style>
 
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
