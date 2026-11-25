@@ -4202,8 +4202,8 @@
                   <div><label for="regularProntuarioAmb" class="label-cirurgia">Prontuário ambulatorial</label><input id="regularProntuarioAmb" class="campo-cirurgia" maxlength="60" placeholder="Número do prontuário ambulatorial"></div>
                   <div class="sm:col-span-2"><label for="regularNomePaciente" class="label-cirurgia">Nome completo *</label><input id="regularNomePaciente" class="campo-cirurgia" required maxlength="180" placeholder="Nome completo do paciente"></div>
                   <div><label for="regularNascimento" class="label-cirurgia">Data de nascimento</label><input id="regularNascimento" type="date" class="campo-cirurgia"></div>
-                  <div><label for="regularCPF" class="label-cirurgia">CPF</label><input id="regularCPF" class="campo-cirurgia" inputmode="numeric" maxlength="20" placeholder="000.000.000-00"><p id="regularCPFErro" class="regular-doc-error" aria-live="polite"></p></div>
-                  <div><label for="regularCNS" class="label-cirurgia">Cartão SUS (CNS)</label><input id="regularCNS" class="campo-cirurgia" inputmode="numeric" maxlength="24" placeholder="000 0000 0000 0000"><p id="regularCNSErro" class="regular-doc-error" aria-live="polite"></p></div>
+                  <div><label for="regularCPF" class="label-cirurgia">CPF</label><input id="regularCPF" class="campo-cirurgia" inputmode="numeric" maxlength="20" placeholder="000.000.000-00" autocomplete="off" oninput="aoDigitarDocumentoRegular('regularCPF')" onblur="validarDocumentoRegular('regularCPF',true)"><p id="regularCPFErro" class="regular-doc-error" aria-live="polite"></p></div>
+                  <div><label for="regularCNS" class="label-cirurgia">Cartão SUS (CNS)</label><input id="regularCNS" class="campo-cirurgia" inputmode="numeric" maxlength="24" placeholder="000 0000 0000 0000" autocomplete="off" oninput="aoDigitarDocumentoRegular('regularCNS')" onblur="validarDocumentoRegular('regularCNS',true)"><p id="regularCNSErro" class="regular-doc-error" aria-live="polite"></p></div>
                   
                   <div class="sm:col-span-2"><label for="regularNomeMae" class="label-cirurgia">Nome da mãe</label><input id="regularNomeMae" class="campo-cirurgia" maxlength="180" placeholder="Nome completo da mãe"></div>
                   <div><label for="regularTelefone" class="label-cirurgia">Telefone</label><input id="regularTelefone" class="campo-cirurgia" maxlength="30" placeholder="(00) 00000-0000"></div>
@@ -6046,6 +6046,13 @@ function cnsRegularValido(valor){
  if(dv===11)dv=0;
  else if(dv===10){soma+=2;dv=11-(soma%11);if(dv===11)dv=0;sufixo='001';}
  return d.slice(11)===sufixo+String(dv);
+}
+function aoDigitarDocumentoRegular(id){
+ const campo=document.getElementById(id);if(!campo)return;
+ const digitos=campo.value.replace(/\D/g,'');
+ campo.dataset.touched='1';
+ campo.value=id==='regularCPF'?formatarCPFRegular(digitos):formatarCNSRegular(digitos);
+ validarDocumentoRegular(id,true);
 }
 function validarDocumentoRegular(id,mostrarIncompleto=true){
  const campo=document.getElementById(id),erro=document.getElementById(id+'Erro');if(!campo||!erro)return true;
