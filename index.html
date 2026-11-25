@@ -5186,7 +5186,7 @@
               <button type="button" onclick="verificarStatusSISREG(false)" class="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2.5 text-[10px] font-semibold text-emerald-900 hover:bg-emerald-100 sm:w-auto"><i class="fa-solid fa-rotate mr-1"></i>Verificar conexão</button>
             </div>
             <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
-              <div class="w-full min-w-0 sm:w-72 sm:flex-none"><label for="regularBuscaPaciente" class="mb-1 block text-[10px] font-semibold text-slate-600">CPF ou Cartão do SUS (CNS)</label><input id="regularBuscaPaciente" inputmode="numeric" class="w-full min-h-[48px] rounded-lg border border-emerald-300 bg-white px-3 py-3 text-base" autocomplete="off" maxlength="18" placeholder="Digite CPF ou Cartão do SUS" aria-describedby="regularBuscaAjuda"></div>
+              <div class="w-full min-w-0 sm:w-72 sm:flex-none"><label for="regularBuscaPaciente" class="mb-1 block text-[10px] font-semibold text-slate-600">CPF ou Cartão do SUS (CNS)</label><input id="regularBuscaPaciente" inputmode="numeric" class="w-full min-h-[48px] rounded-lg border border-emerald-300 bg-white px-3 py-3 text-base" autocomplete="off" maxlength="18" placeholder="Digite CPF ou Cartão do SUS" aria-describedby="regularBuscaAjuda"><p id="regularBuscaErro" class="mt-1 hidden text-xs font-semibold text-rose-700" role="alert" aria-live="assertive"></p></div>
               <button id="btnConsultarSISREG" type="button" onclick="consultarPacienteSISREG()" class="w-full min-h-[48px] rounded-lg bg-emerald-800 px-4 py-3 text-[11px] font-bold text-white hover:bg-emerald-900 disabled:cursor-wait disabled:opacity-60 sm:w-auto"><i class="fa-solid fa-magnifying-glass mr-2"></i>Consultar SISREG</button>
             </div>
             <p id="regularBuscaAjuda" class="mt-2 text-[10px] text-emerald-900/75">A identificação é automática: CPF com 11 dígitos ou CNS com 15 dígitos.</p>
@@ -6264,10 +6264,18 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             exibirToast('Consulta SISREG cancelada. Você pode corrigir o número ou iniciar uma nova busca.','info');
         }
         async function consultarPacienteSISREG(){
-            const campo=document.getElementById('regularBuscaPaciente'),valor=campo.value.trim().replace(/\\D/g,''),box=document.getElementById('regularResultadosSISREG'),localBox=document.getElementById('sisregLocalResultado');
+            const campo=document.getElementById('regularBuscaPaciente'),valor=String(campo.value||'').replace(/\D/g,''),box=document.getElementById('regularResultadosSISREG'),localBox=document.getElementById('sisregLocalResultado'),erro=document.getElementById('regularBuscaErro');
             if(sisregConsultaController)return;
             const tipo=valor.length===11?'cpf':(valor.length===15?'cns':'');
-            if(!tipo){exibirToast('Informe um CPF com 11 dígitos ou um Cartão SUS (CNS) com 15 dígitos.','erro');campo.focus();return;}
+            let mensagem='';
+            if(!valor) mensagem='Informe um CPF (11 dígitos) ou Cartão do SUS/CNS (15 dígitos).';
+            else if(!tipo) mensagem='Foram informados '+valor.length+' dígitos. O CPF deve ter exatamente 11 dígitos ou o CNS exatamente 15 dígitos.';
+            else if(tipo==='cpf'&&!cpfRegularValido(valor)) mensagem='CPF inválido: os dígitos verificadores não conferem. Confira o número informado.';
+            else if(tipo==='cns'&&!cnsRegularValido(valor)) mensagem='Cartão do SUS (CNS) inválido: o número não passou pela regra oficial de validação.';
+            if(mensagem){
+                erro.textContent=mensagem;erro.classList.remove('hidden');campo.classList.add('border-rose-500','ring-1','ring-rose-300');campo.classList.remove('border-emerald-300');campo.setAttribute('aria-invalid','true');campo.focus();return;
+            }
+            erro.textContent='';erro.classList.add('hidden');campo.classList.remove('border-rose-500','ring-1','ring-rose-300');campo.classList.add('border-emerald-300');campo.setAttribute('aria-invalid','false');
             const controller=new AbortController(),btn=document.getElementById('btnConsultarSISREG');
             sisregConsultaController=controller;btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Consultando...';campo.disabled=true;
             box.classList.add('hidden');localBox.classList.remove('hidden');
@@ -7045,18 +7053,16 @@ function formatarCNSRegular(v){const d=String(v||'').replace(/\D/g,'');return d.
 function cpfRegularValido(valor){const d=String(valor||'').replace(/\D/g,'');if(d.length!==11||/^([0-9])\1{10}$/.test(d))return false;let soma=0;for(let i=0;i<9;i++)soma+=Number(d[i])*(10-i);let dig=(soma*10)%11;if(dig===10)dig=0;if(dig!==Number(d[9]))return false;soma=0;for(let i=0;i<10;i++)soma+=Number(d[i])*(11-i);dig=(soma*10)%11;if(dig===10)dig=0;return dig===Number(d[10]);}
 function cnsRegularValido(valor){
  const d=String(valor||'').replace(/\D/g,'');
- if(d.length!==15||!['1','2','7','8','9'].includes(d[0])||/^([0-9])\1{14}$/.test(d))return false;
- let soma=0;
+ if(d.length!==15||!['1','2','7','8','9'].includes(d[0]))return false;
  if(d[0]==='7'||d[0]==='8'||d[0]==='9'){
-  for(let i=0;i<14;i++)soma+=Number(d[i])*(15-i);
-  let dv=(soma*10)%11;if(dv===10)dv=0;
-  return dv===Number(d[14]);
+  let soma=0;for(let i=0;i<15;i++)soma+=Number(d[i])*(15-i);
+  return soma%11===0;
  }
- for(let i=0;i<11;i++)soma+=Number(d[i])*(15-i);
- let resto=soma%11,dv=11-resto,sufixo='000';
- if(dv===11)dv=0;
- else if(dv===10){soma+=2;dv=11-(soma%11);if(dv===11)dv=0;sufixo='001';}
- return d.slice(11)===sufixo+String(dv);
+ let soma=0;for(let i=0;i<11;i++)soma+=Number(d[i])*(15-i);
+ let resto=soma%11;
+ if(resto===0)return d.slice(11)==='0000';
+ if(resto===1){soma+=2;resto=soma%11;const dv=11-resto;return d.slice(11)==='001'+String(dv===11?0:dv);}
+ const dv=11-resto;return d.slice(11)==='000'+String(dv===11?0:dv);
 }
 function aoDigitarDocumentoRegular(id){
  const campo=document.getElementById(id);if(!campo)return;
@@ -7085,7 +7091,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
 }
         function inicializarFormularioRegular(){
             const data=document.getElementById('regularDataPrevista');if(data&&!data.value)data.value=dataLocalISOAgenda(new Date());
-            const busca=document.getElementById('regularBuscaPaciente');if(busca&&!busca.dataset.bound){busca.dataset.bound='1';busca.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();consultarPacienteSISREG();}});busca.addEventListener('input',()=>{busca.value=busca.value.replace(/\\D/g,'').slice(0,15);});}const cod=document.getElementById('regularCodigoOrigem');if(cod&&!cod.dataset.bound){cod.dataset.bound='1';cod.addEventListener('input',()=>{const v=cod.value.trim();if(/^\d{4,}$/.test(v)){document.getElementById('regularBuscaProcedimento').value=v;buscarProcedimentosRegular();}});}
+            const busca=document.getElementById('regularBuscaPaciente');if(busca&&!busca.dataset.bound){busca.dataset.bound='1';busca.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();consultarPacienteSISREG();}});busca.addEventListener('input',()=>{const erro=document.getElementById('regularBuscaErro');if(erro){erro.textContent='';erro.classList.add('hidden');}busca.classList.remove('border-rose-500','ring-1','ring-rose-300');busca.classList.add('border-emerald-300');busca.setAttribute('aria-invalid','false');});}const cod=document.getElementById('regularCodigoOrigem');if(cod&&!cod.dataset.bound){cod.dataset.bound='1';cod.addEventListener('input',()=>{const v=cod.value.trim();if(/^\d{4,}$/.test(v)){document.getElementById('regularBuscaProcedimento').value=v;buscarProcedimentosRegular();}});}
             ['regularCPF','regularCNS'].forEach(id=>{const campo=document.getElementById(id);if(campo&&!campo.dataset.bound){campo.dataset.bound='1';campo.addEventListener('input',()=>{const dig=campo.value.replace(/\D/g,'');campo.value=id==='regularCPF'?formatarCPFRegular(dig):formatarCNSRegular(dig);validarDocumentoRegular(id,campo.dataset.touched==='1');});campo.addEventListener('blur',()=>{campo.dataset.touched='1';validarDocumentoRegular(id,true);});}});
             const form=document.getElementById('formRegularCirurgia');if(form&&!form.dataset.enterBound){form.dataset.enterBound='1';form.addEventListener('keydown',evento=>{if(evento.key!=='Enter'||evento.isComposing)return;const atual=evento.target;if(!(atual instanceof HTMLElement)||!['INPUT','SELECT','TEXTAREA'].includes(atual.tagName))return;evento.preventDefault();const campos=Array.from(form.querySelectorAll('input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled])')).filter(el=>el.offsetParent!==null&&el.tabIndex!==-1);const indice=campos.indexOf(atual);if(indice>=0&&indice<campos.length-1){campos[indice+1].focus({preventScroll:true});}else if(indice===campos.length-1){const salvar=document.getElementById('btnSalvarAgendamentoRegular');if(typeof form.requestSubmit==='function')form.requestSubmit(salvar||undefined);else if(salvar)salvar.click();}});}
         }
