@@ -4541,6 +4541,29 @@
 }
 </style>
 
+
+<style id="cpam-date-button-typography">
+/* Pequeno aumento tipográfico; dimensões e grade permanecem inalteradas */
+#appShell .cpam-date-arrow{
+  font-size:clamp(13px,1.22vw,15px)!important;
+}
+#appShell .cpam-date-shortcut-group button{
+  font-size:13px!important;
+}
+@media(max-width:640px){
+  #appShell .cpam-date-arrow{
+    font-size:clamp(9px,2.55vw,11px)!important;
+  }
+  #appShell .cpam-date-shortcut-group button{
+    font-size:12px!important;
+  }
+}
+@media(max-width:359px){
+  #appShell .cpam-date-arrow{font-size:8px!important}
+  #appShell .cpam-date-shortcut-group button{font-size:11px!important}
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
