@@ -6733,7 +6733,7 @@ async function regularAtualizarResumoProcedimento(){
   if(ids.length){const p=await supabaseClient.from('pacientes').select('id,nome_paciente').in('id',ids);if(p.error)throw p.error;for(const x of p.data||[])pacientes[x.id]=x.nome_paciente;}
   const total=(registros||[]).length;let usados=0,limite=null;
   if(config&&tipo){const l=regularAgendaLimitesCache.find(x=>x.profissional_id===medicoId&&x.exame_tipo===tipo&&x.ativo);limite=l?Number(l.limite_diario):null;
-   const e=await supabaseClient.from('gastro_agenda_exames').select('id',{count:'exact',head:true}).eq('profissional_id',medicoId).eq('exame_tipo',tipo).eq('data_agendada',data).eq('status','agendado');if(e.error)throw e.error;usados=e.count||0;}
+   usados=(registros||[]).filter(x=>agendaTipoProcedimento(x.procedimento_nome)===tipo).length;}
   const dow=new Date(data+'T12:00:00').getDay(),iso=dow===0?7:dow,diaPermitido=!config||(config.dias_semana||[]).includes(iso);
   const lista=(registros||[]).map(x=>'<li class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 py-1.5"><span class="min-w-0"><strong class="font-semibold text-slate-700">'+escaparHtml(pacientes[x.paciente_id]||'Paciente não identificado')+'</strong><span class="block text-[10px] text-slate-500">'+escaparHtml(x.procedimento_nome||'Procedimento não informado')+'</span></span></li>').join('');
   let regra='';
