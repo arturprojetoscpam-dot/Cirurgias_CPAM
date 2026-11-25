@@ -137,7 +137,18 @@
         #appShell #secAgendamentosEletivos label[for="filtroDataAgendaEletiva"]{font-size:1rem!important;font-weight:800!important;}
         #appShell #secAgendamentosEletivos .agenda-resumo-titulo{font-size:.875rem!important;font-weight:800!important;letter-spacing:.1em;}
 
-        /* CPAM POSITIVUS DESIGN SYSTEM — camada visual, sem alterar regras de negócio */
+        
+        /* Navegação de datas da Regulação */
+        #appShell .agenda-data-atalho{min-width:42px;border:1px solid #dbe4df;border-radius:8px;background:#fff;padding:.38rem .58rem;color:#52645a;font-size:10px;font-weight:800;transition:all .15s}
+        #appShell .agenda-data-atalho:hover{border-color:#7ab89a;background:#edf8f1;color:#14543e}
+        #appShell #regularDataPrevista{appearance:none;-webkit-appearance:none;cursor:pointer}
+        #appShell #regularDataPrevista::-webkit-calendar-picker-indicator{cursor:pointer;opacity:.7;margin-left:.3rem}
+        #appShell .regular-doc-error{display:none;margin-top:.3rem;font-size:10px;font-weight:600;line-height:1.4;color:#b42318}
+        #appShell .regular-doc-error.is-visible{display:block}
+        #appShell .regular-doc-invalid{border-color:#dc2626!important;background:#fffafa!important;box-shadow:0 0 0 2px rgba(220,38,38,.09)!important}
+        #appShell .regular-doc-valid{border-color:#16a36a!important}
+        @media(max-width:640px){#appShell #regularDataPrevista{font-size:1rem!important}}
+/* CPAM POSITIVUS DESIGN SYSTEM — camada visual, sem alterar regras de negócio */
         :root{
           --cpam-bg:#FFFFFF;--cpam-surface:#F3F5F4;--cpam-green:#22A06B;
           --cpam-green-hover:#1B8558;--cpam-mint:#D3F3E4;--cpam-ink:#191A23;
@@ -4198,8 +4209,8 @@
                   <div><label for="regularProntuarioAmb" class="label-cirurgia">Prontuário ambulatorial</label><input id="regularProntuarioAmb" class="campo-cirurgia" maxlength="60" placeholder="Número do prontuário ambulatorial"></div>
                   <div class="sm:col-span-2"><label for="regularNomePaciente" class="label-cirurgia">Nome completo *</label><input id="regularNomePaciente" class="campo-cirurgia" required maxlength="180" placeholder="Nome completo do paciente"></div>
                   <div><label for="regularNascimento" class="label-cirurgia">Data de nascimento</label><input id="regularNascimento" type="date" class="campo-cirurgia"></div>
-                  <div><label for="regularCPF" class="label-cirurgia">CPF</label><input id="regularCPF" class="campo-cirurgia" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"></div>
-                  <div><label for="regularCNS" class="label-cirurgia">Cartão SUS (CNS)</label><input id="regularCNS" class="campo-cirurgia" inputmode="numeric" maxlength="18" placeholder="Número do CNS"></div>
+                  <div><label for="regularCPF" class="label-cirurgia">CPF</label><input id="regularCPF" class="campo-cirurgia" inputmode="numeric" maxlength="14" placeholder="000.000.000-00"><p id="regularCPFErro" class="regular-doc-error" aria-live="polite"></p></div>
+                  <div><label for="regularCNS" class="label-cirurgia">Cartão SUS (CNS)</label><input id="regularCNS" class="campo-cirurgia" inputmode="numeric" maxlength="18" placeholder="000 0000 0000 0000"><p id="regularCNSErro" class="regular-doc-error" aria-live="polite"></p></div>
                   
                   <div class="sm:col-span-2"><label for="regularNomeMae" class="label-cirurgia">Nome da mãe</label><input id="regularNomeMae" class="campo-cirurgia" maxlength="180" placeholder="Nome completo da mãe"></div>
                   <div><label for="regularTelefone" class="label-cirurgia">Telefone</label><input id="regularTelefone" class="campo-cirurgia" maxlength="30" placeholder="(00) 00000-0000"></div>
@@ -4225,11 +4236,23 @@
               <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="sm:col-span-2 lg:col-span-4 rounded-xl border border-slate-200 bg-white p-3">
 <div class="flex flex-wrap items-center justify-between gap-2"><div><label for="regularDataPrevista" class="label-cirurgia">Data prevista *</label><div class="mt-1 flex flex-wrap items-center gap-2"><span id="regularDataSemanaLabel" class="text-xs font-bold text-slate-800">Selecione o médico</span><span id="regularDataDisponibilidade" class="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Aguardando seleção</span></div></div><div id="regularEscalaSemanal" class="flex flex-wrap items-center gap-1" aria-label="Escala semanal do profissional"><span class="text-[10px] text-slate-400">A escala será exibida após selecionar o médico</span></div></div>
-<div class="mt-3 flex flex-wrap items-center gap-1.5">
-<button type="button" onclick="regularNavegarData(-90)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">−90d</button><button type="button" onclick="regularNavegarData(-30)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">−30d</button><button type="button" onclick="regularNavegarData(-7)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">−7d</button><button type="button" onclick="regularNavegarData(-1)" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50" aria-label="Dia anterior"><i class="fa-solid fa-chevron-left"></i></button>
-<input id="regularDataPrevista" type="date" min="\${regularAgendaHojeISO()}" class="campo-cirurgia min-w-[155px] flex-1 font-bold" required onchange="regularDataManualAlterada()">
-<button type="button" onclick="regularNavegarData(1)" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50" aria-label="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button><button type="button" onclick="regularNavegarData(7)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">+7d</button><button type="button" onclick="regularNavegarData(30)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">+30d</button><button type="button" onclick="regularNavegarData(90)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">+90d</button><button type="button" onclick="regularBuscarProximaDataDisponivel()" class="ml-auto rounded-lg bg-[#123C32] px-3 py-2 text-[10px] font-bold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-calendar-check mr-1"></i>Próxima vaga</button></div>
-<p class="mt-2 text-[10px] text-slate-500">A data inicial é localizada automaticamente conforme a escala e a disponibilidade do médico. Você também pode navegar pelos atalhos.</p></div><div id="regularResumoAgendaProcedimento" class="sm:col-span-2 lg:col-span-4 hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-live="polite"><div class="flex items-center justify-between gap-2"><strong class="text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar-check mr-1.5 text-[#123C32]"></i>Resumo da agenda do médico</strong><span id="regularResumoAgendaStatus" class="text-[10px] font-semibold text-slate-500"></span></div><div id="regularResumoAgendaConteudo" class="mt-2 text-xs text-slate-600">Selecione o médico e a data para consultar a disponibilidade.</div></div>
+<div class="mt-4 grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
+ <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+  <div class="flex flex-wrap items-center justify-between gap-2"><span class="text-[10px] font-bold uppercase tracking-[.14em] text-slate-500"><i class="fa-regular fa-calendar mr-1.5"></i>Data selecionada</span><span id="regularDataDisponibilidade" class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">Aguardando seleção</span></div>
+  <div class="mt-2 flex items-center gap-2">
+   <button type="button" onclick="regularNavegarData(-1)" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-emerald-400 hover:text-emerald-800" aria-label="Dia anterior"><i class="fa-solid fa-chevron-left"></i></button>
+   <div class="min-w-0 flex-1 rounded-lg border border-emerald-200 bg-white px-3 py-2 text-center shadow-sm">
+    <input id="regularDataPrevista" type="date" min="\${regularAgendaHojeISO()}" class="w-full min-w-0 border-0 bg-transparent p-0 text-center text-lg font-extrabold tracking-tight text-[#123C32] outline-none focus:ring-0" required onchange="regularDataManualAlterada()">
+    <p id="regularDataSemanaLabel" class="mt-0.5 text-[11px] font-semibold capitalize text-slate-500">Selecione o médico</p>
+   </div>
+   <button type="button" onclick="regularNavegarData(1)" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-emerald-400 hover:text-emerald-800" aria-label="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+  <div class="mt-2 flex flex-wrap items-center justify-center gap-1.5"><span class="mr-1 text-[9px] font-bold uppercase tracking-wide text-slate-400">Atalhos</span>
+   <button type="button" onclick="regularNavegarData(-90)" class="agenda-data-atalho">−90d</button><button type="button" onclick="regularNavegarData(-30)" class="agenda-data-atalho">−30d</button><button type="button" onclick="regularNavegarData(-7)" class="agenda-data-atalho">−7d</button><span class="mx-1 h-4 w-px bg-slate-200"></span><button type="button" onclick="regularNavegarData(7)" class="agenda-data-atalho">+7d</button><button type="button" onclick="regularNavegarData(30)" class="agenda-data-atalho">+30d</button><button type="button" onclick="regularNavegarData(90)" class="agenda-data-atalho">+90d</button>
+  </div>
+ </div>
+ <div class="flex flex-col gap-2 xl:min-w-[190px]"><button type="button" onclick="regularBuscarProximaDataDisponivel(true)" class="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#123C32] px-4 py-2.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-[#1b5948] focus:outline-none focus:ring-2 focus:ring-emerald-300"><i class="fa-solid fa-calendar-check"></i>Próxima vaga disponível</button><p class="text-center text-[10px] leading-relaxed text-slate-500">Busca o próximo dia da escala com vaga para o procedimento.</p></div>
+</div></div><div id="regularResumoAgendaProcedimento" class="sm:col-span-2 lg:col-span-4 hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" aria-live="polite"><div class="flex items-center justify-between gap-2"><strong class="text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar-check mr-1.5 text-[#123C32]"></i>Resumo da agenda do médico</strong><span id="regularResumoAgendaStatus" class="text-[10px] font-semibold text-slate-500"></span></div><div id="regularResumoAgendaConteudo" class="mt-2 text-xs text-slate-600">Selecione o médico e a data para consultar a disponibilidade.</div></div>
                 <div class="sm:col-span-2 lg:col-span-4"><label for="regularObservacao" class="label-cirurgia">Observações da Regulação</label><textarea id="regularObservacao" rows="3" class="campo-cirurgia" maxlength="2000" placeholder="Informações complementares sobre a solicitação ou programação..."></textarea></div>
               </div>
             </section>
@@ -6024,10 +6047,16 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
         window.addEventListener('popstate',function(){resolverRotaAtual();});
         let agendaModoVisualizacao='semanal';
         let regularPacienteAtual=null,regularBuscaProcedimentoTimer=null,regularDadosSISREG=false,sisregProgressTimer=null;
+
+function formatarCPFRegular(v){const d=String(v||'').replace(/\D/g,'').slice(0,11);return d.length>9?d.replace(/(\d{3})(\d{3})(\d{3})(\d{0,2})/,'$1.$2.$3-$4'):d.length>6?d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1.$2.$3'):d.length>3?d.replace(/(\d{3})(\d{0,3})/,'$1.$2'):d;}
+function formatarCNSRegular(v){const d=String(v||'').replace(/\D/g,'').slice(0,15);return d.replace(/^(\d{3})(\d{0,4})?(\d{0,4})?(\d{0,4})?$/,(m,a,b='',c='',e='')=>[a,b,c,e].filter(Boolean).join(' '));}
+function cpfRegularValido(valor){const d=String(valor||'').replace(/\D/g,'');if(d.length!==11||/^([0-9])\1{10}$/.test(d))return false;let soma=0;for(let i=0;i<9;i++)soma+=Number(d[i])*(10-i);let dig=(soma*10)%11;if(dig===10)dig=0;if(dig!==Number(d[9]))return false;soma=0;for(let i=0;i<10;i++)soma+=Number(d[i])*(11-i);dig=(soma*10)%11;if(dig===10)dig=0;return dig===Number(d[10]);}
+function cnsRegularValido(valor){const d=String(valor||'').replace(/\D/g,'');if(d.length!==15||!['1','2','7','8','9'].includes(d[0])||/^([0-9])\1{14}$/.test(d))return false;if(d[0]==='1'||d[0]==='2'){let soma=0;for(let i=0;i<15;i++)soma+=Number(d[i])*(15-i);return soma%11===0;}let soma=0;for(let i=0;i<11;i++)soma+=Number(d[i])*(15-i);let dv=11-(soma%11);if(dv===11)dv=0;if(dv===10){soma+=2;dv=11-(soma%11);if(dv===11)dv=0;}return d===d.slice(0,11)+String(dv)+'000';}
+function validarDocumentoRegular(id,mostrarIncompleto=true){const campo=document.getElementById(id),erro=document.getElementById(id+'Erro');if(!campo||!erro)return true;const d=campo.value.replace(/\D/g,'');let mensagem='';if(d){if(id==='regularCPF'){if(d.length!==11)mensagem='CPF incompleto: informe os 11 números.';else if(!cpfRegularValido(d))mensagem='CPF inválido. Confira os números e os dígitos verificadores.';}else{if(d.length!==15)mensagem='CNS incompleto: informe os 15 números.';else if(!cnsRegularValido(d))mensagem='CNS inválido ou fora do padrão do Cartão Nacional de Saúde.';}}erro.textContent=mensagem;erro.classList.toggle('is-visible',!!mensagem);campo.classList.toggle('regular-doc-invalid',!!mensagem);campo.classList.toggle('regular-doc-valid',!!d&&!mensagem);campo.setAttribute('aria-invalid',mensagem?'true':'false');return !mensagem;}
         function inicializarFormularioRegular(){
             const data=document.getElementById('regularDataPrevista');if(data&&!data.value)data.value=dataLocalISOAgenda(new Date());
             const busca=document.getElementById('regularBuscaPaciente');if(busca&&!busca.dataset.bound){busca.dataset.bound='1';busca.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();consultarPacienteSISREG();}});busca.addEventListener('input',()=>{busca.value=busca.value.replace(/\\D/g,'').slice(0,15);});}const cod=document.getElementById('regularCodigoOrigem');if(cod&&!cod.dataset.bound){cod.dataset.bound='1';cod.addEventListener('input',()=>{const v=cod.value.trim();if(/^\d{4,}$/.test(v)){document.getElementById('regularBuscaProcedimento').value=v;buscarProcedimentosRegular();}});}
-            const cpf=document.getElementById('regularCPF');if(cpf&&!cpf.dataset.bound){cpf.dataset.bound='1';cpf.addEventListener('input',()=>{const v=cpf.value.replace(/\D/g,'').slice(0,11);cpf.value=v.length===11?v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/,'$1.$2.$3-$4'):v;});}
+            ['regularCPF','regularCNS'].forEach(id=>{const campo=document.getElementById(id);if(campo&&!campo.dataset.bound){campo.dataset.bound='1';campo.addEventListener('input',()=>{const dig=campo.value.replace(/\D/g,'').slice(0,id==='regularCPF'?11:15);campo.value=id==='regularCPF'?formatarCPFRegular(dig):formatarCNSRegular(dig);validarDocumentoRegular(id,false);});campo.addEventListener('blur',()=>validarDocumentoRegular(id,true));}});
             const form=document.getElementById('formRegularCirurgia');if(form&&!form.dataset.enterBound){form.dataset.enterBound='1';form.addEventListener('keydown',evento=>{if(evento.key!=='Enter'||evento.isComposing)return;const atual=evento.target;if(!(atual instanceof HTMLElement)||!['INPUT','SELECT','TEXTAREA'].includes(atual.tagName))return;evento.preventDefault();const campos=Array.from(form.querySelectorAll('input:not([type=hidden]):not([disabled]),select:not([disabled]),textarea:not([disabled])')).filter(el=>el.offsetParent!==null&&el.tabIndex!==-1);const indice=campos.indexOf(atual);if(indice>=0&&indice<campos.length-1){campos[indice+1].focus({preventScroll:true});}else if(indice===campos.length-1){const salvar=document.getElementById('btnSalvarAgendamentoRegular');if(typeof form.requestSubmit==='function')form.requestSubmit(salvar||undefined);else if(salvar)salvar.click();}});}
         }
         async function limparPacienteRegular(confirmar=true){
@@ -6082,7 +6111,7 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
             if(!profissionalResponsavelId){exibirToast('Selecione o médico responsável.','erro');document.getElementById('regularGastroMedico').focus();return;}
             if(!nome||!procedimento||!codigo||!data){exibirToast('Preencha nome, procedimento e data prevista. O prontuário ambulatorial pode ser informado quando disponível.','erro');return;}
             if(!regularPacienteAtual&&!cpf&&!cns){exibirToast('Para cadastrar um novo paciente, informe CPF ou Cartão SUS (CNS).','erro');return;}
-            if(cpf&&cpf.length!==11){exibirToast('O CPF deve conter 11 números.','erro');return;}
+            if(cpf&&!cpfRegularValido(cpf)){validarDocumentoRegular('regularCPF',true);exibirToast('CPF inválido. Confira os 11 números e os dígitos verificadores.','erro');document.getElementById('regularCPF').focus();return;}if(cns&&!cnsRegularValido(cns)){validarDocumentoRegular('regularCNS',true);exibirToast('CNS inválido. Confira os 15 números e o padrão do Cartão Nacional de Saúde.','erro');document.getElementById('regularCNS').focus();return;}
             const nascimentoRegular=regularPacienteAtual?.data_nascimento||document.getElementById('regularNascimento').value;
             const idadeRegular=idadeNaData(nascimentoRegular,data);
             if(idadeRegular===null){exibirToast('Informe uma data de nascimento válida antes de regularizar a cirurgia.','erro');if(!regularPacienteAtual)document.getElementById('regularNascimento').focus();return;}
@@ -6746,26 +6775,26 @@ function regularNavegarData(dias){
  input.value=alvo;regularAtualizarNavegacaoData();regularAtualizarResumoProcedimento();
 }
 async function regularAoSelecionarMedico(){regularAtualizarNavegacaoData();await regularBuscarProximaDataDisponivel();}
-async function regularBuscarProximaDataDisponivel(){
+async function regularBuscarProximaDataDisponivel(proxima=true){
  const medicoId=document.getElementById('regularGastroMedico')?.value,input=document.getElementById('regularDataPrevista');
  if(!medicoId||!input){exibirToast('Selecione o médico para localizar a próxima data.','aviso');return;}
- const token=++regularAgendaBuscaDataToken,hoje=regularAgendaHojeISO(),status=document.getElementById('regularDataDisponibilidade');
+ const token=++regularAgendaBuscaDataToken,hoje=regularAgendaHojeISO(),dataAtual=input.value||hoje,inicioBusca=proxima&&dataAtual>=hoje?regularAgendaDataAdd(dataAtual,1):hoje,status=document.getElementById('regularDataDisponibilidade');
  if(status){status.textContent='Buscando vaga...';status.className='rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800';}
  try{
   await regularAgendaCarregarBases();if(token!==regularAgendaBuscaDataToken)return;
   const config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
-  if(!config){input.value=hoje;regularAtualizarNavegacaoData();await regularAtualizarResumoProcedimento();return;}
+  if(!config){input.value=inicioBusca;regularAtualizarNavegacaoData();await regularAtualizarResumoProcedimento();return;}
   if(!config.ativo){if(status)status.textContent='Agenda desativada';exibirToast('A agenda deste profissional está desativada. Consulte a Coordenação.','erro');return;}
   const limites=regularAgendaLimitesCache.filter(x=>x.profissional_id===medicoId&&x.ativo&&Number(x.limite_diario)>0);
   const procedimento=document.getElementById('regularProcedimentoNome')?.value,tipoSelecionado=agendaTipoProcedimento(procedimento);
   if(procedimento&&(!tipoSelecionado||!limites.some(x=>x.exame_tipo===tipoSelecionado))){if(status)status.textContent='Sem vaga para este procedimento';exibirToast('Este profissional não possui limite positivo configurado para o procedimento selecionado.','erro');return;}
   if(!limites.length){if(status)status.textContent='Sem procedimentos habilitados';exibirToast('Não há procedimentos com limite positivo configurado para este médico.','aviso');return;}
-  const fim=regularAgendaDataAdd(hoje,180);
+  const fim=regularAgendaDataAdd(inicioBusca,180);
   const q=await supabaseClient.from('agendamentos_eletivos').select('data_prevista,procedimento_nome').eq('profissional_responsavel_id',medicoId).eq('situacao','aguardando_bloco').gte('data_prevista',hoje).lte('data_prevista',fim).limit(5000);if(q.error)throw q.error;
   if(token!==regularAgendaBuscaDataToken)return;
   const ocupacao={};for(const r of q.data||[]){const t=agendaTipoProcedimento(r.procedimento_nome);if(!t)continue;const k=r.data_prevista+'|'+t;ocupacao[k]=(ocupacao[k]||0)+1;}
   const diasPermitidos=new Set(config.dias_semana||[]);let encontrada=null;
-  for(let i=0;i<=180;i++){const data=regularAgendaDataAdd(hoje,i),dow=new Date(data+'T12:00:00').getDay(),iso=dow===0?7:dow;if(!diasPermitidos.has(iso))continue;
+  for(let i=0;i<=180;i++){const data=regularAgendaDataAdd(inicioBusca,i),dow=new Date(data+'T12:00:00').getDay(),iso=dow===0?7:dow;if(!diasPermitidos.has(iso))continue;
    const candidatos=tipoSelecionado?limites.filter(x=>x.exame_tipo===tipoSelecionado):limites;
    if(candidatos.some(x=>(ocupacao[data+'|'+x.exame_tipo]||0)<Number(x.limite_diario))){encontrada=data;break;}
   }
