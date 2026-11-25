@@ -6125,7 +6125,6 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
         }
         async function buscarProcedimentosRegular(){
             const campo=document.getElementById('regularBuscaProcedimento'),box=document.getElementById('regularResultadosProcedimento'),termo=campo.value.trim();
-            gastroLimparMedicoRegular();
             document.getElementById('regularProcedimentoCodigo').value='';document.getElementById('regularProcedimentoNome').value='';document.getElementById('regularProcedimentoSelecionado').classList.add('hidden');
             if(regularBuscaProcedimentoTimer)clearTimeout(regularBuscaProcedimentoTimer);if(termo.length<2){box.classList.add('hidden');return;}
             regularBuscaProcedimentoTimer=setTimeout(async()=>{try{
@@ -6809,7 +6808,7 @@ async function regularAoSelecionarMedico(){regularAtualizarNavegacaoData();await
 async function regularBuscarProximaDataDisponivel(proxima=false){
  const medicoId=document.getElementById('regularGastroMedico')?.value,input=document.getElementById('regularDataPrevista');
  if(!medicoId||!input){exibirToast('Selecione o médico para localizar a próxima data.','aviso');return;}
- const token=++regularAgendaBuscaDataToken,hoje=regularAgendaHojeISO(),dataAtual=input.value||hoje,inicioBusca=proxima&&dataAtual>=hoje?regularAgendaDataAdd(dataAtual,1):hoje,status=document.getElementById('regularDataDisponibilidade');
+ const token=++regularAgendaBuscaDataToken,hoje=regularAgendaHojeISO(),inicioBusca=hoje,status=document.getElementById('regularDataDisponibilidade');
  if(status){status.textContent='Buscando vaga...';status.className='rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800';}
  try{
   await regularAgendaCarregarBases();if(token!==regularAgendaBuscaDataToken)return;
@@ -6821,10 +6820,14 @@ async function regularBuscarProximaDataDisponivel(proxima=false){
   if(procedimento&&(!tipoSelecionado||!limites.some(x=>x.exame_tipo===tipoSelecionado))){if(status)status.textContent='Sem vaga para este procedimento';exibirToast('Este profissional não possui limite positivo configurado para o procedimento selecionado.','erro');return;}
   if(!limites.length){if(status)status.textContent='Sem procedimentos habilitados';exibirToast('Não há procedimentos com limite positivo configurado para este médico.','aviso');return;}
   const fim=regularAgendaDataAdd(inicioBusca,180);
-  const q=await supabaseClient.from('agendamentos_eletivos').select('data_prevista,procedimento_nome').eq('profissional_responsavel_id',medicoId).eq('situacao','aguardando_bloco').gte('data_prevista',hoje).lte('data_prevista',fim).limit(5000);if(q.error)throw q.error;
-  if(token!==regularAgendaBuscaDataToken)return;
-  const ocupacao={};for(const r of q.data||[]){const t=agendaTipoProcedimento(r.procedimento_nome);if(!t)continue;const k=r.data_prevista+'|'+t;ocupacao[k]=(ocupacao[k]||0)+1;}
-  const diasPermitidos=new Set(config.dias_semana||[]);let encontrada=null;
+  const ocupacao={};let offset=0;const pagina=1000;
+  while(true){
+   const q=await supabaseClient.from('agendamentos_eletivos').select('data_prevista,procedimento_nome').eq('profissional_responsavel_id',medicoId).eq('situacao','aguardando_bloco').gte('data_prevista',hoje).lte('data_prevista',fim).order('data_prevista',{ascending:true}).range(offset,offset+pagina-1);
+   if(q.error)throw q.error;if(token!==regularAgendaBuscaDataToken)return;
+   for(const r of q.data||[]){const t=agendaTipoProcedimento(r.procedimento_nome);if(!t)continue;const k=r.data_prevista+'|'+t;ocupacao[k]=(ocupacao[k]||0)+1;}
+   if(!q.data||q.data.length<pagina)break;offset+=q.data.length;
+  }
+  const diasPermitidos=new Set((config.dias_semana||[]).map(Number));let encontrada=null;
   for(let i=0;i<=180;i++){const data=regularAgendaDataAdd(inicioBusca,i),dow=new Date(data+'T12:00:00').getDay(),iso=dow===0?7:dow;if(!diasPermitidos.has(iso))continue;
    const candidatos=tipoSelecionado?limites.filter(x=>x.exame_tipo===tipoSelecionado):limites;
    if(candidatos.some(x=>(ocupacao[data+'|'+x.exame_tipo]||0)<Number(x.limite_diario))){encontrada=data;break;}
