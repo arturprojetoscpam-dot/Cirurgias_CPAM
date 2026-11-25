@@ -3885,46 +3885,52 @@
 
 
 <style>
-/* Hierarquia desktop preservada; ajuste mobile com legibilidade e foco acessível */
-#appShell .cpam-date-selected-label{
-  font-size:16px!important;
-  font-weight:800!important;
-  letter-spacing:.10em!important;
-}
+/* Contraste, cores semânticas e responsividade final do seletor */
 #appShell .cpam-date-arrow{
-  min-height:76px!important;
-  height:76px!important;
-  transform:translateY(30px);
+  font-size:clamp(12px,1.15vw,14px)!important;
+  -webkit-tap-highlight-color:transparent;
+  transition:background-color .15s ease,border-color .15s ease,filter .15s ease;
+}
+#appShell .cpam-date-back{
+  background:#991B1B!important;
+  border-color:#7F1D1D!important;
+  color:#fff!important;
+}
+#appShell .cpam-date-forward{
+  background:#166534!important;
+  border-color:#14532D!important;
+  color:#fff!important;
+}
+#appShell .cpam-date-shortcut-back button{
+  background:#991B1B!important;
+  border-color:#7F1D1D!important;
+  color:#fff!important;
+}
+#appShell .cpam-date-shortcut-forward button{
+  background:#166534!important;
+  border-color:#14532D!important;
+  color:#fff!important;
 }
 #appShell .cpam-date-shortcut-group button{
-  height:40px!important;
-  min-height:40px!important;
-  align-self:end!important;
+  font-size:13px!important;
+  -webkit-tap-highlight-color:transparent;
 }
-#appShell .cpam-next-slot{
-  height:40px!important;
-  min-height:40px!important;
+#appShell .cpam-date-arrow:focus,
+#appShell .cpam-date-arrow:active,
+#appShell .cpam-date-shortcut-group button:focus,
+#appShell .cpam-date-shortcut-group button:active{
+  color:#fff!important;
+  opacity:1!important;
+  filter:brightness(.88)!important;
 }
-#appShell #regularDataPrevista,
-#appShell .cpam-date-input{
-  box-sizing:border-box!important;
-  height:76px!important;
-  min-height:76px!important;
-  font-size:36px!important;
-  font-weight:800!important;
-  line-height:1.2!important;
-}
-#appShell #regularDataPrevista::-webkit-datetime-edit,
-#appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
-#appShell #regularDataPrevista::-webkit-datetime-edit-text,
-#appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
-#appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
-#appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
-  font-size:36px!important;
-  font-weight:800!important;
-  line-height:1.2!important;
-}
-/* Foco consistente, visível e sem salto estranho ao tocar */
+#appShell .cpam-date-back:focus,
+#appShell .cpam-date-back:active{background:#7F1D1D!important;border-color:#7F1D1D!important}
+#appShell .cpam-date-forward:focus,
+#appShell .cpam-date-forward:active{background:#14532D!important;border-color:#14532D!important}
+#appShell .cpam-date-shortcut-back button:focus,
+#appShell .cpam-date-shortcut-back button:active{background:#7F1D1D!important;border-color:#7F1D1D!important}
+#appShell .cpam-date-shortcut-forward button:focus,
+#appShell .cpam-date-shortcut-forward button:active{background:#14532D!important;border-color:#14532D!important}
 #appShell .cpam-date-arrow:focus-visible,
 #appShell .cpam-date-shortcut-group button:focus-visible,
 #appShell .cpam-next-slot:focus-visible,
@@ -3933,44 +3939,43 @@
   outline-offset:2px!important;
   box-shadow:0 0 0 2px #1E3A8A!important;
 }
-#appShell .cpam-date-arrow:active,
-#appShell .cpam-date-shortcut-group button:active,
+#appShell .cpam-next-slot:focus,
 #appShell .cpam-next-slot:active{
-  filter:brightness(.88)!important;
+  background:#1D4ED8!important;
+  color:#fff!important;
+  opacity:1!important;
+  filter:brightness(.9)!important;
 }
 @media(max-width:640px){
   #appShell .cpam-date-control{
-    grid-template-columns:minmax(0,.92fr) minmax(0,1.5fr) minmax(0,.92fr)!important;
-    column-gap:5px!important;
+    grid-template-columns:minmax(0,.78fr) minmax(0,1.9fr) minmax(0,.78fr)!important;
+    column-gap:4px!important;
     row-gap:6px!important;
   }
   #appShell .cpam-date-selected{
     min-width:0!important;
-    padding:7px 3px!important;
+    padding:7px 2px!important;
     gap:6px!important;
   }
   #appShell .cpam-date-selected-label{
     font-size:12px!important;
-    letter-spacing:.045em!important;
-    line-height:1.2!important;
+    letter-spacing:.04em!important;
     white-space:nowrap!important;
   }
   #appShell .cpam-date-arrow{
     box-sizing:border-box!important;
     min-width:0!important;
-    min-height:48px!important;
-    height:48px!important;
+    min-height:62px!important;
+    height:62px!important;
     padding:5px 2px!important;
-    transform:translateY(23px)!important;
+    transform:translateY(27px)!important;
     flex-direction:column!important;
     gap:3px!important;
-    border-width:1px!important;
-    border-radius:9px!important;
-    font-size:clamp(8px,2.5vw,10px)!important;
+    font-size:clamp(9px,2.7vw,11px)!important;
     line-height:1.1!important;
     white-space:normal!important;
   }
-  #appShell .cpam-date-arrow i{font-size:11px!important}
+  #appShell .cpam-date-arrow i{font-size:12px!important}
   #appShell #regularDataPrevista,
   #appShell .cpam-date-input{
     display:block!important;
@@ -3980,8 +3985,8 @@
     max-width:100%!important;
     height:54px!important;
     min-height:54px!important;
-    padding:4px 1px!important;
-    font-size:clamp(19px,5.8vw,23px)!important;
+    padding:3px 0!important;
+    font-size:clamp(16px,4.8vw,20px)!important;
     font-weight:800!important;
     line-height:1.15!important;
     text-align:center!important;
@@ -3992,47 +3997,33 @@
   #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
-    font-size:clamp(19px,5.8vw,23px)!important;
+    font-size:clamp(16px,4.8vw,20px)!important;
     font-weight:800!important;
   }
-  #appShell .cpam-date-shortcut-group button,
-  #appShell .cpam-next-slot{
-    box-sizing:border-box!important;
+  #appShell .cpam-date-shortcut-group button{
     height:34px!important;
     min-height:34px!important;
-    border-width:1px!important;
+    font-size:12px!important;
+    padding:0 1px!important;
   }
-  #appShell #regularDataPrevista:focus,
-  #appShell #regularDataPrevista:focus-visible{
-    outline:3px solid #93C5FD!important;
-    outline-offset:1px!important;
-    box-shadow:0 0 0 2px #1E3A8A!important;
-  }
+  #appShell .cpam-next-slot{height:34px!important;min-height:34px!important}
 }
 @media(max-width:359px){
   #appShell .cpam-date-control{
-    grid-template-columns:minmax(0,.88fr) minmax(0,1.55fr) minmax(0,.88fr)!important;
+    grid-template-columns:minmax(0,.7fr) minmax(0,2fr) minmax(0,.7fr)!important;
     column-gap:3px!important;
   }
-  #appShell .cpam-date-selected-label{font-size:10px!important;letter-spacing:.025em!important}
-  #appShell .cpam-date-arrow{
-    min-height:44px!important;
-    height:44px!important;
-    transform:translateY(22px)!important;
-    font-size:7px!important;
-  }
+  #appShell .cpam-date-selected-label{font-size:10px!important;letter-spacing:.02em!important}
+  #appShell .cpam-date-arrow{font-size:8px!important;min-height:58px!important;height:58px!important;transform:translateY(25px)!important}
   #appShell #regularDataPrevista,
-  #appShell .cpam-date-input{
-    height:50px!important;
-    min-height:50px!important;
-    font-size:19px!important;
-  }
+  #appShell .cpam-date-input{font-size:16px!important}
   #appShell #regularDataPrevista::-webkit-datetime-edit,
   #appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
   #appShell #regularDataPrevista::-webkit-datetime-edit-text,
   #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
-  #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{font-size:19px!important}
+  #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{font-size:16px!important}
+  #appShell .cpam-date-shortcut-group button{font-size:10px!important}
 }</style>
 
 </head>
