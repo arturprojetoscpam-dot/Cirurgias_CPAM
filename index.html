@@ -3885,10 +3885,11 @@
 
 
 <style>
-/* Ajuste final de dimensões do seletor de data — mantém a largura máxima e a lógica */
+/* Refinamento final: setas maiores e ligeiramente rebaixadas; data com mais destaque */
 #appShell .cpam-date-arrow{
-  min-height:52px!important;
-  height:52px!important;
+  min-height:60px!important;
+  height:60px!important;
+  transform:translateY(6px);
 }
 #appShell .cpam-date-shortcut-group button{
   height:40px!important;
@@ -3903,7 +3904,7 @@
 #appShell .cpam-date-input{
   height:76px!important;
   min-height:76px!important;
-  font-size:36px!important;
+  font-size:40px!important;
   font-weight:800!important;
   line-height:1.2!important;
 }
@@ -3913,14 +3914,15 @@
 #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
 #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
 #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
-  font-size:36px!important;
+  font-size:40px!important;
   font-weight:800!important;
   line-height:1.2!important;
 }
 @media(max-width:640px){
   #appShell .cpam-date-arrow{
-    min-height:46px!important;
-    height:46px!important;
+    min-height:52px!important;
+    height:52px!important;
+    transform:translateY(5px);
   }
   #appShell .cpam-date-shortcut-group button,
   #appShell .cpam-next-slot{
@@ -3931,7 +3933,7 @@
   #appShell .cpam-date-input{
     height:62px!important;
     min-height:62px!important;
-    font-size:30px!important;
+    font-size:34px!important;
   }
   #appShell #regularDataPrevista::-webkit-datetime-edit,
   #appShell #regularDataPrevista::-webkit-datetime-edit-fields-wrapper,
@@ -3939,14 +3941,15 @@
   #appShell #regularDataPrevista::-webkit-datetime-edit-month-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-day-field,
   #appShell #regularDataPrevista::-webkit-datetime-edit-year-field{
-    font-size:30px!important;
+    font-size:34px!important;
   }
 }
 @media(max-width:359px){
+  #appShell .cpam-date-arrow{min-height:48px!important;height:48px!important}
   #appShell .cpam-date-shortcut-group button{height:32px!important;min-height:32px!important}
   #appShell .cpam-next-slot{height:32px!important;min-height:32px!important}
   #appShell #regularDataPrevista,
-  #appShell .cpam-date-input{font-size:26px!important}
+  #appShell .cpam-date-input{font-size:30px!important}
 }
 </style>
 
