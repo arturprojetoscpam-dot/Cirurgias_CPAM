@@ -6844,7 +6844,8 @@ function regularAtualizarNavegacaoData(){
  agenda?.querySelectorAll('.cpam-date-arrow,.cpam-date-shortcuts button,.cpam-next-slot').forEach(botao=>{botao.disabled=!habilitar;botao.setAttribute('aria-disabled',String(!habilitar));});
  const label=document.getElementById('regularDataSemanaLabel'),status=document.getElementById('regularDataDisponibilidade'),escala=document.getElementById('regularEscalaSemanal');
  if(label)label.textContent=data?regularAgendaDataFormatada(data):'Selecione uma data';
- if(status){status.textContent=data?'Data selecionada':'Aguardando seleção';status.className='rounded-full px-2 py-1 text-[10px] font-semibold '+(data?'bg-emerald-50 text-emerald-800':'bg-slate-100 text-slate-600');}
+ if(status){status.textContent=!medicoId?'Aguardando médico':data?'Data selecionada':'Aguardando seleção';status.className='rounded-full px-2 py-1 text-[10px] font-semibold '+(medicoId&&data?'bg-emerald-50 text-emerald-800':'bg-slate-100 text-slate-600');}
+ if(!medicoId&&label)label.textContent='Selecione o médico';
  if(!escala)return;
  if(!medicoId){escala.innerHTML='<span class="text-[10px] text-slate-400">A escala será exibida após selecionar o médico</span>';return;}
  if(!config){escala.innerHTML='<span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold text-emerald-800">AGENDA LIVRE · QUALQUER DATA</span>';return;}
