@@ -4564,6 +4564,22 @@
 }
 </style>
 
+
+<style id="cpam-date-main-buttons-larger">
+/* Aumenta apenas os rótulos dos botões laterais; preserva caixa e alinhamento */
+#appShell .cpam-date-arrow{
+  font-size:clamp(17px,1.6vw,19.5px)!important;
+}
+@media(max-width:640px){
+  #appShell .cpam-date-arrow{
+    font-size:clamp(11.7px,3.3vw,14.3px)!important;
+  }
+}
+@media(max-width:359px){
+  #appShell .cpam-date-arrow{font-size:10.4px!important}
+}
+</style>
+
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
 
