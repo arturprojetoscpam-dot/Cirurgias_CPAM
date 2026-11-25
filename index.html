@@ -3635,7 +3635,7 @@
  #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:4px}
  #appShell .cpam-date-arrow{font-size:7px}
  #appShell .cpam-date-shortcut-group{gap:2px}
- #appShell .cpam-date-shortcut-group button{font-size:7px;min-height:30px}
+ #appShell .cpam-date-shortcut-group button{font-size:7px;height:24px;min-height:24px}
 }
 </style>
 
@@ -3783,15 +3783,21 @@
   background:#166534;
 }
 #appShell .cpam-date-input{
-  min-height:62px;
+  min-height:68px;
   border:1px solid #CBD5E1!important;
   border-radius:15px!important;
   background:#FFFFFF!important;
   color:#0F172A!important;
   padding:8px 10px!important;
-  font-size:clamp(23px,2.6vw,32px)!important;
+  font-size:clamp(27px,2.8vw,34px)!important;
   font-weight:800!important;
+  line-height:1.2!important;
   box-shadow:0 1px 3px rgba(15,23,42,.06);
+}
+#appShell .cpam-date-input::-webkit-datetime-edit{
+  font-size:inherit;
+  font-weight:inherit;
+  line-height:inherit;
 }
 #appShell .cpam-next-slot{
   min-height:40px;
@@ -3834,7 +3840,9 @@
   grid-row:2;
 }
 #appShell .cpam-date-shortcut-group button{
-  min-height:36px;
+  align-self:end;
+  height:28px;
+  min-height:28px;
   border:1px solid #14532D;
   border-radius:9px;
   background:#166534;
@@ -3861,11 +3869,11 @@
   #appShell .cpam-date-selected-label{font-size:7px;gap:4px;letter-spacing:.04em}
   #appShell .cpam-date-selected-label:before,
   #appShell .cpam-date-selected-label:after{height:2px;min-width:8px}
-  #appShell .cpam-date-input{min-height:48px;padding:5px 2px!important;font-size:clamp(20px,5vw,26px)!important}
+  #appShell .cpam-date-input{min-height:54px;padding:5px 2px!important;font-size:clamp(22px,5.5vw,28px)!important}
   #appShell .cpam-next-slot{min-height:34px;padding:5px 3px;font-size:clamp(8px,2.1vw,10px)}
   #appShell .cpam-date-arrow{min-height:38px;padding:5px 2px;font-size:clamp(8px,2.2vw,10px)}
   #appShell .cpam-date-shortcut-group{gap:3px}
-  #appShell .cpam-date-shortcut-group button{min-height:32px;padding:0 1px;font-size:clamp(8px,2.1vw,10px)}
+  #appShell .cpam-date-shortcut-group button{height:26px;min-height:26px;padding:0 1px;font-size:clamp(8px,2.1vw,10px)}
 }
 @media(max-width:359px){
   #appShell .cpam-date-control{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);gap:4px}
