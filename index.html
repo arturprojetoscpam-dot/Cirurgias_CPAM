@@ -4217,13 +4217,19 @@
               <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div class="sm:col-span-2 relative"><label for="regularBuscaProcedimento" class="label-cirurgia">Procedimento cirúrgico *</label><input id="regularBuscaProcedimento" class="campo-cirurgia" autocomplete="off" placeholder="Pesquise pelo nome ou código do procedimento" oninput="buscarProcedimentosRegular()"><input type="hidden" id="regularProcedimentoCodigo"><input type="hidden" id="regularProcedimentoNome"><div id="regularResultadosProcedimento" class="absolute z-30 mt-1 hidden max-h-64 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-xl"></div><p id="regularProcedimentoSelecionado" class="mt-1 hidden text-[10px] font-semibold text-emerald-800"></p></div>
                 <div><label for="regularCodigoOrigem" class="label-cirurgia">Código do procedimento</label><input id="regularCodigoOrigem" class="campo-cirurgia" maxlength="60" placeholder="Preenchido automaticamente ao selecionar o procedimento"></div>
-                <div id="regularGastroMedicoWrap"><label for="regularGastroMedico" class="label-cirurgia">Médico responsável *</label><select id="regularGastroMedico" class="campo-cirurgia" required onchange="regularAtualizarResumoProcedimento()"><option value="">Carregando médicos...</option></select><p class="mt-1 text-[10px] text-slate-500">A agenda é aplicada conforme o médico selecionado: a equipe Gastro segue os dias e limites configurados; os demais médicos têm agenda livre.</p></div>
+                <div id="regularGastroMedicoWrap"><label for="regularGastroMedico" class="label-cirurgia">Médico responsável *</label><select id="regularGastroMedico" class="campo-cirurgia" required onchange="regularAoSelecionarMedico()"><option value="">Carregando médicos...</option></select><p class="mt-1 text-[10px] text-slate-500">A agenda é aplicada conforme o médico selecionado: a equipe Gastro segue os dias e limites configurados; os demais médicos têm agenda livre.</p></div>
               </div>
             </section>
             <section class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
               <div><h3 class="text-sm font-extrabold text-slate-800"><i class="fa-solid fa-calendar-check mr-2 text-[#123C32]"></i>Programação cirúrgica</h3><p class="mt-1 text-xs text-slate-500">Dados iniciais do agendamento para acompanhamento pelo Bloco.</p></div>
               <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <div><label for="regularDataPrevista" class="label-cirurgia">Data prevista *</label><input id="regularDataPrevista" type="date" class="campo-cirurgia" required onchange="regularAtualizarResumoProcedimento()"></div><div id="regularResumoAgendaProcedimento" class="sm:col-span-2 lg:col-span-4 hidden rounded-xl border border-slate-200 bg-slate-50 p-3" aria-live="polite"><div class="flex items-center justify-between gap-2"><strong class="text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar-check mr-1.5 text-[#123C32]"></i>Resumo da agenda do médico</strong><span id="regularResumoAgendaStatus" class="text-[10px] font-semibold text-slate-500"></span></div><div id="regularResumoAgendaConteudo" class="mt-2 text-xs text-slate-600">Selecione o médico e a data para consultar a disponibilidade.</div></div>
+                <div class="sm:col-span-2 lg:col-span-4 rounded-xl border border-slate-200 bg-white p-3">
+<div class="flex flex-wrap items-center justify-between gap-2"><div><label for="regularDataPrevista" class="label-cirurgia">Data prevista *</label><div class="mt-1 flex flex-wrap items-center gap-2"><span id="regularDataSemanaLabel" class="text-xs font-bold text-slate-800">Selecione o médico</span><span id="regularDataDisponibilidade" class="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Aguardando seleção</span></div></div><div id="regularEscalaSemanal" class="flex flex-wrap items-center gap-1" aria-label="Escala semanal do profissional"><span class="text-[10px] text-slate-400">A escala será exibida após selecionar o médico</span></div></div>
+<div class="mt-3 flex flex-wrap items-center gap-1.5">
+<button type="button" onclick="regularNavegarData(-90)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">−90d</button><button type="button" onclick="regularNavegarData(-30)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">−30d</button><button type="button" onclick="regularNavegarData(-7)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">−7d</button><button type="button" onclick="regularNavegarData(-1)" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50" aria-label="Dia anterior"><i class="fa-solid fa-chevron-left"></i></button>
+<input id="regularDataPrevista" type="date" min="\${regularAgendaHojeISO()}" class="campo-cirurgia min-w-[155px] flex-1 font-bold" required onchange="regularDataManualAlterada()">
+<button type="button" onclick="regularNavegarData(1)" class="rounded-lg border border-slate-200 px-3 py-2 text-slate-600 hover:border-emerald-300 hover:bg-emerald-50" aria-label="Próximo dia"><i class="fa-solid fa-chevron-right"></i></button><button type="button" onclick="regularNavegarData(7)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">+7d</button><button type="button" onclick="regularNavegarData(30)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">+30d</button><button type="button" onclick="regularNavegarData(90)" class="rounded-lg border border-slate-200 px-2.5 py-2 text-[10px] font-bold text-slate-600 hover:border-emerald-300 hover:bg-emerald-50">+90d</button><button type="button" onclick="regularBuscarProximaDataDisponivel()" class="ml-auto rounded-lg bg-[#123C32] px-3 py-2 text-[10px] font-bold text-white hover:bg-[#1b5948]"><i class="fa-solid fa-calendar-check mr-1"></i>Próxima vaga</button></div>
+<p class="mt-2 text-[10px] text-slate-500">A data inicial é localizada automaticamente conforme a escala e a disponibilidade do médico. Você também pode navegar pelos atalhos.</p></div><div id="regularResumoAgendaProcedimento" class="sm:col-span-2 lg:col-span-4 hidden rounded-xl border border-slate-200 bg-slate-50 p-3" aria-live="polite"><div class="flex items-center justify-between gap-2"><strong class="text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar-check mr-1.5 text-[#123C32]"></i>Resumo da agenda do médico</strong><span id="regularResumoAgendaStatus" class="text-[10px] font-semibold text-slate-500"></span></div><div id="regularResumoAgendaConteudo" class="mt-2 text-xs text-slate-600">Selecione o médico e a data para consultar a disponibilidade.</div></div>
                 <div class="sm:col-span-2 lg:col-span-4"><label for="regularObservacao" class="label-cirurgia">Observações da Regulação</label><textarea id="regularObservacao" rows="3" class="campo-cirurgia" maxlength="2000" placeholder="Informações complementares sobre a solicitação ou programação..."></textarea></div>
               </div>
             </section>
@@ -6702,6 +6708,55 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
 let regularAgendaMedicosCache=[],regularAgendaConfigsCache=[],regularAgendaLimitesCache=[];
 let agendaProcedimentosRegistros=[],agendaProcedimentosPacientes={};
 const AGENDA_PROCEDIMENTOS_TIPOS=[['COLONOSCOPIA','agendaLimiteColonoscopia'],['RETOSSIGMOIDOSCOPIA','agendaLimiteRetossigmoidoscopia'],['ENDOSCOPIA DIGESTIVA ALTA','agendaLimiteEda'],['ENEMA OPACO','agendaLimiteEnema']];
+
+let regularAgendaBuscaDataToken=0;
+function regularAgendaHojeISO(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function regularAgendaDataAdd(iso,dias){const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+dias);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
+function regularAgendaDataFormatada(iso){if(!iso)return '—';return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(iso+'T12:00:00'));}
+function regularAtualizarNavegacaoData(){
+ const input=document.getElementById('regularDataPrevista');if(!input)return;
+ const data=input.value,medicoId=document.getElementById('regularGastroMedico')?.value,config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
+ const label=document.getElementById('regularDataSemanaLabel'),status=document.getElementById('regularDataDisponibilidade'),escala=document.getElementById('regularEscalaSemanal');
+ if(label)label.textContent=data?regularAgendaDataFormatada(data):'Selecione uma data';
+ if(status){status.textContent=data?'Data selecionada':'Aguardando seleção';status.className='rounded-full px-2 py-1 text-[10px] font-semibold '+(data?'bg-emerald-50 text-emerald-800':'bg-slate-100 text-slate-600');}
+ if(!escala)return;
+ if(!medicoId){escala.innerHTML='<span class="text-[10px] text-slate-400">A escala será exibida após selecionar o médico</span>';return;}
+ if(!config){escala.innerHTML=['SEG','TER','QUA','QUI','SEX'].map(x=>'<span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-bold text-emerald-800">'+x+' · LIVRE</span>').join('');return;}
+ const dias=[['SEG',1],['TER',2],['QUA',3],['QUI',4],['SEX',5],['SÁB',6],['DOM',7]];
+ escala.innerHTML=dias.map(([nome,n])=>{const ativo=(config.dias_semana||[]).includes(n);return '<span class="rounded-full px-2 py-1 text-[9px] font-bold '+(ativo?'bg-emerald-100 text-emerald-900':'bg-slate-100 text-slate-400')+'">'+nome+(ativo?' · '+String(config.turno||'ATENDE').slice(0,1):' · —')+'</span>';}).join('');
+}
+function regularDataManualAlterada(){const input=document.getElementById('regularDataPrevista');if(input&&input.value<regularAgendaHojeISO()){input.value=regularAgendaHojeISO();exibirToast('Não é permitido selecionar datas passadas.','aviso');}regularAtualizarNavegacaoData();regularAtualizarResumoProcedimento();}
+function regularNavegarData(dias){const input=document.getElementById('regularDataPrevista');if(!input)return;const base=input.value||regularAgendaHojeISO();let nova=regularAgendaDataAdd(base,dias);if(nova<regularAgendaHojeISO())nova=regularAgendaHojeISO();input.value=nova;regularAtualizarNavegacaoData();regularAtualizarResumoProcedimento();}
+async function regularAoSelecionarMedico(){regularAtualizarNavegacaoData();await regularBuscarProximaDataDisponivel();}
+async function regularBuscarProximaDataDisponivel(){
+ const medicoId=document.getElementById('regularGastroMedico')?.value,input=document.getElementById('regularDataPrevista');
+ if(!medicoId||!input){exibirToast('Selecione o médico para localizar a próxima data.','aviso');return;}
+ const token=++regularAgendaBuscaDataToken,hoje=regularAgendaHojeISO(),status=document.getElementById('regularDataDisponibilidade');
+ if(status){status.textContent='Buscando vaga...';status.className='rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800';}
+ try{
+  await regularAgendaCarregarBases();if(token!==regularAgendaBuscaDataToken)return;
+  const config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
+  if(!config){input.value=hoje;regularAtualizarNavegacaoData();await regularAtualizarResumoProcedimento();return;}
+  if(!config.ativo){if(status)status.textContent='Agenda desativada';exibirToast('A agenda deste profissional está desativada. Consulte a Coordenação.','erro');return;}
+  const limites=regularAgendaLimitesCache.filter(x=>x.profissional_id===medicoId&&x.ativo&&Number(x.limite_diario)>0);
+  const procedimento=document.getElementById('regularProcedimentoNome')?.value,tipoSelecionado=agendaTipoProcedimento(procedimento);
+  if(procedimento&&(!tipoSelecionado||!limites.some(x=>x.exame_tipo===tipoSelecionado))){if(status)status.textContent='Sem vaga para este procedimento';exibirToast('Este profissional não possui limite positivo configurado para o procedimento selecionado.','erro');return;}
+  if(!limites.length){if(status)status.textContent='Sem procedimentos habilitados';exibirToast('Não há procedimentos com limite positivo configurado para este médico.','aviso');return;}
+  const fim=regularAgendaDataAdd(hoje,180);
+  const q=await supabaseClient.from('agendamentos_eletivos').select('data_prevista,procedimento_nome').eq('profissional_responsavel_id',medicoId).eq('situacao','aguardando_bloco').gte('data_prevista',hoje).lte('data_prevista',fim).limit(5000);if(q.error)throw q.error;
+  if(token!==regularAgendaBuscaDataToken)return;
+  const ocupacao={};for(const r of q.data||[]){const t=agendaTipoProcedimento(r.procedimento_nome);if(!t)continue;const k=r.data_prevista+'|'+t;ocupacao[k]=(ocupacao[k]||0)+1;}
+  const diasPermitidos=new Set(config.dias_semana||[]);let encontrada=null;
+  for(let i=0;i<=180;i++){const data=regularAgendaDataAdd(hoje,i),dow=new Date(data+'T12:00:00').getDay(),iso=dow===0?7:dow;if(!diasPermitidos.has(iso))continue;
+   const candidatos=tipoSelecionado?limites.filter(x=>x.exame_tipo===tipoSelecionado):limites;
+   if(candidatos.some(x=>(ocupacao[data+'|'+x.exame_tipo]||0)<Number(x.limite_diario))){encontrada=data;break;}
+  }
+  if(!encontrada){if(status)status.textContent='Nenhuma vaga nos próximos 180 dias';exibirToast('Não foi encontrada vaga nos próximos 180 dias para este médico e procedimento.','aviso');return;}
+  input.value=encontrada;regularAtualizarNavegacaoData();await regularAtualizarResumoProcedimento();
+  if(status){status.textContent='Próxima vaga encontrada';status.className='rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-semibold text-emerald-900';}
+ }catch(error){console.error('Busca da próxima data disponível:',error);if(status)status.textContent='Falha na consulta';exibirToast('Não foi possível localizar a próxima data disponível.','erro');}
+}
+
 function regularAgendaSincronizarData(){regularAtualizarResumoProcedimento();}
 function agendaTipoProcedimento(valor){
  const t=String(valor||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase();
