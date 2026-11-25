@@ -6808,7 +6808,7 @@ async function regularAoSelecionarMedico(){regularAtualizarNavegacaoData();await
 async function regularBuscarProximaDataDisponivel(proxima=false){
  const medicoId=document.getElementById('regularGastroMedico')?.value,input=document.getElementById('regularDataPrevista');
  if(!medicoId||!input){exibirToast('Selecione o médico para localizar a próxima data.','aviso');return;}
- const token=++regularAgendaBuscaDataToken,hoje=regularAgendaHojeISO(),inicioBusca=hoje,status=document.getElementById('regularDataDisponibilidade');
+ const token=++regularAgendaBuscaDataToken,hoje=regularAgendaHojeISO(),dataAtual=input.value||hoje,inicioBusca=proxima&&dataAtual>=hoje?regularAgendaDataAdd(dataAtual,1):hoje,status=document.getElementById('regularDataDisponibilidade');
  if(status){status.textContent='Buscando vaga...';status.className='rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-800';}
  try{
   await regularAgendaCarregarBases();if(token!==regularAgendaBuscaDataToken)return;
