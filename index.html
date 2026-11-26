@@ -5915,7 +5915,18 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 const icone=tipo==='danger'?'fa-triangle-exclamation':tipo==='attention'?'fa-circle-exclamation':'fa-circle-question';
                 overlay.className='cpam-dialog-backdrop';
                 const card=document.createElement('section');card.className='cpam-dialog-card';card.setAttribute('role','alertdialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-labelledby','cpamDialogTitle');card.setAttribute('aria-describedby','cpamDialogMessage');
-                if(cfg.tipo==='agendamento'){
+                if(cfg.tipo==='erro-formulario'){
+                    card.style.width='min(100%,560px)';
+                    const cab=document.createElement('header');cab.className='flex items-center justify-between gap-4 border-b-2 border-rose-700 px-5 py-4 sm:px-6';
+                    const marca=document.createElement('img');marca.src='https://cirurgiascpam.vercel.app/logo-cpam.png';marca.alt='Logo CPAM';marca.className='max-h-14 w-auto max-w-[150px] object-contain';marca.onerror=function(){this.style.display='none';};
+                    const inst=document.createElement('div');inst.className='text-right text-[9px] font-semibold leading-relaxed text-slate-500';inst.innerHTML='<div>COMPLEXO DE PEDIATRIA</div><div class="font-extrabold text-slate-800">ARLINDA MARQUES</div><div>ÁREA DA REGULAÇÃO</div>';
+                    cab.appendChild(marca);cab.appendChild(inst);card.appendChild(cab);
+                    const corpo=document.createElement('div');corpo.className='px-5 py-6 sm:px-6';
+                    const titulo=document.createElement('h2');titulo.id='cpamDialogTitle';titulo.className='flex items-center gap-2 text-lg font-extrabold text-rose-800';titulo.innerHTML='<i class="fa-solid fa-circle-exclamation"></i> '+(cfg.titulo||'DADOS OBRIGATÓRIOS');
+                    const mensagem=document.createElement('p');mensagem.id='cpamDialogMessage';mensagem.className='mt-3 rounded-xl border border-rose-200 border-l-4 border-l-rose-600 bg-rose-50 px-4 py-4 text-sm font-semibold leading-relaxed text-rose-950';mensagem.textContent=cfg.mensagem;
+                    corpo.appendChild(titulo);corpo.appendChild(mensagem);
+                    const orientacao=document.createElement('p');orientacao.className='mt-3 text-xs leading-relaxed text-slate-500';orientacao.textContent='Corrija a informação indicada para continuar com o agendamento.';corpo.appendChild(orientacao);card.appendChild(corpo);
+                }else if(cfg.tipo==='agendamento'){
                     card.style.width='min(100%,760px)';card.style.maxHeight='min(92vh,900px)';card.style.overflowY='auto';
                     const cab=document.createElement('header');cab.className='grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 items-center border-b-2 border-emerald-800 px-5 py-4 sm:px-7';
                     const marca=document.createElement('div');marca.className='flex items-center justify-center sm:justify-start gap-3';
@@ -5965,7 +5976,8 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 }
                 const acoes=document.createElement('div');acoes.className='cpam-dialog-actions sticky bottom-0';
                 const cancelar=document.createElement('button');cancelar.type='button';cancelar.className='cpam-dialog-btn cpam-dialog-cancel';cancelar.textContent=cfg.textoCancelar;
-                const confirmar=document.createElement('button');confirmar.type='button';confirmar.className='cpam-dialog-btn cpam-dialog-confirm '+(tipo==='danger'?'danger':'');confirmar.textContent=cfg.textoConfirmar;
+                const confirmar=document.createElement('button');confirmar.type='button';confirmar.className='cpam-dialog-btn cpam-dialog-confirm '+(cfg.tipo==='erro-formulario'||tipo==='danger'?'danger':'');confirmar.textContent=cfg.tipo==='erro-formulario'?'Entendi':cfg.textoConfirmar;
+                if(cfg.tipo==='erro-formulario')cancelar.classList.add('hidden');
                 acoes.appendChild(cancelar);acoes.appendChild(confirmar);card.appendChild(acoes);overlay.appendChild(card);document.body.appendChild(overlay);
                 let finalizado=false;
                 function concluir(valor){if(finalizado)return;finalizado=true;document.removeEventListener('keydown',tecla);overlay.remove();if(anterior&&typeof anterior.focus==='function')anterior.focus({preventScroll:true});resolve(valor);}
@@ -7284,25 +7296,31 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
                 data.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='block w-full border-b border-slate-100 px-3 py-2.5 text-left text-xs hover:bg-emerald-50';const n=document.createElement('strong');n.className='block text-slate-800';n.textContent=p.procedimento;const d=document.createElement('span');d.className='mt-1 block text-[10px] text-slate-500';d.textContent='Código: '+p.cod_proced+(p.especialidade?' · '+p.especialidade:'');b.append(n,d);b.addEventListener('click',()=>{document.getElementById('regularProcedimentoCodigo').value=p.cod_proced;document.getElementById('regularProcedimentoNome').value=p.procedimento;document.getElementById('regularCodigoOrigem').value=p.cod_proced;campo.value=p.procedimento;const s=document.getElementById('regularProcedimentoSelecionado');s.textContent='Selecionado: '+p.procedimento+' · Código '+p.cod_proced;s.classList.remove('hidden');box.classList.add('hidden');gastroAtualizarMedicoRegular();regularAtualizarResumoProcedimento();});box.appendChild(b);});
             }catch(error){console.error(error);box.classList.remove('hidden');box.textContent='Erro ao consultar catálogo de procedimentos.';}},250);
         }
+        async function mostrarErroAgendamento(titulo,mensagem,campoId){
+            await confirmarDialogo({titulo:titulo||'DADOS OBRIGATÓRIOS',mensagem:mensagem,tipo:'erro-formulario',textoConfirmar:'Entendi'});
+            if(campoId){const campo=document.getElementById(campoId);if(campo){campo.focus({preventScroll:false});campo.scrollIntoView({behavior:'smooth',block:'center'});}}
+        }
         async function salvarAgendamentoRegular(evento){
-            evento.preventDefault();if(!perfilAtual||!['administrador','regulacao','coordenacao'].includes(perfilAtual.role)){exibirToast('Apenas a Regulação, o Coordenador ou o Administrador podem acessar esta função.','erro');return;}
+            evento.preventDefault();if(!perfilAtual||!['administrador','regulacao','coordenacao'].includes(perfilAtual.role)){await mostrarErroAgendamento('ACESSO NÃO AUTORIZADO','Apenas a Regulação, o Coordenador ou o Administrador podem acessar esta função.');return;}
             const nome=document.getElementById('regularNomePaciente').value.trim(),amb=document.getElementById('regularProntuarioAmb').value.trim(),cpf=document.getElementById('regularCPF').value.replace(/\D/g,''),cns=document.getElementById('regularCNS').value.replace(/\D/g,''),codigo=document.getElementById('regularProcedimentoCodigo').value,procedimento=document.getElementById('regularProcedimentoNome').value,data=document.getElementById('regularDataPrevista').value;
             const profissionalResponsavelId=document.getElementById('regularGastroMedico').value;
-            if(!profissionalResponsavelId){exibirToast('Informe o médico responsável antes de preencher a data prevista.','erro');document.getElementById('regularGastroMedico').focus();regularAtualizarNavegacaoData();return;}
-            if(!nome||!procedimento||!codigo||!data){exibirToast('Preencha nome, procedimento e data prevista. O prontuário ambulatorial pode ser informado quando disponível.','erro');return;}
-            if(data<regularAgendaHojeISO()){exibirToast('Data não permitida: a data prevista para a cirurgia não pode ser anterior à data atual. Corrija a data para continuar.','erro');document.getElementById('regularDataPrevista').focus();return;}
-            if(!regularPacienteAtual&&!cpf&&!cns){exibirToast('Para cadastrar um novo paciente, informe CPF ou Cartão SUS (CNS).','erro');return;}
-            if(cpf&&!validarDocumentoRegular('regularCPF',true)){document.getElementById('regularCPF').focus();return;}if(cns&&!validarDocumentoRegular('regularCNS',true)){document.getElementById('regularCNS').focus();return;}
+            if(!profissionalResponsavelId){regularAtualizarNavegacaoData();await mostrarErroAgendamento('MÉDICO RESPONSÁVEL OBRIGATÓRIO','Selecione o médico responsável antes de preencher ou salvar a data prevista.','regularGastroMedico');return;}
+            if(!nome){await mostrarErroAgendamento('PACIENTE OBRIGATÓRIO','Informe o nome completo do paciente.','regularNomePaciente');return;}
+            if(!procedimento||!codigo){await mostrarErroAgendamento('PROCEDIMENTO OBRIGATÓRIO','Selecione um procedimento válido no catálogo antes de salvar o agendamento.','regularProcedimentoNome');return;}
+            if(!data){await mostrarErroAgendamento('DATA PREVISTA OBRIGATÓRIA','Informe a data prevista para o agendamento.','regularDataPrevista');return;}
+            if(data<regularAgendaHojeISO()){await mostrarErroAgendamento('DATA NÃO PERMITIDA','A data prevista para a cirurgia não pode ser anterior à data atual. Corrija a data para continuar.','regularDataPrevista');return;}
+            if(!regularPacienteAtual&&!cpf&&!cns){await mostrarErroAgendamento('IDENTIFICAÇÃO DO PACIENTE OBRIGATÓRIA','Para cadastrar um novo paciente, informe pelo menos um identificador: CPF ou Cartão SUS (CNS).','regularCPF');return;}
+            if(cpf&&!validarDocumentoRegular('regularCPF',true)){await mostrarErroAgendamento('CPF INVÁLIDO',document.getElementById('regularCPFErro')?.textContent||'Confira o CPF informado.','regularCPF');return;}if(cns&&!validarDocumentoRegular('regularCNS',true)){await mostrarErroAgendamento('CARTÃO SUS INVÁLIDO',document.getElementById('regularCNSErro')?.textContent||'Confira o Cartão SUS informado.','regularCNS');return;}
             const nascimentoRegular=regularPacienteAtual?.data_nascimento||document.getElementById('regularNascimento').value;
             const idadeRegular=idadeNaData(nascimentoRegular,data);
-            if(idadeRegular===null){exibirToast('Informe uma data de nascimento válida antes de regularizar a cirurgia.','erro');if(!regularPacienteAtual)document.getElementById('regularNascimento').focus();return;}
-            if(regularPacienteAtual&&!regularPacienteAtual.data_nascimento){exibirToast('Este paciente ainda não possui data de nascimento cadastrada. Atualize o cadastro do paciente antes de regularizar.','erro');return;}
-            if(idadeRegular<18&&perfilAtual.role==='coordenacao'){exibirToast('O perfil Coordenador só pode regularizar pacientes maiores de idade em casos especiais autorizados pela Direção. Para menores, utilize o fluxo da Regulação.','erro');return;}
-            if(idadeRegular>=18&&!['administrador','coordenacao'].includes(perfilAtual.role)){exibirToast('Bloqueado: pacientes com 18 anos ou mais na data prevista só podem ser regularizados pelo Coordenador ou Administrador, em caso especial autorizado pela Direção.','erro');return;}
+            if(idadeRegular===null){await mostrarErroAgendamento('DATA DE NASCIMENTO NECESSÁRIA','Informe uma data de nascimento válida antes de regularizar a cirurgia.','regularNascimento');return;}
+            if(regularPacienteAtual&&!regularPacienteAtual.data_nascimento){await mostrarErroAgendamento('CADASTRO DO PACIENTE INCOMPLETO','Este paciente ainda não possui data de nascimento cadastrada. Atualize o cadastro do paciente antes de regularizar.');return;}
+            if(idadeRegular<18&&perfilAtual.role==='coordenacao'){await mostrarErroAgendamento('PERMISSÃO NÃO DISPONÍVEL','O perfil Coordenador só pode regularizar pacientes maiores de idade em casos especiais autorizados pela Direção. Para menores, utilize o fluxo da Regulação.');return;}
+            if(idadeRegular>=18&&!['administrador','coordenacao'].includes(perfilAtual.role)){await mostrarErroAgendamento('REGULARIZAÇÃO BLOQUEADA','Pacientes com 18 anos ou mais na data prevista só podem ser regularizados pelo Coordenador ou Administrador, em caso especial autorizado pela Direção.');return;}
             if(idadeRegular>=18){const autorizou=await confirmarDialogo({titulo:'Exceção para paciente maior de idade',mensagem:'O paciente terá '+idadeRegular+' anos na data prevista da cirurgia.',detalhes:'A regularização de pacientes com 18 anos ou mais é excepcional e somente pode ocorrer com autorização da Direção. Confirme apenas se esta autorização foi concedida.\\n\\nDeseja prosseguir com a regularização?',tipo:'atencao',textoConfirmar:'Confirmo a autorização da Direção',textoCancelar:'Cancelar'});if(!autorizou)return;}
             const dataConfirmacao=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'Não informada';
             const medicoSelecionado=document.getElementById('regularGastroMedico').selectedOptions[0]?.textContent||'Não selecionado';
-            const confirmou=await confirmarDialogo({mensagem:'Revise os dados do paciente e do procedimento antes de registrar o agendamento.',tipo:'agendamento',dados:{nome,procedimento,data:dataConfirmacao,medico:medicoSelecionado,nomeMae:document.getElementById('regularNomeMae').value.trim(),telefone:document.getElementById('regularTelefone').value.trim(),codigoBloco:regularPacienteAtual?.codigo_paciente||null,amb},textoConfirmar:'Confirmar agendamento',textoCancelar:'Voltar e corrigir'});if(!confirmou)return;
+            const confirmou=await confirmarDialogo({mensagem:'Confira os dados abaixo. Ao selecionar “Confirmar agendamento”, o registro será salvo e encaminhado ao Bloco Cirúrgico.',tipo:'agendamento',dados:{nome,procedimento,data:dataConfirmacao,medico:medicoSelecionado,nomeMae:document.getElementById('regularNomeMae').value.trim(),telefone:document.getElementById('regularTelefone').value.trim(),codigoBloco:regularPacienteAtual?.codigo_paciente||null,amb},textoConfirmar:'Confirmar agendamento',textoCancelar:'Voltar e corrigir'});if(!confirmou)return;
             const btn=document.getElementById('btnSalvarAgendamentoRegular');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
             try{
                 let pacienteId=regularPacienteAtual?regularPacienteAtual.id:null,codigoBlocoGerado=regularPacienteAtual?.codigo_paciente||null;
