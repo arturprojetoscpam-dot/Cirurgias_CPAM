@@ -5915,18 +5915,58 @@ function autorizarEnvioLogin(){loginEnviadoPorClique=true;}
                 const icone=tipo==='danger'?'fa-triangle-exclamation':tipo==='attention'?'fa-circle-exclamation':'fa-circle-question';
                 overlay.className='cpam-dialog-backdrop';
                 const card=document.createElement('section');card.className='cpam-dialog-card';card.setAttribute('role','alertdialog');card.setAttribute('aria-modal','true');card.setAttribute('aria-labelledby','cpamDialogTitle');card.setAttribute('aria-describedby','cpamDialogMessage');
-                const topo=document.createElement('div');topo.className='flex gap-4 p-5 sm:p-6';
-                const simbolo=document.createElement('div');simbolo.className='cpam-dialog-icon '+tipo;simbolo.innerHTML='<i class="fa-solid '+icone+'"></i>';simbolo.setAttribute('aria-hidden','true');
-                const conteudo=document.createElement('div');conteudo.className='min-w-0 flex-1';
-                const titulo=document.createElement('h2');titulo.id='cpamDialogTitle';titulo.className='text-base font-bold tracking-tight text-slate-900';titulo.textContent=cfg.titulo;
-                const mensagem=document.createElement('p');mensagem.id='cpamDialogMessage';mensagem.className='mt-2 text-sm leading-relaxed text-slate-600';mensagem.textContent=cfg.mensagem;
-                conteudo.appendChild(titulo);conteudo.appendChild(mensagem);
-                if(cfg.detalhes){const detalhes=document.createElement('div');detalhes.className='cpam-dialog-details mt-3';detalhes.textContent=cfg.detalhes;conteudo.appendChild(detalhes);}
-                topo.appendChild(simbolo);topo.appendChild(conteudo);
-                const acoes=document.createElement('div');acoes.className='cpam-dialog-actions';
+                if(cfg.tipo==='agendamento'){
+                    card.style.width='min(100%,760px)';card.style.maxHeight='min(92vh,900px)';card.style.overflowY='auto';
+                    const cab=document.createElement('header');cab.className='grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-4 items-center border-b-2 border-emerald-800 px-5 py-4 sm:px-7';
+                    const marca=document.createElement('div');marca.className='flex items-center justify-center sm:justify-start gap-3';
+                    const logo=document.createElement('img');logo.src='https://cirurgiascpam.vercel.app/logo-cpam.png';logo.alt='Identidade visual do Complexo de Pediatria Arlinda Marques';logo.className='max-h-20 w-auto max-w-[190px] object-contain';logo.onerror=function(){this.style.display='none';};
+                    marca.appendChild(logo);
+                    const inst=document.createElement('div');inst.className='text-right text-[9px] sm:text-[10px] leading-relaxed text-slate-600';
+                    inst.innerHTML='<div class="font-bold tracking-wide text-slate-800">GOVERNO DO ESTADO DA PARAÍBA</div><div>SUS — Sistema Único de Saúde</div><div>Secretaria de Estado da Saúde</div><div class="font-bold text-slate-900">COMPLEXO DE PEDIATRIA ARLINDA MARQUES</div><div>Ambulatório · Área da Regulação</div>';
+                    cab.appendChild(marca);cab.appendChild(inst);card.appendChild(cab);
+                    const corpo=document.createElement('div');corpo.className='px-5 py-5 sm:px-7 sm:py-6';
+                    const faixa=document.createElement('div');faixa.className='mb-5 flex flex-wrap items-center justify-between gap-3';
+                    const titulo=document.createElement('h2');titulo.id='cpamDialogTitle';titulo.className='text-xl sm:text-2xl font-extrabold tracking-wide text-slate-900';titulo.textContent='AGENDAMENTO INTERNO';
+                    const selo=document.createElement('span');selo.className='rounded-lg border border-slate-300 bg-slate-100 px-3 py-2 text-[10px] font-bold tracking-wider text-slate-700';selo.textContent='CONFERÊNCIA DOS DADOS';
+                    faixa.appendChild(titulo);faixa.appendChild(selo);corpo.appendChild(faixa);
+                    const mensagem=document.createElement('p');mensagem.id='cpamDialogMessage';mensagem.className='mb-4 text-sm leading-relaxed text-slate-600';mensagem.textContent=cfg.mensagem;corpo.appendChild(mensagem);
+                    const grade=document.createElement('div');grade.className='grid grid-cols-1 sm:grid-cols-2 gap-0 overflow-hidden rounded-xl border border-slate-200';
+                    function campo(rotulo,valor,classes){
+                        if(valor===undefined||valor===null||String(valor).trim()==='')return;
+                        const box=document.createElement('div');box.className='min-w-0 border-b border-r border-slate-200 px-4 py-3 '+(classes||'');
+                        const label=document.createElement('div');label.className='mb-1 text-[9px] font-bold tracking-widest text-slate-500';label.textContent=rotulo;
+                        const value=document.createElement('div');value.className='break-words text-sm font-bold uppercase leading-snug text-slate-900';value.textContent=String(valor);
+                        box.appendChild(label);box.appendChild(value);grade.appendChild(box);
+                    }
+                    campo('PACIENTE',cfg.dados?.nome,'sm:col-span-2 bg-white');
+                    campo('PROCEDIMENTO / EXAME',cfg.dados?.procedimento,'sm:col-span-2 bg-white');
+                    campo('DATA PREVISTA',cfg.dados?.data,'bg-slate-50');
+                    campo('MÉDICO RESPONSÁVEL',cfg.dados?.medico,'bg-slate-50');
+                    if(cfg.dados?.nomeMae)campo('NOME DA MÃE',cfg.dados.nomeMae,'bg-white');
+                    if(cfg.dados?.telefone)campo('TELEFONE DE CONTATO',cfg.dados.telefone,'bg-white');
+                    if(cfg.dados?.codigoBloco)campo('PRONTUÁRIO INTERNO DO BLOCO', '#'+String(cfg.dados.codigoBloco).padStart(7,'0'),'bg-slate-50');
+                    if(cfg.dados?.ambulatorio)campo('PRONTUÁRIO AMBULATORIAL',cfg.dados.ambulatorio,'bg-slate-50');
+                    corpo.appendChild(grade);
+                    const alerta=document.createElement('div');alerta.className='mt-5 rounded-lg border border-amber-300 border-l-4 border-l-amber-500 bg-amber-50 px-4 py-3 text-xs leading-relaxed text-amber-950';
+                    const alertaTitulo=document.createElement('div');alertaTitulo.className='mb-1 flex items-center gap-2 font-extrabold';alertaTitulo.innerHTML='<i class="fa-solid fa-circle-info"></i> ATENÇÃO';
+                    const alertaTexto=document.createElement('p');alertaTexto.textContent='Se o paciente ainda não possuir cadastro definitivo, ele será cadastrado automaticamente, com a geração do seu prontuário interno do Bloco Cirúrgico.';
+                    alerta.appendChild(alertaTitulo);alerta.appendChild(alertaTexto);corpo.appendChild(alerta);
+                    const nota=document.createElement('p');nota.className='mt-3 text-[10px] leading-relaxed text-slate-500';nota.textContent='Confira cuidadosamente os dados antes de confirmar. O agendamento será encaminhado para acompanhamento pelo Bloco Cirúrgico.';corpo.appendChild(nota);
+                    card.appendChild(corpo);
+                }else{
+                    const topo=document.createElement('div');topo.className='flex gap-4 p-5 sm:p-6';
+                    const simbolo=document.createElement('div');simbolo.className='cpam-dialog-icon '+tipo;simbolo.innerHTML='<i class="fa-solid '+icone+'"></i>';simbolo.setAttribute('aria-hidden','true');
+                    const conteudo=document.createElement('div');conteudo.className='min-w-0 flex-1';
+                    const titulo=document.createElement('h2');titulo.id='cpamDialogTitle';titulo.className='text-base font-bold tracking-tight text-slate-900';titulo.textContent=cfg.titulo;
+                    const mensagem=document.createElement('p');mensagem.id='cpamDialogMessage';mensagem.className='mt-2 text-sm leading-relaxed text-slate-600';mensagem.textContent=cfg.mensagem;
+                    conteudo.appendChild(titulo);conteudo.appendChild(mensagem);
+                    if(cfg.detalhes){const detalhes=document.createElement('div');detalhes.className='cpam-dialog-details mt-3';detalhes.textContent=cfg.detalhes;conteudo.appendChild(detalhes);}
+                    topo.appendChild(simbolo);topo.appendChild(conteudo);card.appendChild(topo);
+                }
+                const acoes=document.createElement('div');acoes.className='cpam-dialog-actions sticky bottom-0';
                 const cancelar=document.createElement('button');cancelar.type='button';cancelar.className='cpam-dialog-btn cpam-dialog-cancel';cancelar.textContent=cfg.textoCancelar;
                 const confirmar=document.createElement('button');confirmar.type='button';confirmar.className='cpam-dialog-btn cpam-dialog-confirm '+(tipo==='danger'?'danger':'');confirmar.textContent=cfg.textoConfirmar;
-                acoes.appendChild(cancelar);acoes.appendChild(confirmar);card.appendChild(topo);card.appendChild(acoes);overlay.appendChild(card);document.body.appendChild(overlay);
+                acoes.appendChild(cancelar);acoes.appendChild(confirmar);card.appendChild(acoes);overlay.appendChild(card);document.body.appendChild(overlay);
                 let finalizado=false;
                 function concluir(valor){if(finalizado)return;finalizado=true;document.removeEventListener('keydown',tecla);overlay.remove();if(anterior&&typeof anterior.focus==='function')anterior.focus({preventScroll:true});resolve(valor);}
                 function tecla(evento){if(evento.key==='Escape'){evento.preventDefault();concluir(false);}else if(evento.key==='Tab'){const itens=[cancelar,confirmar],idx=itens.indexOf(document.activeElement);if(evento.shiftKey&&idx===0){evento.preventDefault();confirmar.focus();}else if(!evento.shiftKey&&idx===1){evento.preventDefault();cancelar.focus();}}}
@@ -7262,8 +7302,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
             if(idadeRegular>=18){const autorizou=await confirmarDialogo({titulo:'Exceção para paciente maior de idade',mensagem:'O paciente terá '+idadeRegular+' anos na data prevista da cirurgia.',detalhes:'A regularização de pacientes com 18 anos ou mais é excepcional e somente pode ocorrer com autorização da Direção. Confirme apenas se esta autorização foi concedida.\\n\\nDeseja prosseguir com a regularização?',tipo:'atencao',textoConfirmar:'Confirmo a autorização da Direção',textoCancelar:'Cancelar'});if(!autorizou)return;}
             const dataConfirmacao=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'Não informada';
             const medicoSelecionado=document.getElementById('regularGastroMedico').selectedOptions[0]?.textContent||'Não selecionado';
-            const detalhesConfirmacao='PACIENTE\\n'+nome+'\\n\\nPROCEDIMENTO\\n'+procedimento+'\\n\\nDATA PREVISTA\\n'+dataConfirmacao+'\\n\\nMÉDICO RESPONSÁVEL\\n'+medicoSelecionado.replace(/\\s*·\\s*CRM\\s*/i,'\\nCRM: ')+'\\n\\nATENÇÃO\\nSe o paciente ainda não possuir cadastro definitivo, ele será cadastrado automaticamente, com a geração do seu prontuário interno do Bloco Cirúrgico.';
-            const confirmou=await confirmarDialogo({titulo:'CONFIRMAR AGENDAMENTO CIRÚRGICO',mensagem:'Revise os dados abaixo. Ao confirmar, o agendamento será registrado para acompanhamento pelo Bloco Cirúrgico.',detalhes:detalhesConfirmacao,tipo:'atencao',textoConfirmar:'Confirmar agendamento',textoCancelar:'Voltar e corrigir'});if(!confirmou)return;
+            const confirmou=await confirmarDialogo({mensagem:'Revise os dados do paciente e do procedimento antes de registrar o agendamento.',tipo:'agendamento',dados:{nome,procedimento,data:dataConfirmacao,medico:medicoSelecionado,nomeMae:document.getElementById('regularNomeMae').value.trim(),telefone:document.getElementById('regularTelefone').value.trim(),codigoBloco:regularPacienteAtual?.codigo_paciente||null,amb},textoConfirmar:'Confirmar agendamento',textoCancelar:'Voltar e corrigir'});if(!confirmou)return;
             const btn=document.getElementById('btnSalvarAgendamentoRegular');btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin mr-2"></i>Salvando...';
             try{
                 let pacienteId=regularPacienteAtual?regularPacienteAtual.id:null,codigoBlocoGerado=regularPacienteAtual?.codigo_paciente||null;
