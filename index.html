@@ -4654,7 +4654,7 @@
 }
 </style>
 <style id="cpam-agenda-inline-warning-and-limits">
-#appShell .cpam-inline-doctor-warning{display:flex;align-items:flex-start;gap:10px;margin:10px 0 12px;border:1px solid #fcd9a6;border-left:4px solid #d97706;border-radius:10px;background:#fffbeb;padding:10px 12px;color:#92400e}
+#appShell .cpam-inline-doctor-warning{cursor:pointer;display:flex;align-items:flex-start;gap:10px;margin:10px 0 12px;border:1px solid #fcd9a6;border-left:4px solid #d97706;border-radius:10px;background:#fffbeb;padding:10px 12px;color:#92400e}
 #appShell .cpam-inline-doctor-warning>i{margin-top:2px;font-size:15px;color:#b45309}
 #appShell .cpam-inline-doctor-warning>div{display:flex;flex-direction:column;gap:3px}
 #appShell .cpam-inline-doctor-warning strong{font-size:11px;font-weight:850}
@@ -5328,7 +5328,7 @@
     <div class="cpam-date-shortcut-group cpam-date-shortcut-back"><button type="button" onclick="regularNavegarData(-7)">−7</button><button type="button" onclick="regularNavegarData(-30)">−30</button><button type="button" onclick="regularNavegarData(-90)">−90</button></div>
     <div class="cpam-date-shortcut-group cpam-date-shortcut-forward"><button type="button" onclick="regularNavegarData(7)">+7</button><button type="button" onclick="regularNavegarData(30)">+30</button><button type="button" onclick="regularNavegarData(90)">+90</button></div>
   </div>
-  <div id="regularDataErroMedico" class="cpam-inline-doctor-warning hidden" role="alert" aria-live="polite"><i class="fa-solid fa-circle-exclamation"></i><div><strong>Campo obrigatório: Médico responsável</strong><span>Selecione um médico na lista acima para liberar a escolha e a navegação da data prevista.</span></div></div>
+  <div id="regularDataErroMedico" class="cpam-inline-doctor-warning hidden" role="button" tabindex="0" title="Clique para ir ao campo Médico responsável" onclick="regularFocarMedicoObrigatorio()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();regularFocarMedicoObrigatorio();}" aria-live="polite"><i class="fa-solid fa-circle-exclamation"></i><div><strong>Campo obrigatório: Médico responsável</strong><span>Selecione um médico na lista acima para liberar a escolha e a navegação da data prevista. Clique aqui para ir ao campo.</span></div><i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i></div>
   <div id="regularResumoAgendaProcedimento" class="mt-3 hidden cpam-agenda-summary" aria-live="polite"><div class="flex items-center justify-between gap-2"><strong class="text-xs font-extrabold text-slate-800"><i class="fa-solid fa-calendar-check mr-1.5 text-[#123C32]"></i>Resumo da agenda do médico</strong><span id="regularResumoAgendaStatus" class="text-[10px] font-semibold text-slate-500"></span></div><div id="regularResumoAgendaConteudo" class="mt-2 text-xs text-slate-600">Selecione o médico e a data para consultar a disponibilidade.</div></div>
 </div>
                 <div class="sm:col-span-2 lg:col-span-4 mt-2"><label for="regularObservacao" class="label-cirurgia">Observações da Regulação</label><textarea id="regularObservacao" rows="3" class="campo-cirurgia !rounded-xl !border-slate-200 !px-3 !py-3 leading-relaxed" maxlength="2000" placeholder="Informações complementares sobre a solicitação ou programação..."></textarea></div>
@@ -8214,6 +8214,7 @@ let regularAgendaBuscaDataToken=0;
 function regularAgendaHojeISO(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function regularAgendaDataAdd(iso,dias){const d=new Date(iso+'T12:00:00');d.setDate(d.getDate()+dias);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');}
 function regularAgendaDataFormatada(iso){if(!iso)return '—';return new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(iso+'T12:00:00'));}
+function regularFocarMedicoObrigatorio(){const campo=document.getElementById('regularGastroMedico');if(!campo)return;campo.scrollIntoView({behavior:'smooth',block:'center'});window.setTimeout(()=>campo.focus({preventScroll:true}),250);}
 function regularAtualizarNavegacaoData(){
  const input=document.getElementById('regularDataPrevista');if(!input)return;input.removeAttribute('min');
  const data=input.value,medicoId=document.getElementById('regularGastroMedico')?.value,config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
