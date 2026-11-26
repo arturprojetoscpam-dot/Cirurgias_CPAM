@@ -8382,7 +8382,7 @@ async function regularAtualizarResumoProcedimento(){
   if(config&&!config.ativo){
    regra='<div class="cpam-summary-alert is-warning"><i class="fa-solid fa-triangle-exclamation"></i><span>A agenda deste médico está desativada. Consulte a Coordenação.</span></div>';
   }else if(config){
-   regra='<div class="cpam-summary-meta"><span><i class="fa-regular fa-clock"></i>'+escaparHtml(config.turno||'TARDE')+' · '+escaparHtml(String(config.hora_inicio||'13:00').slice(0,5))+'</span><span><i class="fa-solid fa-location-dot"></i>'+escaparHtml(config.consultorio||'Hospital Gastro')+'</span><span class="cpam-summary-days"><i class="fa-regular fa-calendar"></i>'+((config.dias_semana||[]).map(agendaDiaSemanaNome).join(' · ')||'Dias não definidos')+'</span></div>';
+   regra='';
    if(!diaPermitido)regra+='<div class="cpam-summary-alert is-warning"><i class="fa-solid fa-calendar-xmark"></i><span>Esta data não faz parte dos dias configurados para a agenda deste médico.</span></div>';
    const linhas=limitesAtivos.map(x=>{
     const qtd=qtdPorTipo[x.exame_tipo]||0,zero=Number(x.limite_diario)===0,atual=tipo===x.exame_tipo,cheio=!zero&&limite!==null&&usados>=limite;
