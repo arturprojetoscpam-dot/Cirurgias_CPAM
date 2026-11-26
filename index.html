@@ -8407,7 +8407,8 @@ async function regularAtualizarResumoProcedimento(){
    }
   }
   status.textContent='';
-  const tabela='<section class="cpam-patients-section"><div class="cpam-patients-heading"><strong>Pacientes agendados</strong><span class="cpam-patients-count">'+total+' registro(s)</span></div><div class="cpam-summary-doctor"><div class="cpam-summary-doctor-line"><div class="cpam-summary-doctor-name"><strong>'+escaparHtml(medico.nome)+'</strong><span>CRM '+escaparHtml(medico.crm||'—')+'</span></div><span class="cpam-summary-total">'+total+' agendado(s)</span></div>'+(config?'<div class="cpam-summary-meta"><span><i class="fa-regular fa-clock"></i>'+escaparHtml(config.turno||'TARDE')+' · '+escaparHtml(String(config.hora_inicio||'13:00').slice(0,5))+'</span><span><i class="fa-solid fa-location-dot"></i>'+escaparHtml(config.consultorio||'Hospital Gastro')+'</span></div>':'')+'</div>'+(total?'<div class="cpam-patients-table-wrap"><table class="cpam-patients-table"><thead><tr><th>ORD</th><th>Prontuário / ID</th><th>Nome do paciente</th><th>Procedimento / exame</th><th>Turno / status</th></tr></thead><tbody>'+pacientesHtml+'</tbody></table></div>':'<div class="cpam-empty-patients" role="status"><i class="fa-solid fa-calendar-xmark"></i><strong>Nenhum paciente agendado nesta data</strong><span>Esta data está sem pacientes programados para este médico.</span></div>')+'</section>';
+  const blocoMedico='<div class="cpam-summary-doctor"><div class="cpam-summary-doctor-line"><div class="cpam-summary-doctor-name"><strong>'+escaparHtml(medico.nome)+'</strong><span>CRM '+escaparHtml(medico.crm||'—')+'</span></div><span class="cpam-summary-total">'+total+' agendado(s)</span></div>'+(config?'<div class="cpam-summary-meta"><span><i class="fa-regular fa-clock"></i>'+escaparHtml(config.turno||'TARDE')+' · '+escaparHtml(String(config.hora_inicio||'13:00').slice(0,5))+'</span><span><i class="fa-solid fa-location-dot"></i>'+escaparHtml(config.consultorio||'Hospital Gastro')+'</span></div>':'')+'</div>';
+  const tabela='<section class="cpam-patients-section"><div class="cpam-patients-heading"><strong>Pacientes agendados</strong><span class="cpam-patients-count">'+total+' registro(s)</span></div>'+(total?'<div class="cpam-patients-table-wrap"><table class="cpam-patients-table"><thead><tr><th>ORD</th><th>Prontuário / ID</th><th>Nome do paciente</th><th>Procedimento / exame</th><th>Turno / status</th></tr></thead><tbody>'+pacientesHtml+'</tbody></table></div>':'<div class="cpam-empty-patients" role="status"><i class="fa-solid fa-calendar-xmark"></i><strong>Nenhum paciente agendado nesta data</strong><span>Esta data está sem pacientes programados para este médico.</span></div>')+blocoMedico+'</section>';
   conteudo.innerHTML=regra+destaque+tabela+limitesHtml;
  }catch(error){
   console.error('Resumo da agenda:',error);
@@ -8500,12 +8501,14 @@ async function regulacaoAgendamentoComSenha(payload){
 #appShell .cpam-patients-heading{align-items:center!important;gap:10px!important}
 #appShell .cpam-patients-heading strong{font-size:12px!important;font-weight:850!important}
 #appShell .cpam-patients-count{display:inline-flex!important;align-items:center!important;border:1px solid #bbf7d0!important;border-radius:999px!important;background:#dcfce7!important;color:#14532d!important;padding:4px 9px!important;font-size:11px!important;font-weight:800!important;white-space:nowrap!important}
-#appShell .cpam-patients-table th{font-size:10px!important;font-weight:800!important}
-#appShell .cpam-patients-table td{font-size:11px!important}
-#appShell .cpam-patients-table .cpam-patient-order{width:42px!important;text-align:center!important;color:#64748b!important;font-weight:800!important;font-variant-numeric:tabular-nums!important}
-#appShell .cpam-patients-table .cpam-patient-id{font-size:11px!important;font-weight:750!important}
-#appShell .cpam-patients-table .cpam-patient-name{font-size:11px!important;font-weight:800!important}
-#appShell .cpam-patients-table .cpam-patient-procedure{font-size:11px!important}
+#appShell .cpam-patients-table th{font-size:11px!important;font-weight:800!important}
+#appShell .cpam-patients-table td{font-size:12px!important}
+#appShell .cpam-patients-table .cpam-patient-order{width:42px!important;text-align:center!important;color:#64748b!important;font-size:12px!important;font-weight:800!important;font-variant-numeric:tabular-nums!important}
+#appShell .cpam-patients-table .cpam-patient-id{font-size:12px!important;font-weight:750!important}
+#appShell .cpam-patients-table .cpam-patient-name{font-size:12px!important;font-weight:800!important}
+#appShell .cpam-patients-table .cpam-patient-procedure{font-size:12px!important}
+#appShell .cpam-patients-table .cpam-patient-turn{font-size:11px!important}
+#appShell .cpam-patients-table .cpam-patient-status{font-size:10px!important}
 @media(max-width:640px){#appShell #regularDataSemanaLabel{font-size:13px!important}#appShell .cpam-patients-count{font-size:10px!important;padding:3px 7px!important}}
 </style>
 
