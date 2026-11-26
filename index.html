@@ -8075,6 +8075,7 @@ function regularAtualizarNavegacaoData(){
  const input=document.getElementById('regularDataPrevista');if(!input)return;input.removeAttribute('min');
  const data=input.value,medicoId=document.getElementById('regularGastroMedico')?.value,config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
  const habilitar=!!medicoId;input.disabled=!habilitar;input.setAttribute('aria-disabled',String(!habilitar));
+ const avisoMedico=document.getElementById('regularDataErroMedico');if(avisoMedico)avisoMedico.classList.toggle('hidden',!!medicoId);
  const agenda=document.querySelector('#appShell .cpam-regular-agenda');
  agenda?.querySelectorAll('.cpam-date-arrow,.cpam-date-shortcuts button,.cpam-next-slot').forEach(botao=>{botao.disabled=!habilitar;botao.setAttribute('aria-disabled',String(!habilitar));});
  const label=document.getElementById('regularDataSemanaLabel'),status=document.getElementById('regularDataDisponibilidade'),escala=document.getElementById('regularEscalaSemanal');
