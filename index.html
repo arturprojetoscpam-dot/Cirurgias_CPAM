@@ -5316,7 +5316,7 @@
               <div class="mt-4 grid grid-cols-1 gap-x-3 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="sm:col-span-2 lg:col-span-4 cpam-regular-agenda">
   <div id="regularGastroMedicoWrap" class="mb-3 max-w-xl"><label for="regularGastroMedico" class="label-cirurgia">Médico responsável *</label><select id="regularGastroMedico" class="campo-cirurgia" required onchange="regularAoSelecionarMedico()"><option value="">Carregando médicos...</option></select></div>
-  <div class="cpam-agenda-topline"><div><label for="regularDataPrevista" class="label-cirurgia">Data prevista *</label><div class="mt-1 flex flex-wrap items-center gap-2"><span id="regularDataSemanaLabel" class="text-xs font-bold text-slate-800">Selecione o médico</span><span id="regularDataDisponibilidade" class="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Aguardando seleção</span></div></div><div id="regularEscalaSemanal" class="cpam-regular-week" aria-label="Escala semanal do profissional"><span class="text-[10px] text-slate-400">Selecione o médico</span></div></div>
+  <div class="cpam-agenda-topline"><div><label for="regularDataPrevista" class="label-cirurgia">Data prevista *</label><div class="mt-1 flex flex-wrap items-center gap-2"><span id="regularDataSemanaLabel" class="text-sm font-bold text-slate-800">Selecione o médico</span><span id="regularDataDisponibilidade" class="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-600">Aguardando seleção</span><span id="regularTurnoSelecionado" class="hidden rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold text-slate-700" aria-live="polite"></span></div></div><div id="regularEscalaSemanal" class="cpam-regular-week" aria-label="Escala semanal do profissional"><span class="text-[10px] text-slate-400">Selecione o médico</span></div></div>
   <div class="cpam-date-control">
     <button type="button" onclick="regularNavegarData(-1)" class="cpam-date-arrow cpam-date-back" aria-label="Data anterior"><i class="fa-solid fa-chevron-left"></i><span>Data anterior</span></button>
     <div class="cpam-date-selected">
@@ -8219,18 +8219,24 @@ function regularAtualizarNavegacaoData(){
  const input=document.getElementById('regularDataPrevista');if(!input)return;input.removeAttribute('min');
  const data=input.value,medicoId=document.getElementById('regularGastroMedico')?.value,config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId);
  const habilitar=!!medicoId;input.disabled=!habilitar;input.setAttribute('aria-disabled',String(!habilitar));
- const avisoMedico=document.getElementById('regularDataErroMedico');if(avisoMedico)avisoMedico.classList.toggle('hidden',!!medicoId);const seletorMedico=document.getElementById('regularGastroMedico');if(seletorMedico){seletorMedico.classList.toggle('cpam-doctor-required',!medicoId);seletorMedico.setAttribute('aria-invalid',String(!medicoId));}
+ const avisoMedico=document.getElementById('regularDataErroMedico');if(avisoMedico)avisoMedico.classList.toggle('hidden',!!medicoId);
+ const seletorMedico=document.getElementById('regularGastroMedico');if(seletorMedico){seletorMedico.classList.toggle('cpam-doctor-required',!medicoId);seletorMedico.setAttribute('aria-invalid',String(!medicoId));}
  const agenda=document.querySelector('#appShell .cpam-regular-agenda');
  agenda?.querySelectorAll('.cpam-date-arrow,.cpam-date-shortcuts button,.cpam-next-slot').forEach(botao=>{botao.disabled=!habilitar;botao.setAttribute('aria-disabled',String(!habilitar));});
- const label=document.getElementById('regularDataSemanaLabel'),status=document.getElementById('regularDataDisponibilidade'),escala=document.getElementById('regularEscalaSemanal');
+ const label=document.getElementById('regularDataSemanaLabel'),status=document.getElementById('regularDataDisponibilidade'),escala=document.getElementById('regularEscalaSemanal'),turnoBadge=document.getElementById('regularTurnoSelecionado');
  if(label)label.textContent=data?regularAgendaDataFormatada(data):'Selecione uma data';
- if(status){status.textContent=!medicoId?'Aguardando médico':data?'Data selecionada':'Aguardando seleção';status.className='rounded-full px-2 py-1 text-[10px] font-semibold '+(medicoId&&data?'bg-emerald-50 text-emerald-800':'bg-slate-100 text-slate-600');}
+ if(status){status.textContent=!medicoId?'Aguardando médico':data?'Data selecionada':'Aguardando seleção';status.className='rounded-full px-2.5 py-1 text-[10px] font-bold '+(medicoId&&data?'bg-[#14532D] text-white':'bg-slate-100 text-slate-600');}
  if(!medicoId&&label)label.textContent='Selecione o médico';
+ const turno=String(config?.turno||'').trim().toUpperCase();
+ if(turnoBadge){
+  if(!medicoId||!config){turnoBadge.classList.add('hidden');turnoBadge.textContent='';}
+  else{turnoBadge.classList.remove('hidden');turnoBadge.innerHTML=turno==='INTEGRAL'?'<span class="inline-flex items-center gap-1"><span>MANHÃ</span><span class="opacity-70">+</span><span>TARDE</span></span>':turno==='MANHÃ'?'MANHÃ':turno==='TARDE'?'TARDE':turno||'TURNO NÃO DEFINIDO';turnoBadge.className='rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-900';}
+ }
  if(!escala)return;
  if(!medicoId){escala.innerHTML='<span class="text-[10px] text-slate-400">A escala será exibida após selecionar o médico</span>';return;}
  if(!config){escala.innerHTML='<span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold text-emerald-800">AGENDA LIVRE · QUALQUER DATA</span>';return;}
- const dias=[['SEG',1],['TER',2],['QUA',3],['QUI',4],['SEX',5],['SÁB',6],['DOM',7]];
- escala.innerHTML=dias.map(([nome,n])=>{const ativo=(config.dias_semana||[]).map(Number).includes(n);return '<span class="rounded-md '+(ativo?'bg-emerald-100 text-emerald-900':'bg-slate-100 text-slate-400')+'"><b>'+nome+'</b><small>'+(ativo?String(config.turno||'ATENDE').slice(0,1):'—')+'</small></span>';}).join('');
+ const dias=[['SEG',1],['TER',2],['QUA',3],['QUI',4],['SEX',5],['SÁB',6],['DOM',7]],turnoCurto=turno==='INTEGRAL'?'M/T':turno==='MANHÃ'?'M':turno==='TARDE'?'T':'•';
+ escala.innerHTML=dias.map(([nome,n])=>{const ativo=(config.dias_semana||[]).map(Number).includes(n);return '<span class="rounded-md '+(ativo?'bg-emerald-100 text-emerald-900':'bg-slate-100 text-slate-400')+'"><b>'+nome+'</b><small>'+(ativo?turnoCurto:'—')+'</small></span>';}).join('');
 }
 function regularImprimirAgendamento(dados){
  const w=window.open('','_blank','width=900,height=700');if(!w){exibirToast('O navegador bloqueou a janela de impressão. Permita pop-ups para este sistema e tente novamente.','aviso');return;}
@@ -8260,7 +8266,23 @@ function regularNavegarData(dias){
  }
  input.value=alvo;regularAtualizarNavegacaoData();regularAtualizarResumoProcedimento();
 }
-async function regularAoSelecionarMedico(){regularAtualizarNavegacaoData();await regularBuscarProximaDataDisponivel(false);}
+async function regularAoSelecionarMedico(){
+ const input=document.getElementById('regularDataPrevista'),medicoId=document.getElementById('regularGastroMedico')?.value;
+ if(!input||!medicoId){if(input)input.value='';regularAtualizarNavegacaoData();return;}
+ try{
+  await regularAgendaCarregarBases();const config=regularAgendaConfigsCache.find(x=>x.profissional_id===medicoId),hoje=regularAgendaHojeISO();let dataInicial=hoje;
+  if(config){
+   if(!config.ativo){input.value='';regularAtualizarNavegacaoData();exibirToast('A agenda deste profissional está desativada. Consulte a Coordenação.','erro');return;}
+   const diasPermitidos=new Set((config.dias_semana||[]).map(Number));
+   if(diasPermitidos.size){const diaHoje=new Date(hoje+'T12:00:00').getDay(),isoHoje=diaHoje===0?7:diaHoje;
+    if(!diasPermitidos.has(isoHoje)){let encontrada=null;for(let i=1;i<=180;i++){const candidato=regularAgendaDataAdd(hoje,i),dow=new Date(candidato+'T12:00:00').getDay(),iso=dow===0?7:dow;if(diasPermitidos.has(iso)){encontrada=candidato;break;}}
+     if(!encontrada){input.value='';regularAtualizarNavegacaoData();exibirToast('Não há dia de atendimento configurado nos próximos 180 dias.','aviso');return;}dataInicial=encontrada;
+    }
+   }
+  }
+  input.value=dataInicial;regularAtualizarNavegacaoData();await regularAtualizarResumoProcedimento();
+ }catch(error){console.error('Seleção do médico na agenda:',error);exibirToast('Não foi possível carregar a escala deste médico.','erro');}
+}
 async function regularBuscarProximaDataDisponivel(proxima=false){
  const medicoId=document.getElementById('regularGastroMedico')?.value,input=document.getElementById('regularDataPrevista');
  if(!medicoId||!input){regularAtualizarNavegacaoData();return;}
@@ -8345,12 +8367,12 @@ async function regularAtualizarResumoProcedimento(){
    const mapa={aguardando_bloco:'Pendente',realizado:'Realizada',cancelado:'Cancelada',nao_compareceu:'Não compareceu'};
    return mapa[String(valor||'').toLowerCase()]||String(valor||'—').replace(/_/g,' ');
   };
-  const pacientesHtml=(registros||[]).map(x=>{
+  const pacientesHtml=(registros||[]).map((x,index)=>{
    const paciente=pacientes[x.paciente_id]||{},codigo=paciente.codigo_paciente;
    const prontuario=codigo!==null&&codigo!==undefined&&String(codigo).trim()!==''?'#'+String(codigo).padStart(7,'0'):'—';
    const turno=x.turno_cirurgico||x.turno_atend||'—',st=statusLabel(x.situacao);
    const classeStatus=String(x.situacao||'').toLowerCase()==='cancelado'?'is-cancelled':String(x.situacao||'').toLowerCase()==='realizado'?'is-done':'is-pending';
-   return '<tr><td class="cpam-patient-id">'+escaparHtml(prontuario)+'</td><td class="cpam-patient-name">'+escaparHtml(paciente.nome_paciente||'Paciente não identificado')+'</td><td class="cpam-patient-procedure">'+escaparHtml(x.procedimento_nome||'Procedimento não informado')+'</td><td><div class="cpam-patient-turn">'+escaparHtml(turno)+'</div><span class="cpam-patient-status '+classeStatus+'">'+escaparHtml(st)+'</span></td></tr>';
+   return '<tr><td class="cpam-patient-order">'+(index+1)+'</td><td class="cpam-patient-id">'+escaparHtml(prontuario)+'</td><td class="cpam-patient-name">'+escaparHtml(paciente.nome_paciente||'Paciente não identificado')+'</td><td class="cpam-patient-procedure">'+escaparHtml(x.procedimento_nome||'Procedimento não informado')+'</td><td><div class="cpam-patient-turn">'+escaparHtml(turno)+'</div><span class="cpam-patient-status '+classeStatus+'">'+escaparHtml(st)+'</span></td></tr>';
   }).join('');
   let regra='',limitesHtml='';
   if(config&&!config.ativo){
@@ -8381,7 +8403,7 @@ async function regularAtualizarResumoProcedimento(){
    }
   }
   status.textContent='';
-  const tabela=total?'<section class="cpam-patients-section"><div class="cpam-patients-heading"><strong>Pacientes agendados</strong><span>'+total+' registro(s)</span></div><div class="cpam-patients-table-wrap"><table class="cpam-patients-table"><thead><tr><th>Prontuário / ID</th><th>Nome do paciente</th><th>Procedimento / exame</th><th>Turno / status</th></tr></thead><tbody>'+pacientesHtml+'</tbody></table></div></section>':'<div class="cpam-empty-patients" role="status"><i class="fa-solid fa-calendar-xmark"></i><strong>Nenhum paciente agendado nesta data</strong><span>Esta data está sem pacientes programados para este médico.</span></div>';
+  const tabela=total?'<section class="cpam-patients-section"><div class="cpam-patients-heading"><strong>Pacientes agendados</strong><span class="cpam-patients-count">— '+total+' registro(s)</span></div><div class="cpam-patients-table-wrap"><table class="cpam-patients-table"><thead><tr><th>ORD</th><th>Prontuário / ID</th><th>Nome do paciente</th><th>Procedimento / exame</th><th>Turno / status</th></tr></thead><tbody>'+pacientesHtml+'</tbody></table></div></section>':'<div class="cpam-empty-patients" role="status"><i class="fa-solid fa-calendar-xmark"></i><strong>Nenhum paciente agendado nesta data</strong><span>Esta data está sem pacientes programados para este médico.</span></div>';
   conteudo.innerHTML='<div class="cpam-summary-doctor"><div class="cpam-summary-doctor-name"><strong>'+escaparHtml(medico.nome)+'</strong><span>CRM '+escaparHtml(medico.crm||'—')+'</span></div><span class="cpam-summary-total">'+total+' agendado(s)</span></div>'+regra+destaque+tabela+limitesHtml;
  }catch(error){
   console.error('Resumo da agenda:',error);
@@ -8467,5 +8489,20 @@ async function regulacaoAgendamentoComSenha(payload){
  }
 }
 </script>
+
+<style id="cpam-regular-final-refinements">
+#appShell #regularDataSemanaLabel{font-size:14px!important;line-height:1.4!important}
+#appShell #regularDataDisponibilidade{background:#14532D!important;color:#fff!important;border:1px solid #14532D!important}
+#appShell .cpam-patients-heading{align-items:center!important;gap:10px!important}
+#appShell .cpam-patients-heading strong{font-size:12px!important;font-weight:850!important}
+#appShell .cpam-patients-count{display:inline-flex!important;align-items:center!important;border:1px solid #bbf7d0!important;border-radius:999px!important;background:#dcfce7!important;color:#14532d!important;padding:4px 9px!important;font-size:11px!important;font-weight:800!important;white-space:nowrap!important}
+#appShell .cpam-patients-table th{font-size:10px!important;font-weight:800!important}
+#appShell .cpam-patients-table td{font-size:11px!important}
+#appShell .cpam-patients-table .cpam-patient-order{width:42px!important;text-align:center!important;color:#64748b!important;font-weight:800!important;font-variant-numeric:tabular-nums!important}
+#appShell .cpam-patients-table .cpam-patient-id{font-size:11px!important;font-weight:750!important}
+#appShell .cpam-patients-table .cpam-patient-name{font-size:11px!important;font-weight:800!important}
+#appShell .cpam-patients-table .cpam-patient-procedure{font-size:11px!important}
+@media(max-width:640px){#appShell #regularDataSemanaLabel{font-size:13px!important}#appShell .cpam-patients-count{font-size:10px!important;padding:3px 7px!important}}
+</style>
 </body>
 </html>
