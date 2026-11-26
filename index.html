@@ -8459,7 +8459,7 @@ function regulacaoDialogoSenhaLimite(mensagem){
 }
 async function regulacaoAgendamentoComSenha(payload){
  let senha=null;while(true){const {data,error}=await supabaseClient.rpc('regulacao_agendamento_criar',{p_payload:payload,p_senha_excecao:senha});if(!error)return data;
-  const mensagem=String(error.message||''),limite=mensagem.toLocaleLowerCase('pt-BR').includes('limite diário atingido'),senhaInvalida=mensagem.toLocaleLowerCase('pt-BR').includes('senha de autorização')&&mensagem.toLocaleLowerCase('pt-BR').includes('incorreta');
+  const mensagem=String(error.message||''),mensagemLimite=mensagem.toLocaleLowerCase('pt-BR'),limite=mensagemLimite.includes('limite diário')&&mensagemLimite.includes('atingido'),senhaInvalida=mensagem.toLocaleLowerCase('pt-BR').includes('senha de autorização')&&mensagem.toLocaleLowerCase('pt-BR').includes('incorreta');
   if((limite||senhaInvalida)&&perfilAtual?.role==='coordenacao'){if(senhaInvalida)exibirToast('Senha incorreta. Confira e tente novamente.','erro');senha=await regulacaoDialogoSenhaLimite(mensagem);if(senha===null){document.getElementById('regularDataPrevista')?.focus();return null;}continue;}throw error;
  }
 }
