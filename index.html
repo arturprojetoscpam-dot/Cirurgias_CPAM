@@ -8067,6 +8067,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
         function gastroLimparMedicoRegular(){
             const campo=document.getElementById('regularGastroMedico');
             if(campo)campo.value='';
+            regularAtualizarNavegacaoData();
         }
         async function gastroAtualizarMedicoRegular(){
             const wrap=document.getElementById('regularGastroMedicoWrap'),campo=document.getElementById('regularGastroMedico');
@@ -8088,6 +8089,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
             campo.innerHTML='<option value="">Selecione o médico responsável</option>'+gastroMedicosRegulacaoCache.map(p=>'<option value="'+p.id+'">'+escaparHtml(p.nome)+(p.crm?' · CRM '+escaparHtml(p.crm):'')+'</option>').join('');
             if(gastroMedicosRegulacaoCache.some(p=>p.id===selecionado))campo.value=selecionado;
             if(!gastroMedicosRegulacaoCache.length)campo.innerHTML='<option value="">Nenhum médico cirurgião ativo cadastrado</option>';
+            regularAtualizarNavegacaoData();
         }
 
         function navegarSistema(destino,atualizarHistorico=true){
