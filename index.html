@@ -8339,11 +8339,16 @@ body{font-size:12px;line-height:1.5;padding:18px 12px 32px}
 .actions{width:100%;max-width:210mm;margin:0 auto 14px;display:flex;justify-content:flex-end}
 .print-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 20px;border:0;border-radius:7px;background:#123c32;color:#fff;font-size:13px;font-weight:700;cursor:pointer}
 .print-button:active{transform:translateY(1px)}
-.sheet{width:100%;max-width:210mm;min-height:297mm;margin:0 auto;background:#fff;padding:20mm 19mm;box-shadow:0 3px 18px rgba(20,45,32,.10)}
-.heading{margin:0 0 25px;padding:0 0 15px;border-bottom:1px solid #d9e1dc;text-align:left}
-.institution{margin:0 0 6px;color:#69776f;font-size:9px;font-weight:500;letter-spacing:.3px}
-.heading h1{margin:0;color:#173e32;font-size:17px;line-height:1.25;font-weight:700}
-.heading .subtitle{margin:5px 0 0;color:#849087;font-size:10px}
+.sheet{position:relative;overflow:hidden;width:100%;max-width:210mm;min-height:297mm;margin:0 auto;background:#fff;padding:17mm 19mm 18mm;box-shadow:0 3px 18px rgba(20,45,32,.10);border-top:5px solid #174b3b}
+.sheet:before{content:"";position:absolute;top:0;right:0;width:62mm;height:62mm;background:linear-gradient(135deg,rgba(220,237,227,.7),rgba(220,237,227,0));clip-path:polygon(100% 0,100% 100%,0 0);pointer-events:none}
+.heading{position:relative;display:flex;align-items:center;gap:17px;margin:0 0 25px;padding:0 0 17px;border-bottom:2px solid #dce8e0;text-align:left}
+.brand-logo{display:block;flex:0 0 auto;width:53mm;height:25mm;max-width:34%;object-fit:contain;object-position:left center}
+.brand-copy{min-width:0;flex:1}
+.institution{margin:0 0 5px;color:#315d4b;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.heading h1{margin:0;color:#123c32;font-size:22px;line-height:1.2;font-weight:800;letter-spacing:-.4px}
+.heading .subtitle{margin:6px 0 0;color:#718178;font-size:10px;font-weight:600;letter-spacing:.25px}
+.document-mark{display:inline-flex;align-items:center;gap:6px;margin-top:9px;padding:4px 9px;border:1px solid #cbded1;border-radius:3px;background:#f1f7f3;color:#315d4b;font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.document-mark:before{content:"";width:6px;height:6px;border-radius:50%;background:#3b8061}
 .details{margin:0;padding:0}
 .item{padding:12px 0;border-bottom:1px solid #e8ede9;break-inside:avoid}
 .item dt{margin:0 0 4px;color:#7a867e;font-size:9px;font-weight:700;letter-spacing:.65px}
@@ -8354,14 +8359,14 @@ body{font-size:12px;line-height:1.5;padding:18px 12px 32px}
 @media print{
  html,body{width:210mm;min-height:297mm;background:#fff!important;padding:0!important;margin:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
  .actions{display:none!important}
- .sheet{width:210mm;min-height:297mm;max-width:none;margin:0;padding:20mm 19mm;box-shadow:none}
+ .sheet{width:210mm;min-height:297mm;max-width:none;margin:0;padding:17mm 19mm 18mm;box-shadow:none;border-top:5px solid #174b3b}
 }
 @media screen and (max-width:600px){
  body{padding:9px 8px 20px}
  .actions{position:sticky;top:0;z-index:5;margin:0 0 9px}
  .print-button{width:100%;min-height:46px}
- .sheet{min-height:0;padding:25px 21px;box-shadow:0 2px 12px rgba(20,45,32,.08)}
- .heading{margin-bottom:17px;padding-bottom:12px}
+ .sheet{min-height:0;padding:25px 21px;box-shadow:0 2px 12px rgba(20,45,32,.08);border-top-width:4px}
+ .heading{align-items:flex-start;gap:12px;margin-bottom:17px;padding-bottom:12px}.brand-logo{width:31%;height:68px;max-width:31%}.heading h1{font-size:18px}.document-mark{font-size:7px;padding:4px 7px}
  .heading h1{font-size:16px}
  .item{padding:10px 0}
  .notice{margin-top:17px}
@@ -8370,7 +8375,7 @@ body{font-size:12px;line-height:1.5;padding:18px 12px 32px}
 </style></head><body>
 <div class="actions"><button id="printButton" class="print-button" type="button"><span aria-hidden="true">▤</span> Imprimir comprovante</button></div>
 <main class="sheet">
-<header class="heading"><p class="institution">Complexo Pediátrico Arlinda Marques</p><h1>Agendamento Interno</h1><p class="subtitle">Bloco Cirúrgico · Comprovante de agendamento</p></header>
+<header class="heading"><img class="brand-logo" src="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/logo-cpam.png" alt="Logomarca do CPAM" onerror="this.style.display='none'"><div class="brand-copy"><p class="institution">Complexo Pediátrico Arlinda Marques</p><h1>Agendamento Interno</h1><p class="subtitle">Bloco Cirúrgico · Comprovante de agendamento</p><span class="document-mark">Documento institucional interno</span></div></header>
 <dl class="details">
 <div class="item"><dt>PACIENTE</dt><dd>${esc(dados.nome)}</dd></div>
 <div class="item"><dt>PRONTUÁRIO INTERNO DO BLOCO CIRÚRGICO</dt><dd>#${esc(codigo)}</dd></div>
