@@ -5356,7 +5356,7 @@
 <div class="grid grid-cols-1 gap-3">
 <details class="rounded-xl border border-amber-200 bg-amber-50/40"><summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5"><span class="flex min-w-0 items-center gap-2"><i class="fa-solid fa-hourglass-half text-amber-700"></i><strong class="text-xs font-bold text-slate-700">Pendências do Bloco</strong><span class="text-[10px] text-slate-500">Cirurgias anteriores ainda sem resposta</span></span><span id="agendaPendenciasTotal" class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-extrabold text-amber-800">—</span></summary><div id="agendaPendenciasLista" class="max-h-[320px] space-y-1 overflow-y-auto border-t border-amber-100 px-3 py-2"><div class="py-3 text-center text-[10px] text-slate-500">Carregando pendências...</div></div></details>
 </div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white"><div class="border-b border-slate-100 bg-slate-50/50 px-4 py-2.5"><div class="flex flex-wrap items-center justify-between gap-2"><h3 class="text-xs font-bold text-slate-800">Programação do dia</h3><p id="agendaDataSelecionadaLabel" class="text-[10px] text-slate-500">Selecione uma data.</p></div></div><div id="agendaProgramacaoDia" class="space-y-3 p-4 sm:p-5"><div class="py-10 text-center text-xs text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando programação...</div></div></div>
+<div class="overflow-hidden rounded-2xl border border-blue-200 bg-white shadow-sm"><div class="border-b border-blue-100 bg-gradient-to-r from-blue-50 via-white to-slate-50 px-4 py-3 sm:px-5"><div class="flex flex-col items-start gap-1.5"><h3 class="text-base font-extrabold tracking-tight text-blue-950 sm:text-lg"><i class="fa-solid fa-calendar-day mr-2 text-blue-600"></i>Programação do dia</h3><p id="agendaDataSelecionadaLabel" class="text-xs font-semibold text-slate-600 sm:text-sm">Selecione uma data.</p></div></div><div id="agendaProgramacaoDia" class="space-y-3 p-4 sm:p-5"><div class="py-10 text-center text-xs text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Carregando programação...</div></div></div>
 </section>
 
         <section id="secCancelamentos" class="hidden space-y-4">
@@ -7713,7 +7713,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
             });
             const dataLegivel=selecionada.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
             const resumo=document.getElementById('agendaResumoDia');if(resumo)resumo.textContent=selecionada.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long'});
-            const labelProgramacao=document.getElementById('agendaDataSelecionadaLabel');if(labelProgramacao)labelProgramacao.textContent='Programação para: '+dataLegivel;
+            const labelProgramacao=document.getElementById('agendaDataSelecionadaLabel');if(labelProgramacao){const dia=String(selecionada.getDate()).padStart(2,'0'),mes=selecionada.toLocaleDateString('pt-BR',{month:'long'}),ano=selecionada.getFullYear(),diaSemana=selecionada.toLocaleDateString('pt-BR',{weekday:'long'});labelProgramacao.textContent=dia+' de '+mes+' de '+ano+' ('+diaSemana+')';}
             renderizarDadosAgendaEletiva();
         }
         function alternarMenuPerfil(){
