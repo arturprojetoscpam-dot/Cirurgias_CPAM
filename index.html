@@ -8310,29 +8310,66 @@ function regularAtualizarNavegacaoData(){
 }
 function regularImprimirAgendamento(dados){
  const w=window.open('','_blank');
- if(!w){exibirToast('O navegador bloqueou a visualização. Permita pop-ups para este sistema e tente novamente.','aviso');return;}
+ if(!w){exibirToast('A visualização foi bloqueada pelo navegador. Permita pop-ups para este sistema e tente novamente.','aviso');return;}
  const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
  const codigo=String(dados.codigoBloco||'').padStart(7,'0');
  const emitido=new Date().toLocaleString('pt-BR');
- const html=`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agendamento Interno - CPAM</title><style>
- *{box-sizing:border-box}html{background:#eef2f0}body{font-family:Arial,Helvetica,sans-serif;color:#26332e;margin:0;padding:24px 12px 40px;font-size:12px;line-height:1.45}
- .toolbar{max-width:210mm;margin:0 auto 14px;display:flex;justify-content:flex-end;gap:8px}
- .print-btn{appearance:none;border:0;border-radius:8px;background:#123c32;color:#fff;padding:11px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 6px #123c3226}
- .print-btn:hover{background:#1b5948}
- .doc{width:100%;max-width:210mm;min-height:297mm;margin:0 auto;background:#fff;padding:18mm 17mm;border:1px solid #dce5e0;box-shadow:0 8px 28px #1b33251a}
- .top{text-align:left;border-bottom:1px solid #cbd8d1;padding:0 0 12px;margin:0 0 22px}
- .institution{font-size:9px;font-weight:600;letter-spacing:.35px;color:#64746c;margin:0 0 5px}
- .top h1{font-size:16px;line-height:1.25;font-weight:700;letter-spacing:.15px;color:#123c32;margin:0}
- .subtitle{font-size:10px;color:#748078;margin:4px 0 0}
- .field{padding:10px 0;border-bottom:1px solid #e8eeea;break-inside:avoid}
- .label{font-size:9px;font-weight:700;letter-spacing:.55px;color:#738078;margin-bottom:3px}
- .value{font-size:12px;font-weight:600;color:#26332e;overflow-wrap:anywhere}
- .notice{margin-top:20px;padding:10px 12px;background:#f6f9f7;border-left:2px solid #7d9c8c;color:#53645a;font-size:10px;line-height:1.5}
- .foot{margin-top:26px;padding-top:9px;border-top:1px solid #e5ebe7;text-align:left;font-size:9px;color:#87928b}
- @page{size:A4 portrait;margin:0}
- @media print{html,body{background:#fff!important;margin:0!important;padding:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.toolbar{display:none!important}.doc{width:210mm;max-width:none;min-height:297mm;margin:0;padding:18mm 17mm;border:0;box-shadow:none}}
- @media screen and (max-width:600px){body{padding:10px 8px 24px}.toolbar{margin:0 0 10px}.print-btn{width:100%;min-height:44px}.doc{min-height:0;padding:24px 20px;border-radius:8px}.top{margin-bottom:16px}.field{padding:9px 0}.value{font-size:12px}.notice{margin-top:16px}}
- </style></head><body><div class="toolbar"><button class="print-btn" type="button" onclick="window.print()">&#128438; Imprimir comprovante</button></div><main class="doc"><header class="top"><p class="institution">COMPLEXO PEDIÁTRICO ARLINDA MARQUES</p><h1>Agendamento Interno</h1><p class="subtitle">Comprovante · Bloco Cirúrgico</p></header><section class="field"><div class="label">PACIENTE</div><div class="value">'+esc(dados.nome)+'</div></section><section class="field"><div class="label">PRONTUÁRIO INTERNO DO BLOCO CIRÚRGICO</div><div class="value">#'+esc(codigo)+'</div></section><section class="field"><div class="label">PROCEDIMENTO</div><div class="value">'+esc(dados.procedimento)+'</div></section><section class="field"><div class="label">DATA PREVISTA</div><div class="value">'+esc(dados.data)+'</div></section><section class="field"><div class="label">MÉDICO RESPONSÁVEL</div><div class="value">'+esc(dados.medico)+'</div></section><div class="notice"><strong>Documento interno de conferência.</strong> Este comprovante registra o agendamento informado pela Regulação e não substitui documentos oficiais ou autorizações assistenciais.</div><footer class="foot">Bloco Cirúrgico · CPAM<br>Emitido em '+esc(emitido)+'</footer></main></body></html>`;
+ const html=`<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agendamento Interno</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;color:#26332e;font-family:Arial,Helvetica,sans-serif}
+html{background:#edf1ef}
+body{font-size:12px;line-height:1.5;padding:18px 12px 32px}
+.actions{width:100%;max-width:210mm;margin:0 auto 14px;display:flex;justify-content:flex-end}
+.print-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:0 20px;border:0;border-radius:7px;background:#123c32;color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.print-button:active{transform:translateY(1px)}
+.sheet{width:100%;max-width:210mm;min-height:297mm;margin:0 auto;background:#fff;padding:20mm 19mm;box-shadow:0 3px 18px rgba(20,45,32,.10)}
+.heading{margin:0 0 25px;padding:0 0 15px;border-bottom:1px solid #d9e1dc;text-align:left}
+.institution{margin:0 0 6px;color:#69776f;font-size:9px;font-weight:500;letter-spacing:.3px}
+.heading h1{margin:0;color:#173e32;font-size:17px;line-height:1.25;font-weight:700}
+.heading .subtitle{margin:5px 0 0;color:#849087;font-size:10px}
+.details{margin:0;padding:0}
+.item{padding:12px 0;border-bottom:1px solid #e8ede9;break-inside:avoid}
+.item dt{margin:0 0 4px;color:#7a867e;font-size:9px;font-weight:700;letter-spacing:.65px}
+.item dd{margin:0;color:#26332e;font-size:12px;font-weight:600;overflow-wrap:anywhere}
+.notice{margin-top:23px;padding:11px 13px;background:#f6f8f6;border-left:2px solid #91a99a;color:#59665e;font-size:10px;line-height:1.55}
+.footer{margin-top:30px;padding-top:10px;border-top:1px solid #e8ede9;color:#89938d;font-size:9px}
+@page{size:A4 portrait;margin:0}
+@media print{
+ html,body{width:210mm;min-height:297mm;background:#fff!important;padding:0!important;margin:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .actions{display:none!important}
+ .sheet{width:210mm;min-height:297mm;max-width:none;margin:0;padding:20mm 19mm;box-shadow:none}
+}
+@media screen and (max-width:600px){
+ body{padding:9px 8px 20px}
+ .actions{position:sticky;top:0;z-index:5;margin:0 0 9px}
+ .print-button{width:100%;min-height:46px}
+ .sheet{min-height:0;padding:25px 21px;box-shadow:0 2px 12px rgba(20,45,32,.08)}
+ .heading{margin-bottom:17px;padding-bottom:12px}
+ .heading h1{font-size:16px}
+ .item{padding:10px 0}
+ .notice{margin-top:17px}
+ .footer{margin-top:22px}
+}
+</style></head><body>
+<div class="actions"><button id="printButton" class="print-button" type="button"><span aria-hidden="true">▤</span> Imprimir comprovante</button></div>
+<main class="sheet">
+<header class="heading"><p class="institution">Complexo Pediátrico Arlinda Marques</p><h1>Agendamento Interno</h1><p class="subtitle">Bloco Cirúrgico · Comprovante de agendamento</p></header>
+<dl class="details">
+<div class="item"><dt>PACIENTE</dt><dd>${esc(dados.nome)}</dd></div>
+<div class="item"><dt>PRONTUÁRIO INTERNO DO BLOCO CIRÚRGICO</dt><dd>#${esc(codigo)}</dd></div>
+<div class="item"><dt>PROCEDIMENTO</dt><dd>${esc(dados.procedimento)}</dd></div>
+<div class="item"><dt>DATA PREVISTA</dt><dd>${esc(dados.data)}</dd></div>
+<div class="item"><dt>MÉDICO RESPONSÁVEL</dt><dd>${esc(dados.medico)}</dd></div>
+</dl>
+<div class="notice"><strong>Documento interno de conferência.</strong> Este comprovante registra o agendamento informado pela Regulação e não substitui documentos oficiais ou autorizações assistenciais.</div>
+<footer class="footer">Bloco Cirúrgico · CPAM<br>Emitido em ${esc(emitido)}</footer>
+</main>
+<script>
+document.getElementById('printButton').addEventListener('click',function(){window.focus();window.print();});
+</script>
+</body></html>`;
  w.document.open();w.document.write(html);w.document.close();
 }
 function regularDataManualAlterada(){const input=document.getElementById('regularDataPrevista');if(!document.getElementById('regularGastroMedico')?.value){if(input)input.value='';regularAtualizarNavegacaoData();return;}regularAtualizarNavegacaoData();regularAtualizarResumoProcedimento();}
