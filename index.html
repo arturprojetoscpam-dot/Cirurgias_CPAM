@@ -8354,7 +8354,7 @@ async function regularImprimirAgendamento(dados){
    '<section class="destaque"><div class="campo"><span class="rotulo">Data do exame</span><strong class="valor">'+esc(dataExtensa)+'</strong></div><div class="campo"><span class="rotulo">Turno e horário</span><strong class="valor">'+esc(turnoHorario)+'</strong></div></section>'+
    '<section class="clinico"><div class="campo"><span class="rotulo">Médico</span><strong class="valor">'+esc(medicoExibicao||'Não informado')+'</strong></div><div class="campo"><span class="rotulo">Procedimento</span><strong class="valor exame">'+esc(dados.procedimento||'—')+'</strong></div></section>'+
    '<section class="orientacoes"><span class="rotulo">Orientações</span>'+(orientacao?'<div class="texto">'+esc(orientacao)+'</div>':'')+'</section>'+
-   '<footer class="rodape"><span>Complexo Pediátrico Arlinda Marques · Ambulatório</span><span>Emitido por '+esc(usuario)+' em '+esc(new Date().toLocaleString('pt-BR'))+'</span></footer></main><script>window.addEventListener("load",()=>setTimeout(()=>window.print(),300));<\\/script></body></html>';
+   '<footer class="rodape"><span>Complexo Pediátrico Arlinda Marques · Ambulatório</span><span>Emitido por '+esc(usuario)+' em '+esc(new Date().toLocaleString('pt-BR'))+'</span></footer></main>'+(dados.visualizar?'':'<script>window.addEventListener("load",()=>setTimeout(()=>window.print(),300));<\\/script>')+'</body></html>';
   w.document.open();w.document.write(html);w.document.close();
  }catch(error){
   console.error('Erro ao gerar comprovante do agendamento interno:',error);
