@@ -7856,10 +7856,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
         async function gastroImprimirAgendamento(registroId){
             const w=window.open('','_blank','width=900,height=700');
             if(!w){exibirToast('Permita a abertura de janelas para imprimir o comprovante.','erro');return;}
-            w.document.open();w.document.write('<!doctype html><html><body style="font:14px Arial;padding:24px">Preparando comprovante...
-
-
-</body></html>');w.document.close();
+            w.document.open();w.document.write('<!doctype html><html><body style="font:14px Arial;padding:24px">Preparando comprovante...</body></html>');w.document.close();
             try{
                 const {data:a,error:erroAg}=await supabaseClient.from('gastro_agendamentos').select('*').eq('id',registroId).single();
                 if(erroAg)throw erroAg;if(!a)throw new Error('Agendamento não encontrado.');
@@ -8695,6 +8692,5 @@ async function regulacaoAgendamentoComSenha(payload){
 #appShell #regularResumoAgendaConteudo .cpam-summary-doctor .cpam-summary-meta{display:flex!important;flex-direction:row!important;align-items:center!important;gap:7px 16px!important;flex-wrap:wrap!important;padding:0!important;margin:0!important;font-size:11px!important;color:#475569!important}
 @media(max-width:640px){#appShell #regularResumoAgendaConteudo .cpam-patients-heading strong,#appShell #regularResumoAgendaConteudo .cpam-patients-heading .cpam-patients-count{font-size:13px!important}#appShell #regularResumoAgendaConteudo .cpam-summary-doctor-name strong{font-size:12px!important}}
 </style>
-
 </body>
 </html>
