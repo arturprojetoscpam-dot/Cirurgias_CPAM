@@ -77,6 +77,8 @@ Requisitos visuais:
 - O título e o subtítulo variam conforme o documento; a identificação institucional e a posição das marcas não variam.
 - Não use um cabeçalho improvisado ou diferente em cada módulo.
 
+- **Alinhamento do título:** o título principal de todo documento deve ficar alinhado à esquerda, logo abaixo da linha divisória do cabeçalho institucional. Exemplo: `Agendamento Interno`. Nunca centralize o título principal. O subtítulo, quando existir, também deve seguir o alinhamento à esquerda.
+
 ### 4.3 Estrutura de referência do cabeçalho
 
 Use esta estrutura como referência conceitual e adapte apenas classes, dimensões e caminhos de imagem à implementação existente, sem alterar a identidade definida:
