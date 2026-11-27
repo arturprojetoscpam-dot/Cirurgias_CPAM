@@ -7683,6 +7683,18 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
             let datas=[];
             if(semanal){const inicio=new Date(selecionada);inicio.setDate(selecionada.getDate()-((selecionada.getDay()+6)%7));for(let i=0;i<7;i++){const d=new Date(inicio);d.setDate(inicio.getDate()+i);datas.push(d);}const fim=datas[6];document.getElementById('agendaIntervalo').textContent='Semana de '+datas[0].toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' a '+fim.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});}
             else{const primeiro=new Date(selecionada.getFullYear(),selecionada.getMonth(),1,12),inicio=new Date(primeiro);inicio.setDate(1-primeiro.getDay());for(let i=0;i<42;i++){const d=new Date(inicio);d.setDate(inicio.getDate()+i);datas.push(d);}document.getElementById('agendaIntervalo').textContent='Visão mensal · '+mesAno;}
+            // Anima a troca do período, mantendo a seleção de um dia dentro do mesmo período instantânea.
+            const chavePeriodo=semanal?'semana-'+dataLocalISOAgenda(datas[0]):'mes-'+selecionada.getFullYear()+'-'+String(selecionada.getMonth()+1).padStart(2,'0');
+            const periodoAnterior=container.dataset.agendaRangeKey||'';
+            const dataAnterior=container.dataset.agendaSelectedIso||'';
+            if(periodoAnterior&&periodoAnterior!==chavePeriodo&&dataAnterior){
+                const direcao=selecionada.getTime()>=new Date(dataAnterior+'T12:00:00').getTime()?'next':'prev';
+                container.classList.remove('agenda-days-enter-next','agenda-days-enter-prev');
+                void container.offsetWidth;
+                container.classList.add(direcao==='next'?'agenda-days-enter-next':'agenda-days-enter-prev');
+            }
+            container.dataset.agendaRangeKey=chavePeriodo;
+            container.dataset.agendaSelectedIso=valor;
             datas.forEach((dia,i)=>{
                 const iso=dataLocalISOAgenda(dia),ativo=iso===valor,ehHoje=iso===hojeISO;
                 const registrosDoDia=agendaEletivaRegistros.filter(r=>r.data_prevista===iso);
@@ -8701,6 +8713,14 @@ async function regulacaoAgendamentoComSenha(payload){
 #appShell .agenda-dia-card.is-selected{border-color:#1d4ed8!important;background:#2563eb!important;color:#fff!important;box-shadow:0 4px 12px rgba(37,99,235,.24)!important;}
 #appShell .agenda-dia-card:focus-visible{outline:3px solid #93c5fd!important;outline-offset:2px!important;}
 @media(max-width:480px){#appShell .agenda-dia-card{min-height:64px!important;padding:6px 2px!important;border-radius:10px!important}#appShell .agenda-dia-card .text-base{font-size:13px!important}}
+</style>
+
+<style id="agenda-days-directional-transition">
+@keyframes agendaDaysEnterNext{from{opacity:.35;transform:translate3d(30px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+@keyframes agendaDaysEnterPrev{from{opacity:.35;transform:translate3d(-30px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+#appShell #agendaSemanaCards.agenda-days-enter-next{animation:agendaDaysEnterNext .32s cubic-bezier(.2,.75,.25,1) both}
+#appShell #agendaSemanaCards.agenda-days-enter-prev{animation:agendaDaysEnterPrev .32s cubic-bezier(.2,.75,.25,1) both}
+@media(prefers-reduced-motion:reduce){#appShell #agendaSemanaCards.agenda-days-enter-next,#appShell #agendaSemanaCards.agenda-days-enter-prev{animation:none!important}}
 </style>
 </body>
 </html>
