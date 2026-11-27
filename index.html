@@ -7575,7 +7575,7 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
                 const data=gastroFormatarData(r.data_prevista);
                 return '<button type="button" onclick="selecionarDataAgendaEletiva(\''+escaparHtml(r.data_prevista)+'\')" class="w-full rounded-xl border border-amber-100 bg-white px-3 py-3 text-left transition hover:border-amber-300 hover:bg-amber-50/60"><span class="flex items-start justify-between gap-2"><strong class="min-w-0 text-xs font-bold text-slate-800">'+escaparHtml(nome)+'</strong><span class="shrink-0 rounded-full bg-amber-50 px-2 py-1 text-[9px] font-bold text-amber-800">'+data+'</span></span><span class="mt-1 block text-[10px] leading-5 text-slate-600">'+escaparHtml(r.procedimento_nome||'Procedimento não informado')+'</span><span class="mt-1 flex flex-wrap gap-x-3 text-[9px] text-slate-500">'+(codigo?'<span>Prontuário bloco '+escaparHtml(codigo)+'</span>':'')+'<span>Turno: '+escaparHtml(r.turno_atend||'—')+'</span></span></button>';
             }).join(''):'<div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center"><i class="fa-solid fa-circle-check text-lg text-emerald-600"></i><p class="mt-2 text-xs font-semibold text-slate-700">Nenhuma pendência do Bloco</p></div>';
-            dia.innerHTML=registrosDia.length?'<div class="flex flex-col space-y-4">'+registrosDia.map(r=>{
+            dia.innerHTML=registrosDia.length?'<div class="cpam-agenda-eletiva-grid grid grid-cols-2 gap-2 sm:gap-3">'+registrosDia.map(r=>{
                 const p=agendaEletivaPacientes[r.paciente_id]||{},medico=agendaEletivaProfissionais[r.profissional_responsavel_id]||{};
                 const nome=p.nome_paciente||'Paciente não identificado',codigo=p.codigo_paciente?'#'+String(p.codigo_paciente).padStart(7,'0'):'';
                 const idade=idadeNaData(p.data_nascimento,r.data_prevista),status=agendaEletivaStatusInfo(r.situacao);
@@ -7856,7 +7856,119 @@ function validarDocumentoRegular(id,mostrarIncompleto=true){
         async function gastroImprimirAgendamento(registroId){
             const w=window.open('','_blank','width=900,height=700');
             if(!w){exibirToast('Permita a abertura de janelas para imprimir o comprovante.','erro');return;}
-            w.document.open();w.document.write('<!doctype html><html><body style="font:14px Arial;padding:24px">Preparando comprovante...</body></html>');w.document.close();
+            w.document.open();w.document.write('<!doctype html><html><body style="font:14px Arial;padding:24px">Preparando comprovante...
+<style>
+/* Grade compacta e responsiva da programação de cirurgias eletivas */
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:stretch;
+  gap:10px!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article{
+  min-width:0;
+  height:100%;
+  padding:11px!important;
+  border-radius:13px!important;
+  box-shadow:0 1px 3px rgba(15,23,42,.06)!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+  gap:9px 10px!important;
+  align-items:start;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section{
+  min-width:0;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(1) .text-\[15px\]{
+  display:-webkit-box;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow-wrap:anywhere;
+  font-size:13px!important;
+  line-height:1.3!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(2) .text-\[13px\]{
+  display:-webkit-box;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow-wrap:anywhere;
+  line-height:1.35!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(3){
+  grid-column:1/-1;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:7px!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(4){
+  grid-column:1/-1;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(4)>div:first-child{
+  margin-bottom:5px!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article select,
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article input{
+  min-width:0!important;
+  height:34px!important;
+  padding-left:7px!important;
+  padding-right:7px!important;
+  font-size:11px!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:nth-child(2){
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:8px!important;
+  margin-top:9px!important;
+  padding:8px!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:nth-child(2)>div{
+  min-width:0;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:nth-child(2)>div:last-child{
+  grid-column:1/-1;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:nth-child(2) label,
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child .mb-1{
+  font-size:9px!important;
+  letter-spacing:.035em;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(4)>div:first-child+div{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(4) button{
+  width:auto!important;
+  min-height:34px;
+  flex:1 1 95px;
+  margin-top:0!important;
+  padding:7px 8px!important;
+  font-size:10px!important;
+  line-height:1.2!important;
+}
+#secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child>section:nth-child(4) button i{
+  margin-right:4px!important;
+}
+@media(min-width:700px){
+  #secAgendamentosEletivos .cpam-agenda-eletiva-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+@media(min-width:1200px){
+  #secAgendamentosEletivos .cpam-agenda-eletiva-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+}
+@media(max-width:380px){
+  #secAgendamentosEletivos .cpam-agenda-eletiva-grid{gap:7px!important}
+  #secAgendamentosEletivos .cpam-agenda-eletiva-grid>article{padding:8px!important}
+  #secAgendamentosEletivos .cpam-agenda-eletiva-grid>article>div:first-child{gap:7px!important}
+  #secAgendamentosEletivas .cpam-agenda-eletiva-grid>article select,
+  #secAgendamentosEletivas .cpam-agenda-eletiva-grid>article input{font-size:10px!important}
+}
+</style>
+
+</body></html>');w.document.close();
             try{
                 const {data:a,error:erroAg}=await supabaseClient.from('gastro_agendamentos').select('*').eq('id',registroId).single();
                 if(erroAg)throw erroAg;if(!a)throw new Error('Agendamento não encontrado.');
