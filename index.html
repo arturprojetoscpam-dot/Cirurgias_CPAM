@@ -8354,12 +8354,15 @@ body{font-size:12px;line-height:1.5;padding:18px 12px 32px}
 .print-button:active{transform:translateY(1px)}
 .sheet{position:relative;overflow:hidden;width:100%;max-width:210mm;min-height:297mm;margin:0 auto;background:#fff;padding:17mm 19mm 18mm;box-shadow:0 3px 18px rgba(20,45,32,.10);border-top:5px solid #174b3b}
 .sheet:before{content:"";position:absolute;top:0;right:0;width:62mm;height:62mm;background:linear-gradient(135deg,rgba(220,237,227,.7),rgba(220,237,227,0));clip-path:polygon(100% 0,100% 100%,0 0);pointer-events:none}
-.heading{position:relative;display:flex;align-items:center;gap:17px;margin:0 0 25px;padding:0 0 17px;border-bottom:2px solid #dce8e0;text-align:left}
-.brand-logo{display:block;flex:0 0 auto;width:53mm;height:25mm;max-width:34%;object-fit:contain;object-position:left center}
-.brand-copy{min-width:0;flex:1}
-.institution{margin:0 0 5px;color:#315d4b;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
-.heading h1{margin:0;color:#123c32;font-size:22px;line-height:1.2;font-weight:800;letter-spacing:-.4px}
-.heading .subtitle{margin:6px 0 0;color:#718178;font-size:10px;font-weight:600;letter-spacing:.25px}
+.heading{position:relative;display:grid;grid-template-columns:27mm minmax(0,1fr) 25mm;align-items:center;gap:5mm;margin:0;padding:0 0 4mm;border-bottom:1px solid #dce8e0;text-align:center}
+.brand-logo{display:block;width:25mm;height:18mm;max-width:100%;object-fit:contain;object-position:center}
+.brand-copy{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2mm}
+.institution{margin:0;color:#315d4b;font-size:9px;font-weight:800;letter-spacing:.65px;text-transform:uppercase;line-height:1.3}
+.institution-unit{margin:0;color:#547168;font-size:8px;font-weight:700;letter-spacing:1px}
+.brand-sespb{display:block;width:23mm;height:18mm;max-width:100%;object-fit:contain;object-position:center}
+.document-title{text-align:center;padding:6mm 0 5mm}
+.document-title h1{margin:0;color:#123c32;font-size:19px;line-height:1.2;font-weight:800;letter-spacing:.2px}
+.document-title .subtitle{margin:2mm 0 0;color:#718178;font-size:10px;font-weight:600;letter-spacing:.25px}
 .document-mark{display:inline-flex;align-items:center;gap:6px;margin-top:9px;padding:4px 9px;border:1px solid #cbded1;border-radius:3px;background:#f1f7f3;color:#315d4b;font-size:8px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
 .document-mark:before{content:"";width:6px;height:6px;border-radius:50%;background:#3b8061}
 .details{margin:0;padding:0}
@@ -8379,8 +8382,7 @@ body{font-size:12px;line-height:1.5;padding:18px 12px 32px}
  .actions{position:sticky;top:0;z-index:5;margin:0 0 9px}
  .print-button{width:100%;min-height:46px}
  .sheet{min-height:0;padding:25px 21px;box-shadow:0 2px 12px rgba(20,45,32,.08);border-top-width:4px}
- .heading{align-items:flex-start;gap:12px;margin-bottom:17px;padding-bottom:12px}.brand-logo{width:31%;height:68px;max-width:31%}.heading h1{font-size:18px}.document-mark{font-size:7px;padding:4px 7px}
- .heading h1{font-size:16px}
+ .heading{grid-template-columns:21mm minmax(0,1fr) 19mm;gap:2mm;padding-bottom:3mm}.brand-logo,.brand-sespb{width:19mm;height:14mm}.institution{font-size:7px;letter-spacing:.3px}.institution-unit{font-size:6.5px;letter-spacing:.5px}.document-title{padding:5mm 0 4mm}.document-title h1{font-size:16px}.document-title .subtitle{font-size:8px}.document-mark{font-size:7px;padding:4px 7px}
  .item{padding:10px 0}
  .notice{margin-top:17px}
  .footer{margin-top:22px}
@@ -8388,7 +8390,7 @@ body{font-size:12px;line-height:1.5;padding:18px 12px 32px}
 </style></head><body>
 <div class="actions"><button id="printButton" class="print-button" type="button"><span aria-hidden="true">▤</span> Imprimir comprovante</button></div>
 <main class="sheet">
-<header class="heading"><img class="brand-logo" src="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/logo-cpam.png" alt="Logomarca do CPAM" onerror="this.style.display='none'"><div class="brand-copy"><p class="institution">Complexo Pediátrico Arlinda Marques</p><h1>Agendamento Interno</h1><p class="subtitle">Bloco Cirúrgico · Comprovante de agendamento</p><span class="document-mark">Documento institucional interno</span></div></header>
+<header class="heading"><img class="brand-logo" src="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/logo-cpam.png" alt="Logomarca do CPAM" onerror="this.style.display='none'"><div class="brand-copy"><p class="institution">COMPLEXO PEDIÁTRICO ARLINDA MARQUES</p><p class="institution-unit">CPAM · BLOCO CIRÚRGICO</p></div><img class="brand-sespb" src="https://raw.githubusercontent.com/arturprojetoscpam-dot/Cirurgias_CPAM/main/SESPB.png" alt="Secretaria de Estado da Saúde da Paraíba" onerror="this.style.display='none'"></header><section class="document-title"><h1>AGENDAMENTO INTERNO</h1><p class="subtitle">Comprovante de agendamento cirúrgico</p><span class="document-mark">Documento institucional interno</span></section>
 <dl class="details">
 <div class="item"><dt>PACIENTE</dt><dd>${esc(dados.nome)}</dd></div>
 <div class="item"><dt>PRONTUÁRIO INTERNO DO BLOCO CIRÚRGICO</dt><dd>#${esc(codigo)}</dd></div>
